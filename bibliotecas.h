@@ -11,7 +11,8 @@
 	#include "tela.h"
 	#include "encoder.h"
 	#include "timers.h"
-	#include "PINOUT.h"
 	#include "motor.h"
+	#include "PINOUT.h"
+	
 
 #endif		
