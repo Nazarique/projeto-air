@@ -45,7 +45,7 @@
 
     void read_Encoder();
     void encoder_Init();
-    uint16_t read_EncoderTest();
+    uint16_t read_Posicao();
 
 
   #ifdef __cplusplus
