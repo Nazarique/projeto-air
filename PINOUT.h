@@ -10,7 +10,7 @@
 	//		 		ENCODER_AS5045_SPI
 	#define 		AS_SPI_SCK 					52  // clk
 	#define 		AS_SPI_MISO 				50  // DO pin
-	#define 		AS_SPI_MOSI 				51  // DI pin
+	#define 		AS_SPI_MOSI 				51  // não usado
 	#define 		AS_SPI_SS 					53  // CS for this device
 
 	//				MOTORDRIVER_BTS7960
