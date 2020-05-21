@@ -16,13 +16,13 @@ void read_Encoder()
   digitalWrite(SS, HIGH);// termina SPI
   posicao_encoder = dados_encoder.data.posi;
   
-  if(!dados_encoder.bit.LIN)
-  {
-    //não teve error
-  }  
+  // if(!dados_encoder.bit.LIN)
+  // {
+  //   //não teve error
+  // }  
 }
 
-uint16_t read_EncoderTest()
+uint16_t read_Posicao()
 {
   return posicao_encoder;
 }
