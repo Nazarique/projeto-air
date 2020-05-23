@@ -21,6 +21,16 @@ void read_Encoder()
   //   //não teve error
   // }  
 }
+int AS5045::Zaxis ()
+{
+  switch (_status & 0x3)
+    {
+    case 0: return 0 ;
+    case 1: return -1 ;
+    case 2: return +1 ;
+    }
+  return 0 ; // invalid case, must return something harmless
+}
 
 uint16_t read_Posicao()
 {
@@ -31,4 +41,5 @@ void encoder_Init()
 {
   SPI.begin();
   SPI.setBitOrder(MSBFIRST);
+  SPI.setClockDivider(3);
 }
