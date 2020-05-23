@@ -3,7 +3,7 @@
 ISR(TIMER4_OVF_vect)                                                           
 { 
   TCNT4 = 49536;
-  read_Encoder();  
+  encoder();  
   deadTimeButton_Isr();
 }
 
