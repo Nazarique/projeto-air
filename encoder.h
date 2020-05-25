@@ -53,3 +53,32 @@
   #endif
 
 #endif
+
+
+  // typedef union {
+  //     struct {
+  //         uint16_t d0   :1;
+  //         uint16_t d1   :1;
+  //         uint16_t d2   :1;
+  //         uint16_t d3   :1;
+  //         uint16_t d4   :1;
+  //         uint16_t d5   :1;
+  //         uint16_t d6   :1;
+  //         uint16_t d7   :1;
+  //         uint16_t d8   :1;
+  //         uint16_t d9   :1;
+  //         uint16_t d10  :1;
+  //         uint16_t d11  :1;
+  //         uint16_t d12  :1;
+  //         uint16_t d13  :1;
+  //         uint16_t EF   :1;
+  //         uint16_t PARD :1;
+  //     } bit;
+
+  //     struct {
+  //         uint16_t posi    :14;
+  //         uint16_t status   :2;
+  //     } data;
+  //         uint32_t u_data;
+
+  //   } AS5047_t;

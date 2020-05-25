@@ -12,6 +12,7 @@
 	#include "encoder.h"
 	#include "timers.h"
 	#include "motor.h"
+ 	#include "controle.h"
 	#include "PINOUT.h"
 
 #endif		

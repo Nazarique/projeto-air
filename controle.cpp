@@ -1,64 +1,52 @@
-typedef struct 
-{
-  struct 
-  {
-    uint8_t flag_degrau :1;
-    uint8_t direcao     :1;
-    uint8_t pwm_requerido;
-    uint8_t pwm_atual;
-  } motor;
+#include "bibliotecas.h"
 
-  struct 
-  {
-    uint16_t config;
-    uint16_t init;
-  } posicao;
-} control_t;
-
-
-volatile control_t control;
+volatile control_t control = {0};
 
 void degrauTime_Isr()                                                      
 {
-  static unsigned char cont = 1;
+  static unsigned char cont5 = 5;
 
   if(control.motor.flag_degrau)
   {
-    if(--cont==0)                                                           
+    if(--cont5==0)                                                           
     { 
-    	cont = 1;                                            
+    	cont5 = 5;                                            
     	control.motor.flag_degrau = 0;                                                                                                              
     }
   }
 }
 
-void degrau(uint8_t pwm, uint8_t pwm_atual)
+uint8_t degrau(uint8_t pwm, uint8_t pwm_atual)
 {
-  control.motor.flag_degrau = 1;
+  uint8_t passo = 5;
 
 	if(pwm_atual == pwm)
 	{
+    control.motor.flag_degrau = 0;
 		return pwm_atual;
 	}
 	else if(pwm_atual > pwm)
 	{
-		pwm_atual--;
+    control.motor.flag_degrau = 1;
+		return (pwm_atual - passo);
 	}
-	else if(pwm_Atual < pwm)
+	else if(pwm_atual < pwm)
 	{
-		pwm_atual++;
+    control.motor.flag_degrau = 1;
+		return (pwm_atual + passo);
 	}
-  return pwm_atual;
 }
 
 void set_Degrau()
 {
   if(!control.motor.flag_degrau)
     {
-      control.motor.pwm_atual = degrau(control.motor.pwm_requerido, control.motor.pwm_atual);
+      control.motor.pwm_atual = degrau(control.motor.pwm_requerido,
+                                       control.motor.pwm_atual);//duvida
     }
-  set_Duty(control.motor.pwm_atual); 
+  set_Duty(control.motor.pwm_atual); //duvida
 }
+
 
 void inverte_Rotacao()
 {
@@ -66,16 +54,24 @@ void inverte_Rotacao()
    
    posicao_encoder = read_Posicao();
 
-  if (posicao_encoder > control.posicao.init && control.motor.direcao == 1)
+  if (posicao_encoder > control.posicao.angulo_inicial && control.motor.direcao == 1)
   {
     control.motor.direcao = 0;
-    direct_Motor(control.motor.direcao)
+    change_Motor(control.motor.direcao);//duvida
   } 
 
-  if (posicao_encoder < control.posicao.config && control.motor.direcao == 0) 
+  if (posicao_encoder < control.posicao.angulo_final && control.motor.direcao == 0) 
   {
     control.motor.direcao = 1;
-    direct_Motor(control.motor.direcao);
+    change_Motor(control.motor.direcao); //duvida
   }
   set_Degrau(); 
 }
+
+// void prenche_estrutura(control_t *c, uint8_t pwm,
+//                        uint16_t angulo)
+// {
+//   c-> motor.pwm_requerido = pwm;
+//   c-> posicao.angulo_final = angulo;
+// }
+
