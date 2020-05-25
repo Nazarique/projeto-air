@@ -34,7 +34,7 @@
       } bit;
 
       struct {
-          uint32_t         :6;
+          uint32_t status   :6;
           uint32_t posi    :12;
           uint32_t         :14; // bits não usados
       } data;
@@ -43,7 +43,7 @@
 
     } AS5045_t;
 
-    void read_Encoder();
+    void encoder();
     void encoder_Init();
     uint16_t read_Posicao();
 
