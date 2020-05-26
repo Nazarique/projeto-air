@@ -10,6 +10,6 @@ void setup() {
 }
 
 void loop() {
-  machine_state();
-  Serial.println(read_Posicao());
+  //machine_state();
+ 
 }
