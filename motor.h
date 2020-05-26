@@ -19,8 +19,8 @@
 			{
 			  uint8_t deadTime :1;
 			  uint8_t stop     :1;
-			  uint8_t direcao  :1; 
-			  uint8_t Adirecao :1; 
+			  uint8_t direcao; 
+			  uint8_t Adirecao; 
 			} motorAux_t;
 
 		void stop_Motor();                                                                            

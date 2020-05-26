@@ -28,7 +28,7 @@ void change_Motor(uint8_t p)
   }
   else
   {
-    direct_Motor(p);  
+    direct_Motor(flag_Motor.direcao);  
   }
 }
 
@@ -49,7 +49,7 @@ void direct_Motor(uint8_t p)
     digitalWrite(DRIVE_IN2,LOW);
     flag_Motor.Adirecao = 0;                                                  
   }
-  if(p==D_ROTACAO_1_SUBIDA)
+  else if(p==D_ROTACAO_1_SUBIDA)
   {                                                                    
     digitalWrite(DRIVE_IN1,LOW);                                             
     digitalWrite(DRIVE_IN2,HIGH);  
