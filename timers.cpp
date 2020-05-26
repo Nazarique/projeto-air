@@ -3,8 +3,11 @@
 ISR(TIMER4_OVF_vect)                                                           
 { 
   TCNT4 = 49536;
-  encoder();  
+  //encoder();
+  //inverte_Rotacao();  
   deadTimeButton_Isr();
+  deadTimeMotor_Isr();
+  degrauTime_Isr();
 }
 
 void interrupt4_OVF_Init()
