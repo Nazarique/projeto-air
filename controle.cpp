@@ -50,20 +50,24 @@ void set_Degrau()
 
 void inverte_Rotacao()
 {
+
    volatile uint16_t posicao_encoder = 0;
    
-   posicao_encoder = read_Posicao();
+   posicao_encoder = 10;
 
-  if (posicao_encoder > control.posicao.angulo_inicial && control.motor.direcao == 1)
+   //posicao_encoder > control.posicao.angulo_inicial
+
+  if (control.motor.pwm_atual < 20  && control.motor.direcao == 1)
   {
     control.motor.direcao = 0;
-    change_Motor(control.motor.direcao);//duvida
+    change_Motor(control.motor.direcao);
   } 
+  //posicao_encoder < control.posicao.angulo_final
 
-  if (posicao_encoder < control.posicao.angulo_final && control.motor.direcao == 0) 
+  if (control.motor.pwm_atual > 200 && control.motor.direcao == 0) 
   {
     control.motor.direcao = 1;
-    change_Motor(control.motor.direcao); //duvida
+    change_Motor(control.motor.direcao);
   }
   set_Degrau(); 
 }
@@ -74,4 +78,3 @@ void inverte_Rotacao()
 //   c-> motor.pwm_requerido = pwm;
 //   c-> posicao.angulo_final = angulo;
 // }
-
