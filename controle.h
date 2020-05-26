@@ -11,7 +11,7 @@
       struct 
       {
         uint8_t flag_degrau :1;
-        uint8_t direcao     :1;
+        uint8_t direcao;
         uint8_t pwm_requerido;
         uint8_t pwm_atual;
       } motor;
