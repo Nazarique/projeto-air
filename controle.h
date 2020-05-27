@@ -7,28 +7,29 @@
   extern "C"{
   #endif
 
-    typedef struct {
-      struct 
-      {
-        uint8_t flag_degrau :1;
-        uint8_t direcao;
-        uint8_t pwm_requerido;
-        uint8_t pwm_atual;
-      } motor;
-
-      struct 
+    typedef struct 
       {
         uint16_t angulo_final;
         uint16_t angulo_inicial;
-      } posicao;
+      } posicao_t;
 
-    } control_t;
+    typedef struct 
+      {
+        uint8_t stop  :1;
+        uint8_t direcao; 
+        uint8_t Adirecao; 
 
-    void degrauTime_Isr();
-    uint8_t degrau(uint8_t pwm, uint8_t pwm_atual);
-    void set_Degrau();
+        uint8_t pwm_requerido;
+        uint8_t pwm_atual;
+      } motorAux_t;
+
+    void deadTimeMotor_Isr();
     void inverte_Rotacao();
-    //void prenche_estrutura();
+    void change_Motor(motorAux_t *motor);
+    void set_Degrau(motorAux_t *motor);
+    uint8_t degrau(uint8_t pwm, uint8_t pwm_atual);
+
+    void control_init();
 
   #ifdef __cplusplus
   } // extern "C"

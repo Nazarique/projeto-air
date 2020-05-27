@@ -18,16 +18,6 @@
 		#define			D_TELA_COLLAB      		'9'
 
 
-//				 		DISPLAY_LCD_20x4
-		#define			LCD_DB4 				4	
-		#define			LCD_DB5 				5
-		#define			LCD_DB6 				6
-		#define			LCD_DB7 				7
-		#define			LCD_RS 					8
-		#define			LCD_EN 					9
-
-
-
 	    #define 		D_INCREMENTO 			1 
 	    #define 		D_DECREMENTO 			2
 	    
