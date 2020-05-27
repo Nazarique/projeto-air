@@ -14,9 +14,9 @@
 	#define 		AS_SPI_SS 					48  // CS for this device
 
 	//				MOTORDRIVER_BTS7960
-	#define			DRIVE_IN1 					13
-	#define			DRIVE_IN2 					12
-	#define			DRIVE_PWM 					11
+	#define			DRIVE_EN 					13
+	#define			DRIVE_PWM_L					12
+	#define			DRIVE_PWM_R  				11
 
 	//		 		DISPLAY_LCD_20x4
 	#define			LCD_DB4 					4	
@@ -27,12 +27,12 @@
 	#define			LCD_EN 						9
 
 	// 				BOTÕES
-  #define     B_bt1             34
-  #define     B_bt2             36
-  #define     B_bt3             38
-  #define     B_bt4             40
-  #define     B_bt5             42
-  #define     B_bt6             44
+    #define         B_bt1                       32
+    #define         B_bt2                       34
+    #define         B_bt3                       36
+    #define         B_bt4                       38
+    #define         B_bt5                       40
+    #define         B_bt6                       30
 
   #ifdef __cplusplus
   } // extern "C"
