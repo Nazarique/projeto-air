@@ -487,5 +487,5 @@ void screen_Init()
 {
 	lcd.begin(20, 4);
 	screen_static(D_TELA_COLLAB);
-  	screen_static(estado);
+  screen_static(estado);
 }

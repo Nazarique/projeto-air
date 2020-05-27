@@ -14,14 +14,7 @@
 		#define			D_CARACTER_BOTAO_4	83
 		#define			D_CARACTER_BOTAO_5	84
 		#define			D_CARACTER_BOTAO_6	85
-
-		// 				BOTÕES
-	    #define         B_bt1                       32
-	    #define         B_bt2                       34
-	    #define         B_bt3                       36
-	    #define         B_bt4                       38
-	    #define         B_bt5                       40
-	    #define         B_bt6                       30
+		
 
 		typedef struct {
 		      unsigned char b1:1;
