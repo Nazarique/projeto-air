@@ -3,8 +3,7 @@
 ISR(TIMER4_OVF_vect)                                                           
 { 
   TCNT4 = 49536;
-  inverte_Rotacao(); 
-  deadTimeMotor_Isr(); 
+  encoder();  
   deadTimeButton_Isr();
 }
 

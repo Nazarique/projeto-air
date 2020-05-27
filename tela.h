@@ -10,7 +10,7 @@
 		#define 		D_TELA_CONFIG_0			'0'
 		#define 		D_TELA_CONFIG_1			'1'
 		#define 		D_MENU_PRESSAO			'2'
-		#define 		D_MENU_VOLUME		    '3'
+		#define 		D_MENU_VOLUME			  '3'
 		#define 		D_MENU_FREQ_RES			'4'
 		#define 		D_MENU_TEMP_INS			'5'
 		#define 		D_TELA_INICIAL			'6'
@@ -18,21 +18,18 @@
 		#define			D_TELA_COLLAB      		'9'
 
 
-	    #define 		D_INCREMENTO 			1 
-	    #define 		D_DECREMENTO 			2
-	    
-
-		typedef struct {  
-	        uint8_t     pwm;
-	        uint16_t angulo;
-	    } config_t;
+//				 		DISPLAY_LCD_20x4
+		#define			LCD_DB4 				4	
+		#define			LCD_DB5 				5
+		#define			LCD_DB6 				6
+		#define			LCD_DB7 				7
+		#define			LCD_RS 					8
+		#define			LCD_EN 					9
 
 		void machine_state();
 		void screen_static(char p);						//tela Static
-		void screen_dynamic(config_t *IHM, config_t *IHM_aux, char p);						//tela dynamic
+		void screen_dynamic(char p);						//tela dynamic
 		void screen_Init();
-		void set_IHM_PWM(config_t *IHM_aux, uint8_t p);
-    	void set_IHM_angulo(config_t *IHM_aux, uint8_t p);
 
 	#ifdef __cplusplus
 	} // extern "C"

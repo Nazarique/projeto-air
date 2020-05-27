@@ -4,14 +4,14 @@
 	#include <stdio.h>
 	#include <stdint.h>
 	#include <arduino.h>
+	#include <SPI.h>
 	#include <LiquidCrystal.h>
-	#include <AS5045.h>
 
 	#include "botao.h"
 	#include "tela.h"
+	#include "encoder.h"
 	#include "timers.h"
 	#include "motor.h"
- 	#include "controle.h"
 	#include "PINOUT.h"
 
 #endif		
