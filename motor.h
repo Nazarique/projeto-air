@@ -11,8 +11,7 @@
 		#define			D_ROTACAO_1_SUBIDA 		1
 
 		void stop_Motor();                                                                            
-		void direct_Motor(uint8_t p);                                                       
-		void set_Duty(uint8_t duty);
+		void direct_Motor(uint8_t p, uint8_t duty);
 		void motor_Init();                                                
 
 	#ifdef __cplusplus

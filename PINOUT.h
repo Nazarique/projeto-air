@@ -14,9 +14,9 @@
 	#define 		AS_SPI_SS 					48  // CS for this device
 
 	//				MOTORDRIVER_BTS7960
-	#define			DRIVE_IN1 					13
-	#define			DRIVE_IN2 					12
-	#define			DRIVE_PWM 					11
+	#define			DRIVE_EN 					13
+	#define			DRIVE_PWM_L					12
+	#define			DRIVE_PWM_R  				11
 
 	//		 		DISPLAY_LCD_20x4
 	#define			LCD_DB4 					4	

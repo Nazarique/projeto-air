@@ -12,14 +12,14 @@ void deadTimeMotor_Isr()
 {
   /* Contadores usados para controle do motor, cont20 = 20ms, cont5 = 5ms.*/
 
-  static unsigned char cont20 = 200;
+  static unsigned char cont20 = 20;
   static unsigned char cont5 = 5;
 
   if(deadTime_Motor)                                                        
   {
     if(--cont20==0)                                                           
     { 
-      cont20 = 200;                                                            
+      cont20 = 20;                                                            
       deadTime_Motor = 0; 
     }
   }
@@ -36,7 +36,7 @@ void deadTimeMotor_Isr()
 
 uint8_t degrau(uint8_t pwm, uint8_t pwm_atual)
 {
-  uint8_t passo = 5;
+  uint8_t passo = 10;
 
   if(pwm_atual == pwm)
   {
@@ -60,8 +60,6 @@ void set_Degrau(motorAux_t *motor)
   {
     motor->stop = 0;
     motor->Adirecao = motor->direcao;
-
-    direct_Motor(motor->direcao);
   }
   else if(motor->stop==0 && degrau_Motor==0)
   {
@@ -69,7 +67,7 @@ void set_Degrau(motorAux_t *motor)
                               motor->pwm_atual);
     degrau_Motor = 1;
   }
-  set_Duty(motor->pwm_atual); //duvida
+  direct_Motor(motor->direcao, motor->pwm_atual);
 }
 
 void change_Motor(motorAux_t *motor)   
@@ -86,15 +84,15 @@ void change_Motor(motorAux_t *motor)
   }
   else
   {
-    direct_Motor(motor->direcao);  
+    direct_Motor(motor->direcao, motor->pwm_atual);
   }
 }
 
 void inverte_Rotacao()
 {
-  uint16_t posicao_encoder;
+  uint16_t posicao_encoder = 50;
 
-  posicao_encoder = ((uint16_t)(encoder.read()*0.08789));
+  //posicao_encoder = ((uint16_t)(encoder.read()*0.08789));
 
   if (posicao_encoder > posi.angulo_final && motor.Adirecao == 1)
   {
@@ -106,7 +104,7 @@ void inverte_Rotacao()
   else if (posicao_encoder < posi.angulo_inicial && motor.Adirecao == 0) 
   {
     motor.direcao = 1;
-    motor.pwm_requerido = 10;
+    motor.pwm_requerido = 250;
     change_Motor(&motor);
   }
   set_Degrau(&motor); 
@@ -114,7 +112,7 @@ void inverte_Rotacao()
 
 void control_init()
 {
-  encoder.begin();
+  //encoder.begin();
   posi.angulo_final = 120;
   posi.angulo_inicial = 60;
 
