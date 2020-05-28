@@ -3,8 +3,7 @@
 void stop_Motor()
 {           
   digitalWrite(DRIVE_EN, LOW);                       
-  OCR1A = 0;
-  OCR1B = 0;
+
 } 
 
 void direct_Motor(uint8_t p, uint8_t duty)                                                    
