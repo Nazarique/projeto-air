@@ -397,7 +397,6 @@ void screen_static(char p)
 
       delay(500);
       break;
-
   }
 }
 
