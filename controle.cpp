@@ -12,14 +12,14 @@ void deadTimeMotor_Isr()
 {
   /* Contadores usados para controle do motor, cont20 = 20ms, cont5 = 5ms.*/
 
-  static unsigned char cont20 = 20;
+  static uint8_t cont300 = 300;
   static unsigned char cont5 = 5;
 
   if(deadTime_Motor)                                                        
   {
-    if(--cont20==0)                                                           
+    if(--cont300==0)                                                           
     { 
-      cont20 = 20;                                                            
+      cont300 = 300;                                                            
       deadTime_Motor = 0; 
     }
   }
@@ -66,8 +66,8 @@ void set_Degrau(motorAux_t *motor)
     motor->pwm_atual = degrau(motor->pwm_requerido, 
                               motor->pwm_atual);
     degrau_Motor = 1;
+    direct_Motor(motor->direcao, motor->pwm_atual);
   }
-  direct_Motor(motor->direcao, motor->pwm_atual);
 }
 
 void change_Motor(motorAux_t *motor)   
@@ -90,13 +90,13 @@ void change_Motor(motorAux_t *motor)
 
 void inverte_Rotacao()
 {
-  uint16_t posicao_encoder = 50;
+  uint16_t posicao_encoder;
 
-  //posicao_encoder = ((uint16_t)(encoder.read()*0.08789));
+  posicao_encoder = ((uint16_t)(encoder.read()*0.08789));
 
   if (posicao_encoder > posi.angulo_final && motor.Adirecao == 1)
   {
-    motor.pwm_requerido = 250;
+    motor.pwm_requerido = 120;
     motor.direcao = 0;
     change_Motor(&motor);
   }
@@ -112,9 +112,9 @@ void inverte_Rotacao()
 
 void control_init()
 {
-  //encoder.begin();
-  posi.angulo_final = 120;
-  posi.angulo_inicial = 60;
+  encoder.begin();
+  posi.angulo_final = 350;
+  posi.angulo_inicial = 20;
 
   motor.pwm_requerido = 120;
 

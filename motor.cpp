@@ -3,22 +3,24 @@
 void stop_Motor()
 {           
   digitalWrite(DRIVE_EN, LOW);                       
-
 } 
 
 void direct_Motor(uint8_t p, uint8_t duty)                                                    
 {
-  digitalWrite(DRIVE_EN, HIGH);
+  
   if(p==D_ROTACAO_0_DESCIDA)                                                
   {
-    OCR1A = duty;
-    OCR1B = 0;                                                 
+    OCR1B = 0;
+    delayMicroseconds(50);
+    OCR1A = duty;                                       
   }
   else if(p==D_ROTACAO_1_SUBIDA)
   {                                                                    
     OCR1A = 0;
+    delayMicroseconds(50);
     OCR1B = duty;
   }
+  digitalWrite(DRIVE_EN, HIGH);
 } 
 
 void motor_Init()
