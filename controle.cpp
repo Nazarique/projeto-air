@@ -1,25 +1,22 @@
 #include "bibliotecas.h"
 
-volatile uint8_t deadTime_Motor, degrau_Motor = 0;
-//variaveis globais para os contadores via interrupção
-
 AS5045 encoder(AS_SPI_SS, AS_SPI_SCK, AS_SPI_MISO);
+volatile uint8_t deadTime_Motor, degrau_Motor = 0;
 
-static motorAux_t motor = {0};
-static posicao_t posi = {0};
+tipoFuncao_p PonteiroDeFuncao;
 
 void deadTimeMotor_Isr()                                                      
 {
-  /* Contadores usados para controle do motor, cont20 = 20ms, cont5 = 5ms.*/
+  /* Contadores usados para controle do motor, cont300 = 300ms, cont5 = 5ms.*/
 
-  static unsigned char cont20 = 20;
+  static uint16_t cont300 = 300;
   static unsigned char cont5 = 5;
 
   if(deadTime_Motor)                                                        
   {
-    if(--cont20==0)                                                           
+    if(--cont300==0)                                                           
     { 
-      cont20 = 20;                                                            
+      cont300 = 300;                                                            
       deadTime_Motor = 0; 
     }
   }
@@ -52,70 +49,106 @@ uint8_t degrau(uint8_t pwm, uint8_t pwm_atual)
   }
 }
 
-void set_Degrau(motorAux_t *motor)
+void set_Degrau(control_t *motor)
 {
   /* Função que verifica se teve um deadTime, após a verificação ela aciona
       o motor na posição definida. */
-  if(motor->stop==1 && deadTime_Motor==0)
+  if(motor->c_stop==1 && deadTime_Motor==0)
   {
-    motor->stop = 0;
-    motor->Adirecao = motor->direcao;
+    motor->c_stop = 0;
   }
-  else if(motor->stop==0 && degrau_Motor==0)
+  else if(motor->c_stop==0 && degrau_Motor==0)
   {
-    motor->pwm_atual = degrau(motor->pwm_requerido, 
-                              motor->pwm_atual);
+    motor->c_pwm_atual = degrau(motor->c_pwm_requerido, 
+                              motor->c_pwm_atual);
     degrau_Motor = 1;
+    direct_Motor(motor->c_direcao, motor->c_pwm_atual);
   }
-  direct_Motor(motor->direcao, motor->pwm_atual);
 }
 
-void change_Motor(motorAux_t *motor)   
+void maqEstados_Control()
 {
-  if(motor->Adirecao != motor->direcao)       
-  {
-    stop_Motor();
-    motor->Adirecao = motor->direcao;
+  system_status * p_sys_status;
+  p_sys_status = get_sys_status();
 
-    motor->stop     = 1;             
-    deadTime_Motor  = 1;
-    
-    motor->pwm_atual= 0;
+  if(p_sys_status->s_respirador)
+  {
+    PonteiroDeFuncao(p_sys_status);
+  }
+}
+
+void control_Inspiracao(system_status *p_sys_status)
+{
+  /* Maq. de Estados: Inspiração
+      função para execução dos procedimentos durante a fase
+      se inspiração.
+  */
+  uint16_t posicao_encoder;
+
+  posicao_encoder = ((uint16_t)(encoder.read()*0.08789));
+
+  digitalWrite(P_VALVULA_PRESSAO_EXP, HIGH);
+
+  if (posicao_encoder > p_sys_status->s_control.c_angulo_final)
+  { 
+    p_sys_status->s_control.c_direcao = 0;
+    p_sys_status->s_control.c_stop = 1;
+    p_sys_status->s_control.c_pwm_requerido = 250;
+    p_sys_status->s_control.c_pwm_atual = 0; 
+    stop_Motor();        
+
+    deadTime_Motor = 1;
+    PonteiroDeFuncao = control_Expiracao;
+  }
+  set_Degrau(&p_sys_status->s_control);
+}
+
+void control_Expiracao(system_status *p_sys_status)
+{
+  /* Maq. de Estados: Expiração
+      função para execução dos procedimentos durante a fase
+      se expiração.
+  */
+
+  uint16_t posicao_encoder;
+  posicao_encoder = ((uint16_t)(encoder.read()*0.08789));
+
+  if(analogRead(P_SENSOR_PRESSAO) < p_sys_status->s_control.c_pressao_PEEP)
+  {
+    digitalWrite(P_VALVULA_PRESSAO_EXP, HIGH);
   }
   else
   {
-    direct_Motor(motor->direcao, motor->pwm_atual);
-  }
-}
-
-void inverte_Rotacao()
-{
-  uint16_t posicao_encoder = 50;
-
-  //posicao_encoder = ((uint16_t)(encoder.read()*0.08789));
-
-  if (posicao_encoder > posi.angulo_final && motor.Adirecao == 1)
-  {
-    motor.pwm_requerido = 250;
-    motor.direcao = 0;
-    change_Motor(&motor);
+    digitalWrite(P_VALVULA_PRESSAO_EXP, LOW); 
   }
 
-  else if (posicao_encoder < posi.angulo_inicial && motor.Adirecao == 0) 
-  {
-    motor.direcao = 1;
-    motor.pwm_requerido = 250;
-    change_Motor(&motor);
+  if(posicao_encoder < p_sys_status->s_control.c_angulo_inicial)
+  { 
+    p_sys_status->s_control.c_direcao = 1;
+    p_sys_status->s_control.c_stop = 1;
+    p_sys_status->s_control.c_pwm_requerido = p_sys_status->s_control.c_pwm_insp;
+    p_sys_status->s_control.c_pwm_atual= 0; 
+    stop_Motor();        
+
+    deadTime_Motor = 1;
+    PonteiroDeFuncao = control_Inspiracao;
   }
-  set_Degrau(&motor); 
+  set_Degrau(&p_sys_status->s_control);
 }
 
 void control_init()
 {
-  //encoder.begin();
-  posi.angulo_final = 120;
-  posi.angulo_inicial = 60;
+  system_status * p_sys_status;  
+  p_sys_status = get_sys_status();
 
-  motor.pwm_requerido = 120;
+  pinMode(P_VALVULA_PRESSAO_EXP, OUTPUT);
+  encoder.begin();
+  
+  p_sys_status->s_control.c_angulo_inicial = 60;
+  p_sys_status->s_control.c_angulo_final = 120;
+  p_sys_status->s_control.c_pressao_PEEP = 6;
 
+  p_sys_status->s_control.c_pwm_insp = 120;
+  p_sys_status->s_control.c_pwm_requerido = p_sys_status->s_control.c_pwm_insp;
+  PonteiroDeFuncao = control_Inspiracao;
 }
