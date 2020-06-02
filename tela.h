@@ -23,16 +23,18 @@
 	    
 
 		typedef struct {  
-	        uint8_t     pwm;
+	        uint8_t  pwm;
+	        uint8_t  PEEP;
 	        uint16_t angulo;
 	    } config_t;
 
 		void machine_state();
 		void screen_static(char p);						//tela Static
-		void screen_dynamic(config_t *IHM, config_t *IHM_aux, char p);						//tela dynamic
+		void screen_dynamic(control_t *controle, config_t *IHM_aux, char p);	
 		void screen_Init();
 		void set_IHM_PWM(config_t *IHM_aux, uint8_t p);
     	void set_IHM_angulo(config_t *IHM_aux, uint8_t p);
+    	void set_IHM_PEEP(config_t *IHM_aux, uint8_t p);
 
 	#ifdef __cplusplus
 	} // extern "C"

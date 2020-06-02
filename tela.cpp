@@ -8,7 +8,12 @@ char estado = '0';
 void machine_state()
 {
   char botao = 0;
-  static config_t config_IHM, config_IHM_aux = {0};
+
+  system_status *p_sys_status;
+  config_t config_IHM_aux;
+  
+  p_sys_status = get_sys_status();
+
   switch(estado)
   {
     case D_TELA_CONFIG_0://config 1     
@@ -22,13 +27,13 @@ void machine_state()
       {
         estado = D_MENU_PRESSAO;
         screen_static(estado);
-        screen_dynamic(&config_IHM, &config_IHM_aux, estado);
+        screen_dynamic(&p_sys_status->s_control, &config_IHM_aux, estado);
       }//pressao
       else if(botao == D_CARACTER_BOTAO_2)
       { 
         estado = D_MENU_VOLUME;
         screen_static(estado);
-        screen_dynamic(&config_IHM, &config_IHM_aux, estado);
+        screen_dynamic(&p_sys_status->s_control, &config_IHM_aux, estado);
       }//volume
       else if(botao == D_CARACTER_BOTAO_5)
       { 
@@ -53,18 +58,18 @@ void machine_state()
       { 
         estado = D_MENU_FREQ_RES;
         screen_static(estado);
-        screen_dynamic(&config_IHM, &config_IHM_aux, estado);
+        screen_dynamic(&p_sys_status->s_control, &config_IHM_aux, estado);
       }//frequencia 
       else if(botao == D_CARACTER_BOTAO_2)
       {
         estado = D_MENU_TEMP_INS; 
         screen_static(estado); 
-        screen_dynamic(&config_IHM, &config_IHM_aux, estado);
+        screen_dynamic(&p_sys_status->s_control, &config_IHM_aux, estado);
       }//tempo
       else if(botao == D_CARACTER_BOTAO_5)
       { 
         estado = D_TELA_INICIAL;  
-        screen_static(estado); 
+        screen_static(estado);
       }//inicia
       else if(botao == D_CARACTER_BOTAO_3)
       { 
@@ -83,28 +88,28 @@ void machine_state()
       else if(botao == D_CARACTER_BOTAO_1)
       { 
         estado = D_MENU_PRESSAO;
-		    set_IHM_PWM(&config_IHM_aux, D_INCREMENTO);
+		    set_IHM_PEEP(&config_IHM_aux, D_INCREMENTO);
         screen_static(estado);
-        screen_dynamic(&config_IHM, &config_IHM_aux, estado);
+        screen_dynamic(&p_sys_status->s_control, &config_IHM_aux, estado);
       } //inc
       else if(botao == D_CARACTER_BOTAO_2)
       { 
         estado = D_MENU_PRESSAO;  
-        set_IHM_PWM(&config_IHM_aux, D_DECREMENTO);
+        set_IHM_PEEP(&config_IHM_aux, D_DECREMENTO);
         screen_static(estado);
-        screen_dynamic(&config_IHM, &config_IHM_aux, estado);
+        screen_dynamic(&p_sys_status->s_control, &config_IHM_aux, estado);
       } //dec
 
       else if(botao == D_CARACTER_BOTAO_3)
       { 
-        estado = D_TELA_CONFIG_0;  
-       	config_IHM.pwm = config_IHM_aux.pwm;
+        estado = D_TELA_CONFIG_0;
+        set_control_PEEP(config_IHM_aux.PEEP);
         screen_static(estado);
       }//salva
       else if(botao == D_CARACTER_BOTAO_4)
       { 
         estado = D_TELA_CONFIG_0;  
-        config_IHM_aux.pwm = config_IHM.pwm;
+        config_IHM_aux.PEEP = p_sys_status->s_control.c_pressao_PEEP;
         screen_static(estado);
       }//esc  
       break;
@@ -119,31 +124,32 @@ void machine_state()
       { 
         estado = D_MENU_VOLUME; 
         set_IHM_angulo(&config_IHM_aux, D_INCREMENTO);
-        screen_dynamic(&config_IHM, &config_IHM_aux, estado);
+        screen_dynamic(&p_sys_status->s_control, &config_IHM_aux, estado);
       } //inc
       else if(botao == D_CARACTER_BOTAO_2)
       { 
         estado = D_MENU_VOLUME; 
         set_IHM_angulo(&config_IHM_aux, D_DECREMENTO);
-        screen_dynamic(&config_IHM, &config_IHM_aux, estado); 
+        screen_dynamic(&p_sys_status->s_control, &config_IHM_aux, estado); 
       } //dec
 
       else if(botao == D_CARACTER_BOTAO_3)
       { 
-        estado = D_TELA_CONFIG_0;  
-        config_IHM.angulo = config_IHM_aux.angulo;
+        estado = D_TELA_CONFIG_0;
+        set_control_angulo(config_IHM_aux.angulo);
+        
         screen_static(estado); 
       }//salva
       else if(botao == D_CARACTER_BOTAO_4)
       {
         estado = D_TELA_CONFIG_0;
-        config_IHM_aux.angulo = config_IHM.angulo;
+        config_IHM_aux.angulo = p_sys_status->s_control.c_angulo_final;
         screen_static(estado);
       }//esc  
       break;
 
     case D_MENU_FREQ_RES://frequencia
-      botao = read_Button();
+        botao = read_Button();
     	  if(!botao)
     	  {
     	  	break;
@@ -151,25 +157,25 @@ void machine_state()
         else if(botao == D_CARACTER_BOTAO_1)
         { 
           estado = D_MENU_FREQ_RES;
-          set_IHM_angulo(&config_IHM_aux, D_INCREMENTO);
-          screen_dynamic(&config_IHM, &config_IHM_aux, estado);
+          set_IHM_PWM(&config_IHM_aux, D_INCREMENTO);
+          screen_dynamic(&p_sys_status->s_control, &config_IHM_aux, estado);
         } //inc
         else if(botao == D_CARACTER_BOTAO_2)
         { 
           estado = D_MENU_FREQ_RES; 
-          set_IHM_angulo(&config_IHM_aux, D_DECREMENTO);
-          screen_dynamic(&config_IHM, &config_IHM_aux, estado); 
+          set_IHM_PWM(&config_IHM_aux, D_DECREMENTO);
+          screen_dynamic(&p_sys_status->s_control, &config_IHM_aux, estado); 
         } //dec
         else if(botao == D_CARACTER_BOTAO_3)
         { 
-          estado = D_TELA_CONFIG_0;  
-          config_IHM.angulo = config_IHM_aux.angulo;
+          estado = D_TELA_CONFIG_0;
+          set_control_pwm(config_IHM_aux.pwm);
           screen_static(estado); 
         }//salva
         else if(botao == D_CARACTER_BOTAO_4)
         { 
           estado = D_TELA_CONFIG_0;  
-          config_IHM_aux.angulo = config_IHM.angulo;
+          config_IHM_aux.pwm = p_sys_status->s_control.c_pwm_insp;
           screen_static(estado); 
         }//esc  
         break;
@@ -185,23 +191,23 @@ void machine_state()
       { 
         estado = D_MENU_TEMP_INS;
         set_IHM_PWM(&config_IHM_aux, D_INCREMENTO);
-        screen_dynamic(&config_IHM, &config_IHM_aux, estado); 
+        screen_dynamic(&p_sys_status->s_control, &config_IHM_aux, estado); 
       } //inc
       else if(botao == D_CARACTER_BOTAO_2){
         estado = D_MENU_TEMP_INS;
         set_IHM_PWM(&config_IHM_aux, D_DECREMENTO);
-        screen_dynamic(&config_IHM, &config_IHM_aux, estado);
+        screen_dynamic(&p_sys_status->s_control, &config_IHM_aux, estado);
       } //dec
       else if(botao == D_CARACTER_BOTAO_3)
       {
         estado = D_TELA_CONFIG_0;
-        config_IHM.pwm = config_IHM_aux.pwm;
+        set_control_pwm(config_IHM_aux.pwm);
         screen_static(estado);
       }//salva
       else if(botao == D_CARACTER_BOTAO_4)
       {
         estado = D_TELA_CONFIG_0; 
-        config_IHM_aux.pwm = config_IHM.pwm;
+        config_IHM_aux.pwm = p_sys_status->s_control.c_pwm_insp;
         screen_static(estado); 
       }//esc  
       break;  
@@ -214,19 +220,26 @@ void machine_state()
   	  	break;
   	  } 
       else if(botao == D_CARACTER_BOTAO_5)
-      {//config
-      	estado = D_TELA_CONFIG_0;  
-        screen_static(estado);
-      }
-      else if(botao == D_CARACTER_BOTAO_6)
       {
       	estado = D_TELA_CONFIG_0;  
         screen_static(estado);
+      }//config
+      else if(botao == D_CARACTER_BOTAO_6)
+      {
+      	estado = D_TELA_INICIAL;  
+        screen_static(estado);
+        set_sys_status(0);
       }//desliga
+      else if (botao == D_CARACTER_BOTAO_2)
+      {
+        estado = D_TELA_INICIAL;
+        screen_static(estado);
+        set_sys_status(1);
+      }//liga
       break;  
   }
 }
-void screen_static(char p)            //tela Static
+void screen_static(char p)
 {
   char col = 1;
   switch(p)
@@ -355,6 +368,12 @@ void screen_static(char p)            //tela Static
 
       lcd.setCursor(col, 2);                               
       lcd.print("Temp. Insp: ");
+
+      lcd.setCursor(col, 3);                               
+      lcd.print("6- Liga");
+
+      lcd.setCursor(col+10, 3);                               
+      lcd.print("2 - Des");
       break;  
 
     case D_TELA_COLLAB:
@@ -382,23 +401,23 @@ void screen_static(char p)            //tela Static
   }
 }
 
-void screen_dynamic(config_t *IHM, config_t *IHM_aux, char p)						//tela dynamic
+void screen_dynamic(control_t *controle, config_t *IHM_aux, char p)						//tela dynamic
 {
 	char col = 16;
 	switch(p)
 	{
 		case D_MENU_PRESSAO:	//tela print pressão                                       
 			lcd.setCursor(col, 0);                               
-			lcd.print(IHM->pwm);//var atual
+			lcd.print(controle->c_pressao_PEEP);//var atual
 
 			lcd.setCursor(col, 1);                               
-			lcd.print(IHM_aux->pwm);//var de ajuste
+			lcd.print(IHM_aux->PEEP);//var de ajuste
 			break;
 
 		case D_MENU_VOLUME:	//tela volume  
 
 			lcd.setCursor(col, 0);                               
-			lcd.print(IHM->angulo);//var atual
+			lcd.print(controle->c_angulo_final);//var atual
 
 			lcd.setCursor(col, 1);                               
 			lcd.print(IHM_aux->angulo);//var de ajuste
@@ -406,15 +425,15 @@ void screen_dynamic(config_t *IHM, config_t *IHM_aux, char p)						//tela dynami
 
 		case D_MENU_FREQ_RES:	//tela freq                                       
 			lcd.setCursor(col, 0);                               
-			lcd.print(IHM->angulo);//var atual
+			lcd.print(controle->c_pwm_insp);//var atual
 
 			lcd.setCursor(col, 1);                               
-			lcd.print(IHM_aux->angulo);//var de ajuste
+			lcd.print(IHM_aux->pwm);//var de ajuste
 			break;
 
 		case D_MENU_TEMP_INS: //tela tempo insp                        
 			lcd.setCursor(col, 0);                               
-			lcd.print(IHM->pwm);//var atual
+			lcd.print(controle->c_pwm_insp);//var atual
 
 			lcd.setCursor(col, 1);                               
 			lcd.print(IHM_aux->pwm);//var de ajuste
@@ -428,7 +447,7 @@ void screen_dynamic(config_t *IHM, config_t *IHM_aux, char p)						//tela dynami
 			lcd.print("Pressao def:");
 
 			lcd.setCursor(13, 3);
-			lcd.print(IHM->pwm);
+			lcd.print(controle->c_pwm_insp);
 			break;		
 
 		case D_TELA_INICIAL_V: // tela iniciar // volume                                    
@@ -439,7 +458,7 @@ void screen_dynamic(config_t *IHM, config_t *IHM_aux, char p)						//tela dynami
 			lcd.print("Volume def:");
 
 			lcd.setCursor(13, 3);
-			lcd.print(IHM_aux->angulo);
+			lcd.print(controle->c_angulo_final);
 			break;			
 	}
 }
@@ -449,7 +468,7 @@ void set_IHM_PWM(config_t *IHM_aux, uint8_t p)
   switch(p)
   {
     case D_INCREMENTO:  
-        if(IHM_aux->pwm<=240)
+        if(IHM_aux->pwm<=99)
         {
           IHM_aux->pwm+=5;
         }
@@ -475,9 +494,29 @@ void set_IHM_angulo(config_t *IHM_aux, uint8_t p)
         break;
         
     case D_DECREMENTO:
-        if(IHM_aux->angulo>=20)
+        if(IHM_aux->angulo>=120)
         {
           IHM_aux->angulo-=5;
+        }
+        break;
+  }
+}
+
+void set_IHM_PEEP(config_t *IHM_aux, uint8_t p)
+{
+  switch(p)
+  {
+    case D_INCREMENTO:  
+        if(IHM_aux->PEEP<=20)
+        {
+          IHM_aux->PEEP+=5;
+        }
+        break;
+        
+    case D_DECREMENTO:
+        if(IHM_aux->PEEP>=4)
+        {
+          IHM_aux->PEEP-=5;
         }
         break;
   }
@@ -488,4 +527,7 @@ void screen_Init()
 	lcd.begin(20, 4);
 	screen_static(D_TELA_COLLAB);
   screen_static(estado);
+
+  pinMode(LCD_PWM, OUTPUT);
+  OCR1C = 120; // AJUSTE DA TELA 
 }
