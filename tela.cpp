@@ -13,7 +13,7 @@ void machine_state()
   config_t config_IHM_aux;
   
   p_sys_status = get_sys_status();
-
+  
   switch(estado)
   {
     case D_TELA_CONFIG_0://config 1     
@@ -468,15 +468,15 @@ void set_IHM_PWM(config_t *IHM_aux, uint8_t p)
   switch(p)
   {
     case D_INCREMENTO:  
-        if(IHM_aux->pwm<=99)
+        if(IHM_aux->pwm<=130)
         {
-          IHM_aux->pwm+=5;
+          IHM_aux->pwm+=10;
         }
         break;
     case D_DECREMENTO:
         if(IHM_aux->pwm>=20)
         {
-          IHM_aux->pwm-=5;
+          IHM_aux->pwm-=10;
         }
         break;
   }
