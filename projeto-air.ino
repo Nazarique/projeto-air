@@ -11,6 +11,10 @@ void setup() {
 
 void loop() {
   machine_state();
-  //Serial.print();
-  
+  Serial.print("OCR1A: ");
+  Serial.print(OCR1A);
+  Serial.print(" ");
+  Serial.print("OCR1B: ");
+  Serial.print(OCR1B);
+  Serial.println(" ");
 }
