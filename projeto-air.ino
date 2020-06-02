@@ -11,4 +11,6 @@ void setup() {
 
 void loop() {
   machine_state();
+  //Serial.print();
+  
 }
