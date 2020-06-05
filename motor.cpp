@@ -13,16 +13,16 @@ void direct_Motor(uint8_t p, uint8_t duty)
   
   if(p==D_ROTACAO_0_DESCIDA)                                                
   {
-  	digitalWrite(DRIVE_EN_L, LOW);
+    OCR1B = 0;
     OCR1A = duty;
-    OCR1B = 0;    
     digitalWrite(DRIVE_EN_R, HIGH);                                             
+    digitalWrite(DRIVE_EN_L, HIGH);
   }
   else if(p==D_ROTACAO_1_SUBIDA)
   { 
-  	digitalWrite(DRIVE_EN_R, LOW);                                                                   
     OCR1A = 0;
     OCR1B = duty;
+    digitalWrite(DRIVE_EN_R, HIGH);                                             
     digitalWrite(DRIVE_EN_L, HIGH);
   }
 } 
@@ -33,7 +33,12 @@ void motor_Init()
   TCCR1B = 0b00001010; 
 
   pinMode(DRIVE_PWM_R, OUTPUT);
+  
   pinMode(DRIVE_PWM_L, OUTPUT);
   pinMode(DRIVE_EN_R, OUTPUT);
   pinMode(DRIVE_EN_L, OUTPUT);
+
+  
+  digitalWrite(DRIVE_EN_L, HIGH);
+  digitalWrite(DRIVE_EN_R, HIGH);
 }                                                                            
