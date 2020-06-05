@@ -3,9 +3,9 @@
 ISR(TIMER4_OVF_vect)                                                           
 { 
   TCNT4 = 49536;
-  maqEstados_Control(); 
   deadTimeMotor_Isr(); 
   deadTimeButton_Isr();
+  maqEstados_Control();
 }
 
 void interrupt4_OVF_Init()
