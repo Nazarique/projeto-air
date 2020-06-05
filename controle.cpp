@@ -7,16 +7,16 @@ tipoFuncao_p PonteiroDeFuncao;
 
 void deadTimeMotor_Isr()                                                      
 {
-  /* Contadores usados para controle do motor, cont300 = 300ms, cont5 = 5ms.*/
+  /* Contadores usados para controle do motor, cont200 = 200ms, cont5 = 5ms.*/
 
-  static uint16_t cont300 = 300;
-  static unsigned char cont5 = 5;
+  static uint8_t cont200 = 30;
+  static uint8_t cont5 = 5;
 
   if(deadTime_Motor)                                                        
   {
-    if(--cont300==0)                                                           
+    if(--cont200==0)                                                           
     { 
-      cont300 = 300;                                                            
+      cont200 = 30;                                                            
       deadTime_Motor = 0; 
     }
   }
@@ -53,11 +53,7 @@ void set_Degrau(control_t *motor)
 {
   /* Função que verifica se teve um deadTime, após a verificação ela aciona
       o motor na posição definida. */
-  if(motor->c_stop==1 && deadTime_Motor==0)
-  {
-    motor->c_stop = 0;
-  }
-  else if(motor->c_stop==0 && degrau_Motor==0)
+  if(degrau_Motor==0 && deadTime_Motor==0)
   {
     motor->c_pwm_atual = degrau(motor->c_pwm_requerido, 
                               motor->c_pwm_atual);
@@ -88,18 +84,20 @@ void control_Inspiracao(system_status *p_sys_status)
   posicao_encoder = ((uint16_t)(encoder.read()*0.08789));
 
   digitalWrite(P_VALVULA_PRESSAO_EXP, HIGH);
-
-  if (posicao_encoder > p_sys_status->s_control.c_angulo_final)
+  p_sys_status->s_control.c_tempo_insp++;
+  
+  if (posicao_encoder > (p_sys_status->s_control.c_angulo_final))
   { 
     p_sys_status->s_control.c_direcao = 0;
-    p_sys_status->s_control.c_stop = 1;
     p_sys_status->s_control.c_pwm_requerido = 250;
     p_sys_status->s_control.c_pwm_atual = 0; 
     stop_Motor();        
 
     deadTime_Motor = 1;
     PonteiroDeFuncao = control_Expiracao;
+    p_sys_status->s_control.c_tempo_insp = 0;
   }
+  
   set_Degrau(&p_sys_status->s_control);
 }
 
@@ -109,10 +107,10 @@ void control_Expiracao(system_status *p_sys_status)
       função para execução dos procedimentos durante a fase
       se expiração.
   */
-
+  
   uint16_t posicao_encoder;
   posicao_encoder = ((uint16_t)(encoder.read()*0.08789));
-
+  
   if(analogRead(P_SENSOR_PRESSAO) < p_sys_status->s_control.c_pressao_PEEP)
   {
     digitalWrite(P_VALVULA_PRESSAO_EXP, HIGH);
@@ -122,12 +120,11 @@ void control_Expiracao(system_status *p_sys_status)
     digitalWrite(P_VALVULA_PRESSAO_EXP, LOW); 
   }
 
-  if(posicao_encoder < p_sys_status->s_control.c_angulo_inicial)
+  if(posicao_encoder < (p_sys_status->s_control.c_angulo_inicial))
   { 
     p_sys_status->s_control.c_direcao = 1;
-    p_sys_status->s_control.c_stop = 1;
     p_sys_status->s_control.c_pwm_requerido = p_sys_status->s_control.c_pwm_insp;
-    p_sys_status->s_control.c_pwm_atual= 0; 
+    p_sys_status->s_control.c_pwm_atual= 0;
     stop_Motor();        
 
     deadTime_Motor = 1;

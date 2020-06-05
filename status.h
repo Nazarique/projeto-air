@@ -7,11 +7,12 @@
 
 	typedef struct 
 	{
-	    uint8_t  c_stop :1;
 	    uint8_t  c_direcao; 
 
 	    uint16_t c_angulo_final;
 	    uint16_t c_angulo_inicial;
+
+	    uint16_t  c_tempo_insp;
 
 	    uint8_t  c_pressao_PEEP;
 
