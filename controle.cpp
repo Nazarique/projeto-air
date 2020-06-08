@@ -9,17 +9,7 @@ void deadTimeMotor_Isr()
 {
   /* Contadores usados para controle do motor, cont200 = 200ms, cont5 = 5ms.*/
 
-  static uint8_t cont200 = 50;
   static uint8_t cont5 = 5;
-
-  if(deadTime_Motor)                                                        
-  {
-    if(--cont200==0)                                                           
-    { 
-      cont200 = 50;                                                            
-      deadTime_Motor = 0; 
-    }
-  }
 
   if(degrau_Motor)
   {
@@ -53,7 +43,18 @@ void set_Degrau(control_t *motor)
 {
   /* Função que verifica se teve um deadTime, após a verificação ela aciona
       o motor na posição definida. */
-  if(degrau_Motor==0 && deadTime_Motor==0)
+  static uint8_t cont200 = 200;
+
+  if(motor->c_deadTime_Motor)                                                        
+  {
+    if(--cont200==0)                                                           
+    { 
+      cont200 = 200;                                                            
+      motor->c_deadTime_Motor = 0; 
+    }
+  }
+  
+  else if(!degrau_Motor)
   {
     motor->c_pwm_atual = degrau(motor->c_pwm_requerido, 
                               motor->c_pwm_atual);
@@ -92,8 +93,8 @@ void control_Inspiracao(system_status *p_sys_status)
     p_sys_status->s_control.c_pwm_requerido = 250;
     p_sys_status->s_control.c_pwm_atual = 0; 
     stop_Motor();        
-
-    deadTime_Motor = 1;
+    p_sys_status->s_control.c_deadTime_Motor = 1;
+    
     PonteiroDeFuncao = control_Expiracao;
     p_sys_status->s_control.c_tempo_insp = 0;
   }
@@ -126,8 +127,8 @@ void control_Expiracao(system_status *p_sys_status)
     p_sys_status->s_control.c_pwm_requerido = p_sys_status->s_control.c_pwm_insp;
     p_sys_status->s_control.c_pwm_atual= 0;
     stop_Motor();        
-
-    deadTime_Motor = 1;
+    p_sys_status->s_control.c_deadTime_Motor = 1;
+    
     PonteiroDeFuncao = control_Inspiracao;
   }
   set_Degrau(&p_sys_status->s_control);
