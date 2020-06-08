@@ -9,14 +9,14 @@ void deadTimeMotor_Isr()
 {
   /* Contadores usados para controle do motor, cont200 = 200ms, cont5 = 5ms.*/
 
-  static uint8_t cont200 = 30;
+  static uint8_t cont200 = 50;
   static uint8_t cont5 = 5;
 
   if(deadTime_Motor)                                                        
   {
     if(--cont200==0)                                                           
     { 
-      cont200 = 30;                                                            
+      cont200 = 50;                                                            
       deadTime_Motor = 0; 
     }
   }
