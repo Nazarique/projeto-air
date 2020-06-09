@@ -9,7 +9,6 @@
     
     typedef void (*tipoFuncao_p)(system_status *p_sys_status);
 
-    void deadTimeMotor_Isr();
     uint8_t degrau(uint8_t pwm, uint8_t pwm_atual);
     void set_Degrau();
     void maqEstados_Control();
