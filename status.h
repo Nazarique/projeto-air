@@ -7,15 +7,17 @@
 
 	typedef struct 
 	{
-	    uint8_t  c_direcao; 
-		uint8_t  c_deadTime_Motor;
-
 	    uint16_t c_angulo_final;
 	    uint16_t c_angulo_inicial;
-	
-	    uint16_t c_tempo_insp;
+	    uint16_t c_encoder;
+
+	    uint32_t c_tempo_insp;
+      	uint32_t c_tempo_exp;
 
 	    uint8_t  c_pressao_PEEP;
+
+		uint8_t  c_direcao; 
+		uint8_t  c_deadTime_Motor;
 
 	    uint8_t  c_pwm_requerido;
 	    uint8_t  c_pwm_insp;
