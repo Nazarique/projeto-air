@@ -3,7 +3,6 @@
 ISR(TIMER4_OVF_vect)                                                           
 { 
   TCNT4 = 49536;
-  deadTimeMotor_Isr(); 
   deadTimeButton_Isr();
   maqEstados_Control();
 }
