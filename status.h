@@ -13,7 +13,7 @@
 	    uint16_t c_angulo_final;
 	    uint16_t c_angulo_inicial;
 	
-	    uint16_t  c_tempo_insp;
+	    uint16_t c_tempo_insp;
 
 	    uint8_t  c_pressao_PEEP;
 
