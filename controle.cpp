@@ -1,28 +1,16 @@
 #include "bibliotecas.h"
 
 AS5045 encoder(AS_SPI_SS, AS_SPI_SCK, AS_SPI_MISO);
-volatile uint8_t deadTime_Motor, degrau_Motor = 0;
 
 tipoFuncao_p PonteiroDeFuncao;
-
-void deadTimeMotor_Isr()                                                      
-{
-  /* Contadores usados para controle do motor, cont200 = 200ms, cont5 = 5ms.*/
-
-  static uint8_t cont5 = 5;
-
-  if(degrau_Motor)
-  {
-    if(--cont5==0)                                                           
-    { 
-      cont5 = 5;                                            
-      degrau_Motor = 0;                                                                                                              
-    }
-  }
-}
+/* Ponteiro de função é usado para fzer a troca de estados, para 
+    o controle via interrupção.*/
 
 uint8_t degrau(uint8_t pwm, uint8_t pwm_atual)
 {
+  /* Função que compara o valor atual do PWM, a realiza o degrau para o
+      PWM desejado.*/
+
   uint8_t passo = 10;
 
   if(pwm_atual == pwm)
@@ -41,9 +29,13 @@ uint8_t degrau(uint8_t pwm, uint8_t pwm_atual)
 
 void set_Degrau(control_t *motor)
 {
-  /* Função que verifica se teve um deadTime, após a verificação ela aciona
+  /* Função que verifica se houve um deadTime, após a verificação ela aciona
       o motor na posição definida. */
+  /* Contadores usados para controle do motor, cont200 = 200ms, cont5 = 5ms.*/
+
   static uint8_t cont200 = 200;
+  static uint8_t cont5 = 5;
+  static uint8_t degrau_Motor = 0;
 
   if(motor->c_deadTime_Motor)                                                        
   {
@@ -53,7 +45,16 @@ void set_Degrau(control_t *motor)
       motor->c_deadTime_Motor = 0; 
     }
   }
-  
+
+  else if(degrau_Motor)
+  {
+    if(--cont5==0)                                                           
+    { 
+      cont5 = 5;                                            
+      degrau_Motor = 0;                                                                                                              
+    }
+  }
+
   else if(!degrau_Motor)
   {
     motor->c_pwm_atual = degrau(motor->c_pwm_requerido, 
@@ -65,6 +66,10 @@ void set_Degrau(control_t *motor)
 
 void maqEstados_Control()
 {
+  /* Maquina de estados para controle de inspração e expiração, uma 
+      struct para armazenamento de variaveis é usado, para criar um link
+      entre o controle e as alterações que podem ser feitas via IHM.*/
+
   system_status * p_sys_status;
   p_sys_status = get_sys_status();
 
@@ -78,7 +83,7 @@ void control_Inspiracao(system_status *p_sys_status)
 {
   /* Maq. de Estados: Inspiração
       função para execução dos procedimentos durante a fase
-      se inspiração.
+      de inspiração.
   */
   uint16_t posicao_encoder;
 
@@ -92,13 +97,11 @@ void control_Inspiracao(system_status *p_sys_status)
     p_sys_status->s_control.c_direcao = 0;
     p_sys_status->s_control.c_pwm_requerido = 250;
     p_sys_status->s_control.c_pwm_atual = 0; 
-    stop_Motor();        
     p_sys_status->s_control.c_deadTime_Motor = 1;
-    
-    PonteiroDeFuncao = control_Expiracao;
     p_sys_status->s_control.c_tempo_insp = 0;
+    stop_Motor();        
+    PonteiroDeFuncao = control_Expiracao;
   }
-  
   set_Degrau(&p_sys_status->s_control);
 }
 
@@ -106,7 +109,7 @@ void control_Expiracao(system_status *p_sys_status)
 {
   /* Maq. de Estados: Expiração
       função para execução dos procedimentos durante a fase
-      se expiração.
+      de expiração.
   */
   
   uint16_t posicao_encoder;
@@ -126,9 +129,8 @@ void control_Expiracao(system_status *p_sys_status)
     p_sys_status->s_control.c_direcao = 1;
     p_sys_status->s_control.c_pwm_requerido = p_sys_status->s_control.c_pwm_insp;
     p_sys_status->s_control.c_pwm_atual= 0;
-    stop_Motor();        
     p_sys_status->s_control.c_deadTime_Motor = 1;
-    
+    stop_Motor();   
     PonteiroDeFuncao = control_Inspiracao;
   }
   set_Degrau(&p_sys_status->s_control);
@@ -136,6 +138,9 @@ void control_Expiracao(system_status *p_sys_status)
 
 void control_init()
 {
+  /* Função responsavél de iniciar parametros de controle, como PWM,
+      posição final e inicial.*/
+
   system_status * p_sys_status;  
   p_sys_status = get_sys_status();
 
@@ -145,8 +150,8 @@ void control_init()
   p_sys_status->s_control.c_angulo_inicial = 60;
   p_sys_status->s_control.c_angulo_final = 120;
   p_sys_status->s_control.c_pressao_PEEP = 6;
-
   p_sys_status->s_control.c_pwm_insp = 120;
   p_sys_status->s_control.c_pwm_requerido = p_sys_status->s_control.c_pwm_insp;
+
   PonteiroDeFuncao = control_Inspiracao;
 }
