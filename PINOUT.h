@@ -37,8 +37,8 @@
     #define         B_bt5                       33
     #define         B_bt6                       31
 
-    #define         P_VALVULA_PRESSAO_EXP		46	
-    #define         P_SENSOR_PRESSAO			1	
+    #define         P_VALVULA_PRESSAO_EXP		2	
+    #define         P_SENSOR_PRESSAO			0	
 
   #ifdef __cplusplus
   } // extern "C"
