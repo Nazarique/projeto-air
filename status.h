@@ -13,11 +13,13 @@
 
 	    uint32_t c_tempo_insp;
       	uint32_t c_tempo_exp;
+      	uint16_t c_tempo_exp_teste;
 
 	    uint8_t  c_pressao_PEEP;
 
 		uint8_t  c_direcao; 
 		uint8_t  c_deadTime_Motor;
+		uint8_t  c_cont_exp;
 
 	    uint8_t  c_pwm_requerido;
 	    uint8_t  c_pwm_insp;
