@@ -34,6 +34,7 @@ void set_Degrau(control_t *motor)
   /* Contadores usados para controle do motor, cont200 = 200ms, cont5 = 5ms.*/
 
   static uint16_t cont35 = 350;
+  static uint16_t cont_exp = 100;
   static uint8_t cont5 = 5;
   static uint8_t degrau_Motor = 0;
 
@@ -43,6 +44,15 @@ void set_Degrau(control_t *motor)
     { 
       cont35 = 350;                                                            
       motor->c_deadTime_Motor = 0; 
+    }
+  }
+
+  else if(motor->c_cont_exp)                                                        
+  {
+    if(--cont_exp==0)                                                           
+    { 
+      cont_exp = motor->c_tempo_exp_teste;                                                            
+      motor->c_cont_exp = 0; 
     }
   }
 
@@ -102,9 +112,11 @@ void control_Inspiracao(system_status *p_sys_status)
     p_sys_status->s_control.c_pwm_requerido = 250;
     p_sys_status->s_control.c_pwm_atual = 0; 
     p_sys_status->s_control.c_deadTime_Motor = 1;
+    p_sys_status->s_control.c_cont_exp = 1;
     p_sys_status->s_control.c_tempo_insp = cont_time;
     cont_time = 0;
-    stop_Motor();        
+    stop_Motor();       
+     
     PonteiroDeFuncao = control_Expiracao;
   }
   set_Degrau(&p_sys_status->s_control);
@@ -142,7 +154,7 @@ void control_Expiracao(system_status *p_sys_status)
     p_sys_status->s_control.c_tempo_exp = cont_time;
     cont_time = 0;
     stop_Motor();   
-    PonteiroDeFuncao = control_Inspiracao;
+    
   }
   set_Degrau(&p_sys_status->s_control);
 }
@@ -163,6 +175,7 @@ void control_init()
   p_sys_status->s_control.c_pressao_PEEP = 6;
   p_sys_status->s_control.c_pwm_insp = 150;
   p_sys_status->s_control.c_pwm_requerido = p_sys_status->s_control.c_pwm_insp;
+  p_sys_status->s_control.c_tempo_exp_teste = 150;
 
   PonteiroDeFuncao = control_Expiracao;
 }
