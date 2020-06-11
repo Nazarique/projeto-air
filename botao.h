@@ -8,12 +8,12 @@
 	#endif
 
 
-		#define			D_CARACTER_BOTAO_1	80
-		#define			D_CARACTER_BOTAO_2	81
-		#define			D_CARACTER_BOTAO_3	82
-		#define			D_CARACTER_BOTAO_4	83
-		#define			D_CARACTER_BOTAO_5	84
-		#define			D_CARACTER_BOTAO_6	85
+		#define			D_CARACTER_BOTAO_1			80
+		#define			D_CARACTER_BOTAO_2			81
+		#define			D_CARACTER_BOTAO_3			82
+		#define			D_CARACTER_BOTAO_4			83
+		#define			D_CARACTER_BOTAO_5			84
+		#define			D_CARACTER_BOTAO_6			85
 		
 
 		typedef struct {

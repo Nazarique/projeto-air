@@ -2,40 +2,9 @@
 
 AS5045 encoder(AS_SPI_SS, AS_SPI_SCK, AS_SPI_MISO);
 
-<<<<<<< HEAD
-static motorAux_t motor = {0};
-static posicao_t posi = {0};
-
-void deadTimeMotor_Isr()                                                      
-{
-  /* Contadores usados para controle do motor, cont20 = 20ms, cont5 = 5ms.*/
-
-  static uint8_t cont300 = 300;
-  static unsigned char cont5 = 5;
-
-  if(deadTime_Motor)                                                        
-  {
-    if(--cont300==0)                                                           
-    { 
-      cont300 = 300;                                                            
-      deadTime_Motor = 0; 
-    }
-  }
-
-  if(degrau_Motor)
-  {
-    if(--cont5==0)                                                           
-    { 
-      cont5 = 5;                                            
-      degrau_Motor = 0;                                                                                                              
-    }
-  }
-}
-=======
 tipoFuncao_p PonteiroDeFuncao;
 /* Ponteiro de função é usado para fzer a troca de estados, para 
     o controle via interrupção.*/
->>>>>>> remotes/origin/deadTime_Control
 
 uint8_t degrau(uint8_t pwm, uint8_t pwm_atual)
 {
