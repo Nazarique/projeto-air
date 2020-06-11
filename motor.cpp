@@ -14,19 +14,17 @@ void direct_Motor(uint8_t p, uint8_t duty)
   if(p==D_ROTACAO_0_DESCIDA)                                                
   {
     OCR1B = 0;
-OCR1A = duty;
+    OCR1A = duty;
     digitalWrite(DRIVE_EN_R, HIGH);                                             
     digitalWrite(DRIVE_EN_L, HIGH);
   }
   else if(p==D_ROTACAO_1_SUBIDA)
   { 
     OCR1A = 0;
-    delayMicroseconds(50);
     OCR1B = duty;
     digitalWrite(DRIVE_EN_R, HIGH);                                             
     digitalWrite(DRIVE_EN_L, HIGH);
   }
-  digitalWrite(DRIVE_EN, HIGH);
 } 
 
 void motor_Init()
