@@ -6,12 +6,13 @@
 	#include <arduino.h>
 	#include <LiquidCrystal.h>
 	#include <AS5045.h>
-
+	
+	#include "status.h"
+	#include "PINOUT.h"
 	#include "botao.h"
 	#include "tela.h"
 	#include "timers.h"
 	#include "motor.h"
  	#include "controle.h"
-	#include "PINOUT.h"
-
+	
 #endif		

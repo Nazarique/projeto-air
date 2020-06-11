@@ -6,29 +6,14 @@
   #ifdef __cplusplus
   extern "C"{
   #endif
+    
+    typedef void (*tipoFuncao_p)(system_status *p_sys_status);
 
-    typedef struct 
-      {
-        uint16_t angulo_final;
-        uint16_t angulo_inicial;
-      } posicao_t;
-
-    typedef struct 
-      {
-        uint8_t stop  :1;
-        uint8_t direcao; 
-        uint8_t Adirecao; 
-
-        uint8_t pwm_requerido;
-        uint8_t pwm_atual;
-      } motorAux_t;
-
-    void deadTimeMotor_Isr();
-    void inverte_Rotacao();
-    void change_Motor(motorAux_t *motor);
-    void set_Degrau(motorAux_t *motor);
     uint8_t degrau(uint8_t pwm, uint8_t pwm_atual);
-
+    void set_Degrau();
+    void maqEstados_Control();
+    void control_Inspiracao(system_status *p_sys_status);
+    void control_Expiracao(system_status *p_sys_status);
     void control_init();
 
   #ifdef __cplusplus
