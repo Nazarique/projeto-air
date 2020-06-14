@@ -1,7 +1,7 @@
 
 #include "bibliotecas.h"
 
-static system_status my_sys_status = {0};
+static system_status_t my_sys_status = {0};
 
 system_status *get_sys_status()
 {

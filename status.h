@@ -32,10 +32,10 @@
 	{
 		uint8_t   s_respirador;
 		control_t s_control;
-	} system_status;
+	} system_status_t;
 
 
-	system_status *get_sys_status();
+	system_status_t *get_sys_status();
 	void *set_sys_status(uint8_t status);
 	void *set_control_angulo(uint16_t angulo);
 	void *set_control_pwm(uint8_t pwm);
