@@ -4,6 +4,8 @@
 	#include <stdio.h>
 	#include <stdint.h>
 	#include <arduino.h>
+  	#include <math.h>
+	#include<ArduinoJson.h>
 	#include <LiquidCrystal.h>
 	#include <AS5045.h>
 	

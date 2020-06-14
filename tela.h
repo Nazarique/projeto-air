@@ -33,8 +33,8 @@
 		void screen_dynamic(control_t *controle, config_t *IHM_aux, char p);	
 		void screen_Init();
 		void set_IHM_PWM(config_t *IHM_aux, uint8_t p);
-    	void set_IHM_angulo(config_t *IHM_aux, uint8_t p);
-    	void set_IHM_PEEP(config_t *IHM_aux, uint8_t p);
+    void set_IHM_angulo(config_t *IHM_aux, uint8_t p);
+    void set_IHM_PEEP(config_t *IHM_aux, uint8_t p);
 
 	#ifdef __cplusplus
 	} // extern "C"
