@@ -8,12 +8,12 @@
 	#endif
 
 
-		#define			D_CARACTER_BOTAO_1	85
-		#define			D_CARACTER_BOTAO_2	85
-		#define			D_CARACTER_BOTAO_3	70
-		#define			D_CARACTER_BOTAO_4	80
-		#define			D_CARACTER_BOTAO_5	82
-		#define			D_CARACTER_BOTAO_6	33
+	#define			BTN_VERDE	      85
+	#define			BTN_DIREITA	      84
+	#define			BTN_BAIXO	      70
+	#define			BTN_CIMA	      80
+	#define			BTN_VERMELHO	  82
+	#define			BTN_ESQUERDA	  33
 		
 
 		typedef struct {
