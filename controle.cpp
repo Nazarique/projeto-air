@@ -80,7 +80,7 @@ void maqEstados_Control()
       struct para armazenamento de variaveis é usado, para criar um link
       entre o controle e as alterações que podem ser feitas via IHM.*/
 
-  system_status * p_sys_status;
+  system_status_t * p_sys_status;
   p_sys_status = get_sys_status();
 
   if(p_sys_status->s_respirador)
@@ -89,7 +89,7 @@ void maqEstados_Control()
   }
 }
 
-void control_Inspiracao(system_status *p_sys_status)
+void control_Inspiracao(system_status_t *p_sys_status)
 {
   /* Maq. de Estados: Inspiração
       função para execução dos procedimentos durante a fase
@@ -119,7 +119,7 @@ void control_Inspiracao(system_status *p_sys_status)
   set_rampa(&p_sys_status->s_control);
 }
 
-void control_Expiracao(system_status *p_sys_status)
+void control_Expiracao(system_status_t *p_sys_status)
 {
   /* Maq. de Estados: Expiração
       função para execução dos procedimentos durante a fase
@@ -231,7 +231,7 @@ void control_init()
   /* Função responsavél de iniciar parametros de controle, como PWM,
       posição final e inicial.*/
 
-  system_status * p_sys_status;  
+  system_status_t * p_sys_status;  
   p_sys_status = get_sys_status();
 
   pinMode(P_VALVULA_PRESSAO_EXP, OUTPUT);
