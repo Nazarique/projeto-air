@@ -20,14 +20,13 @@
 	#define			DRIVE_PWM_R  				11
 
 	//		 		DISPLAY_LCD_20x4
-	#define			LCD_DB4 					49	
-	#define			LCD_DB5 					47
-	#define			LCD_DB6 					45
-	#define			LCD_DB7 					43
-	#define			LCD_RS 						8
-	#define			LCD_EN 						9
+	#define			LCD_DB4 					43	
+	#define			LCD_DB5 					45
+	#define			LCD_DB6 					47
+	#define			LCD_DB7 					49
+	#define			LCD_RS 						9
+	#define			LCD_EN 						8
 	#define			LCD_PWM						13
-
 
 	// 				BOTÕES
     #define         B_bt1                       41
@@ -37,8 +36,10 @@
     #define         B_bt5                       33
     #define         B_bt6                       31
 
-    #define         P_VALVULA_PRESSAO_EXP		2	
-    #define         P_SENSOR_PRESSAO			0	
+    #define         P_VALVULA_PRESSAO_EXP		46	
+    #define         P_SENSOR_PRESSAO			0
+    #define         S_SENSOR_INDUTIVO			2
+
 
   #ifdef __cplusplus
   } // extern "C"
