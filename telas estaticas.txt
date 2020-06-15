@@ -1,0 +1,33 @@
+(" AIR --- Controles  ");
+("   Início           ");
+("   Pressão          ");
+("   Volume      (1/2)");
+(" AIR --- Controles  ");
+("   PEEP             "); 
+("   Calibra          "); 
+("   Desliga     (2/2)"); 
+
+("  Insp-   XXX s     ");
+("  Freq-    XX R/min ");
+("    Pressao:  XX cm ");
+(" Retorna      Grava ");
+
+("  Volume-  XXXmL    ");
+("  Insp  -  XXXs     ");
+("  Freq  -   XXr/min ");
+(" Retorna      Grava ");
+
+("  PEEP       :  XX  ");
+("  Pause Exp -  XXXs ");
+("                    ");
+(" Retorna      Grava ");
+
+("  TESTE      :  XX  ");
+("                    ");
+("                    ");
+(" Retorna      Grava ");
+
+(" P/V Corrente: XXX  ");
+(" T. Inspira  : XXX  ");
+(" Frequencia  : XXX  ");
+(" Retorna            ");
