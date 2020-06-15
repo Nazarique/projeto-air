@@ -11,15 +11,15 @@
 		#define 		D_TELA_CONFIG_0			'0'
 		#define 		D_TELA_CONFIG_1			'1'
 		#define 		D_MENU_PRESSAO			'2'
-		#define 		D_MENU_VOLUME		    '3'
+		#define 		D_MENU_VOLUME		        '3'
 		#define			D_MENU_PEEP      		'4'
-		#define			D_MENU_CALIBRA      	'5'
+		#define			D_MENU_CALIBRA           	'5'
 		#define 		D_TELA_INICIAL			'6'
 		#define			D_TELA_COLLAB      		'9'
 
 //						variáveis de controle
 		#define 		D_SET_VOLUME			'1'
-		#define 		D_SET_PEEP				'2'
+		#define 		D_SET_PEEP	       		'2'
 		#define 		D_SET_PRESSAO			'3'
 		#define 		D_SET_FREQ_RESPI		'4'
 		#define 		D_SET_TEMP_INSPI		'5'
@@ -35,17 +35,17 @@
 		#define 		L_VOLUME_SUP			400
 		#define 		L_VOLUME_INF			100
 
-		#define 		L_PEEP_SUP				20
-		#define 		L_PEEP_INF				4
+		#define 		L_PEEP_SUP		        5
+		#define 		L_PEEP_INF		        3
 
 		#define 		L_PRESSAO_SUP			60
 		#define 		L_PRESSAO_INF			10
 
-		#define 		L_FREQ_RESP_SUP			20
+		#define 		L_FREQ_RESP_SUP			30
 		#define 		L_FREQ_RESP_INF			10
 
-		#define 		L_TEMP_INSP_SUP			60
-		#define 		L_TEMP_INSP_INF			10
+		#define 		L_TEMP_INSP_SUP			2000
+		#define 		L_TEMP_INSP_INF			900
 
 		#define 		L_PAUSE_EXP_SUP			500
 		#define 		L_PAUSE_EXP_INF			350

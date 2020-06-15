@@ -629,14 +629,14 @@ void set_IHM_peep(config_t *IHM_aux, uint8_t p)
     case D_INCREMENTO:  
         if(IHM_aux->h_peep<=L_PEEP_SUP)
         {
-          IHM_aux->h_peep+=5;
+          IHM_aux->h_peep+=1;
         }
         break;
         
     case D_DECREMENTO:
         if(IHM_aux->h_peep>=L_PEEP_INF)
         {
-          IHM_aux->h_peep-=5;
+          IHM_aux->h_peep-=1;
         }
         break;
   }
@@ -689,14 +689,14 @@ void set_IHM_tempInsp(config_t *IHM_aux, uint8_t p)
     case D_INCREMENTO:  
         if(IHM_aux->h_temp_insp<=L_TEMP_INSP_SUP)
         {
-          IHM_aux->h_temp_insp+=5;
+          IHM_aux->h_temp_insp+=100;
         }
         break;
         
     case D_DECREMENTO:
         if(IHM_aux->h_temp_insp>=L_TEMP_INSP_INF)
         {
-          IHM_aux->h_temp_insp-=5;
+          IHM_aux->h_temp_insp-=100;
         }
         break;
   }
@@ -709,14 +709,14 @@ void set_IHM_pauseExp(config_t *IHM_aux, uint8_t p)
     case D_INCREMENTO:  
         if(IHM_aux->h_pause_exp<=L_PAUSE_EXP_SUP)
         {
-          IHM_aux->h_pause_exp+=5;
-        }
-        break;
-        
-    case D_DECREMENTO:
-        if(IHM_aux->h_pause_exp>=L_PAUSE_EXP_INF)
-        {
-          IHM_aux->h_pause_exp-=5;
+          IHM_aux->h_pause_exp+=50;                  //
+        }                                            //  Nao acho que precisa ser
+        break;                                       // de 5 em 5 milissegundos
+                                                     //
+    case D_DECREMENTO:                               //
+        if(IHM_aux->h_pause_exp>=L_PAUSE_EXP_INF)    //
+        {                                            //
+          IHM_aux->h_pause_exp-=50;                  //
         }
         break;
   }
@@ -724,8 +724,8 @@ void set_IHM_pauseExp(config_t *IHM_aux, uint8_t p)
 
 void screen_Init()
 {
-	lcd.begin(20, 4);
-	screen_static(D_TELA_COLLAB);
+  lcd.begin(20, 4);
+  screen_static(D_TELA_COLLAB);
   screen_static(estado);
 
   pinMode(LCD_PWM, OUTPUT);
