@@ -543,12 +543,18 @@ void screen_static(char p)
   }
 }
 
-void screen_dynamic(control_t *controle, config_t *IHM_aux, char p)						//tela dynamic
+void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)						//tela dynamic
 {
   char col = 16;
   switch(p)
   {
     case D_TELA_CONFIG_0:
+      lcd.setCursor(2, 0);        // limpa todos cursores
+      lcd.print(" ");
+      lcd.setCursor(2, 1);
+      lcd.print(" ");
+      lcd.setCursor(2, 2);
+      lcd.print(" ");
       lcd.setCursor(2, cursor);   // aqui a gente 
       lcd.print("~");             // coloca o cursor
       break;
@@ -578,13 +584,13 @@ void screen_dynamic(control_t *controle, config_t *IHM_aux, char p)						//tela 
       lcd.print("~");             // coloca o cursor
 
       lcd.setCursor(12, 0);// volume
-      lcd.print(IHM_aux->angulo);//var de ajuste
+      lcd.print(IHM_aux->h_volume);//var de ajuste
 
       lcd.setCursor(12, 1);// insp                               
       lcd.print(IHM_aux->h_temp_insp);//var de ajuste
 
       lcd.setCursor(13, 2);// freq                              
-      lcd.print(IHM_aux->angulo);//var de ajuste
+      lcd.print(IHM_aux->h_freq);//var de ajuste
       break;				
 
     case D_MENU_PEEP:
@@ -599,20 +605,18 @@ void screen_dynamic(control_t *controle, config_t *IHM_aux, char p)						//tela 
 
       break;
 
-    case D_MENU_FREQ_RES:	//tela freq                                       
-      lcd.setCursor(col, 0);                               
-      lcd.print(controle->c_pwm_insp);//var atual
+    case D_SET_CALIBRA: // não fiz nada aqui
+      lcd.setCursor(2, 0); //apaga "/V"                              
+      lcd.print("  ");
 
-      lcd.setCursor(col, 1);                               
-      lcd.print(IHM_aux->pwm);//var de ajuste
-      break;
+      lcd.setCursor(15, 0);                               
+      lcd.print(config_IHM_aux->h_pressao);
 
-    case D_MENU_TEMP_INS: //tela tempo insp                        
-      lcd.setCursor(col, 0);                               
-      lcd.print(controle->c_pwm_insp);//var atual
+      lcd.setCursor(15, 1);                               
+      lcd.print(config_IHM_aux->h_temp_insp);
 
-      lcd.setCursor(col, 1);                               
-      lcd.print(IHM_aux->pwm);//var de ajuste
+      lcd.setCursor(15, 2);                               
+      lcd.print(config_IHM_aux->h_freq);
       break;
 
     case D_TELA_INICIAL: // tela iniciar // pressão                                    
@@ -623,21 +627,7 @@ void screen_dynamic(control_t *controle, config_t *IHM_aux, char p)						//tela 
       lcd.print(config_IHM_aux->h_pressao);
 
       lcd.setCursor(15, 1);                               
-      lcd.print(controle->c_tempo_insp_cont);
-
-      lcd.setCursor(15, 2);                               
-      lcd.print(config_IHM_aux->h_freq);
-      break;			
-
-    case D_TELA_INICIAL_V: // tela iniciar // volume                                    
-      lcd.setCursor(1, 0); //apaga "P/"                              
-      lcd.print("  ");
-
-      lcd.setCursor(15, 0);                               
-      lcd.print(controle->c_angulo_final);
-
-      lcd.setCursor(15, 1);                               
-      lcd.print(controle->c_tempo_insp_cont);
+      lcd.print(config_IHM_aux->h_temp_insp);
 
       lcd.setCursor(15, 2);                               
       lcd.print(config_IHM_aux->h_freq);
