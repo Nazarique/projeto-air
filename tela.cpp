@@ -186,8 +186,8 @@ void machine_state()
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//Incremento
       else if(botao == BTN_VERDE) {
-        cursor = 1;//RESET CURSOR
-        estado = D_TELA_CONFIG_0;            // Salvando valores
+        cursor = 2;//RESET CURSOR
+        estado = D_TELA_INICIAL;            // Salvando valores
         screen_static(estado);               // 
 
         set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
@@ -258,7 +258,7 @@ void machine_state()
       }//Incremento
       else if(botao == BTN_VERDE){
         cursor = 1;//RESET CURSOR       //
-        estado = D_TELA_CONFIG_0;       // Salva valores
+        estado = D_TELA_INICIAL;       // Salva valores
         screen_static(estado);          //
 
         set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
@@ -437,7 +437,7 @@ void screen_static(char p)
       lcd.setCursor(0,0);
       lcd.print(" AIR --- Controles  ");
       lcd.setCursor(0,1);
-      lcd.print("   PEEP             "); 
+      lcd.print("   PEEP / Pausa Exp "); 
       lcd.setCursor(0,2);
       lcd.print("   Calibra          "); 
       lcd.setCursor(0,3);
@@ -448,9 +448,9 @@ void screen_static(char p)
       lcd.clear();                                       
 
       lcd.setCursor(0,0);
-      lcd.print("  Insp-   XXX s     ");
+      lcd.print("  Insp :  XXX s     ");
       lcd.setCursor(0,1);
-      lcd.print("  Freq-    XX R/min ");
+      lcd.print("  Freq :   XX R/min ");
       lcd.setCursor(0,2);
       lcd.print("    Pressao:  XX cm ");
       lcd.setCursor(0,3);
@@ -461,11 +461,11 @@ void screen_static(char p)
       lcd.clear();                                       
 
       lcd.setCursor(0,0);
-      lcd.print("  Volume-  XXXXmL   ");
+      lcd.print("  Volume : XXXXmL   ");
       lcd.setCursor(0,1);
-      lcd.print("  Insp  -  XXXXs    ");
+      lcd.print("  Insp   : XXXXs    ");
       lcd.setCursor(0,2);
-      lcd.print("  Freq  -   XXr/min ");
+      lcd.print("  Freq   :  XXr/min ");
       lcd.setCursor(0,3);
       lcd.print(" Retorna      Grava ");
       break;        
@@ -473,9 +473,9 @@ void screen_static(char p)
     case D_MENU_PEEP:
       lcd.clear();
       lcd.setCursor(0,1);
-      lcd.print("  PEEP       :  XX  ");
+      lcd.print("  PEEP      :  Xcm  ");
       lcd.setCursor(0,2);
-      lcd.print("  Pause Exp -  XXXs ");
+      lcd.print("  Pausa Exp : XXXXs ");
       lcd.setCursor(0,3);
       lcd.print(" Retorna      Grava ");
       break;
@@ -592,14 +592,14 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.setCursor(1,cursor);    // aqui a gente 
       lcd.print("~");             // coloca o cursor
                                                       // Limpam-se os valores setados 
-      lcd.setCursor(15, 1);                           // anteriormente e apos isso    
+      lcd.setCursor(14, 1);                           // anteriormente e apos isso    
       lcd.print("  ");//                              // printar os valores de        
-      lcd.setCursor(15, 1);                           // calibracao                   
+      lcd.setCursor(14, 1);                           // calibracao                   
       lcd.print(IHM_aux->h_peep);                     //                              
                                                       //                              
-      lcd.setCursor(15, 2);                           //                              
+      lcd.setCursor(14, 2);                           //                              
       lcd.print("  ");//                              //                              
-      lcd.setCursor(15, 2);                           //                              
+      lcd.setCursor(14, 2);                           //                              
       lcd.print(IHM_aux->h_pause_exp/1000);           //                              
       lcd.print(",");                                 //
       lcd.print((IHM_aux->h_pause_exp%1000)/10);      //                              
@@ -621,11 +621,12 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       break;
 
     case D_TELA_INICIAL: // tela inicial                                    
-      lcd.setCursor(2, 0);                            // 
+      lcd.setCursor(cursor, 0);                       // 
       lcd.print("  ");                                // TODO
                                                       //  [ ] uma tela inicial decente
       lcd.setCursor(15, 0);                           //  que entenda quando eh volume e  
-      lcd.print(IHM_aux->h_pressao);                  //  pressao
+      if(cursor == 2){lcd.print(IHM_aux->h_pressao);} //   pressao
+      if(cursor == 1){lcd.print(IHM_aux->h_volume);}  //
                                                       //
       lcd.setCursor(15, 1);                           //
       lcd.print(IHM_aux->h_temp_insp/1000);//         //
