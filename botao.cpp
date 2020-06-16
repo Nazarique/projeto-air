@@ -84,7 +84,7 @@ char detect_Button()
 		{ 
 			flag_button.b5=0;	
 			button = BTN_VERMELHO; 
-			flag_button.deadTime=1;  
+			flag_button.deadTime=1; 
 		}	
 		else
 		{		 		

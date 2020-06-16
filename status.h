@@ -18,6 +18,7 @@ extern "C"{
         uint16_t c_tempo_exp_pause;
 
         uint8_t  c_pressao_PEEP;
+        uint8_t  c_pressao_cont;
 
         uint8_t  c_direcao; 
         uint8_t  c_deadTime_Motor;
@@ -38,8 +39,10 @@ extern "C"{
 	system_status_t *get_sys_status();
 	void *set_sys_status(uint8_t status);
 	void *set_control_angulo(uint16_t angulo);
-	void *set_control_pwm(uint8_t pwm);
 	void *set_control_PEEP(uint8_t peep);
+    void *set_control_tempoInspiratorioIHM(uint16_t tempo_insp);
+    void *set_control_tempoExpiratorioIHM(uint16_t frequencia);
+    void *set_control_pause(uint16_t delay);
 
 	#ifdef __cplusplus
 		} // extern "C"

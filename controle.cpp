@@ -100,8 +100,6 @@ void control_Inspiracao(system_status_t *p_sys_status)
   
   posicao_encoder = encoder.read();
   
-  p_sys_status->s_control.c_encoder = posicao_encoder;
-  
   cont_time++;
   
   if (posicao_encoder < (p_sys_status->s_control.c_angulo_final) &&  posicao_encoder > 200)
@@ -129,8 +127,6 @@ void control_Expiracao(system_status_t *p_sys_status)
   
   uint16_t posicao_encoder;
   posicao_encoder = encoder.read();
-  
-  p_sys_status->s_control.c_encoder = posicao_encoder;
   
   cont_time++;
   if(/*(analogRead(P_SENSOR_PRESSAO) < p_sys_status->s_control.c_pressao_PEEP) && */ cont_time > p_sys_status->s_control.c_tempo_exp_pause)
@@ -169,21 +165,21 @@ void control_Expiracao(system_status_t *p_sys_status)
 uint8_t compensador(uint16_t tempo_inspiratorio_IHM,
                     uint16_t tempo_inspiratorio, uint8_t pwm_atual)
 {
-	int erro = 0;
-	float kp = -0.1;
+  int erro = 0;
+  float kp = -0.1;
   uint16_t pwm = 0;
 
-	erro = tempo_inspiratorio_IHM - tempo_inspiratorio;
+  erro = tempo_inspiratorio_IHM - tempo_inspiratorio;
     
-	pwm = pwm_atual + (kp*erro) + 1;
+  pwm = pwm_atual + (kp*erro) + 1;
 
   if(pwm > 250)
-	{
-		pwm = 250;
-	} 
+  {
+    pwm = 250;
+  } 
   else if(pwm < 40)
   {
-  	pwm = 40;
+    pwm = 40;
   }
   
    return (uint8_t)pwm; 
@@ -241,7 +237,7 @@ void control_init()
   p_sys_status->s_control.c_angulo_inicial  = 3900;
   p_sys_status->s_control.c_angulo_final    = 3100;
 
-  p_sys_status->s_control.c_pressao_PEEP    = 6;
+  p_sys_status->s_control.c_pressao_PEEP    = 3;
     
   p_sys_status->s_control.c_tempo_exp_pause = 400;//350~550
   p_sys_status->s_control.c_tempo_exp_ocioso = 1100;
@@ -253,6 +249,10 @@ void control_init()
                                                
   p_sys_status->s_control.c_pwm_requerido = p_sys_status->s_control.c_pwm_insp;
   
+  p_sys_status->s_control.c_tempo_exp_ocioso = 550;
+  p_sys_status->s_control.c_tempo_exp_pause = 350;
+  p_sys_status->s_control.c_pressao_cont = 15;
+
   //-*
   PonteiroDeFuncao = control_Expiracao;
 }

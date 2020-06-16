@@ -3,7 +3,7 @@
 void serial()
 {
   data dado;
-  dado.pressao = analogRead(P_SENSOR_PRESSAO);  
+  dado.pressao = (analogRead(P_SENSOR_PRESSAO)-48)*0.1105;  
   dado.fluxo = dado.pressao/2;
   dado.volume = dado.pressao*2;
   
@@ -14,10 +14,10 @@ void serial()
   doc["fluxo"] = dado.fluxo;
   doc["volume"] = dado.volume;
   
-  if(Serial.read() == '1'){
-    serializeJson(doc, Serial);
-    Serial.println(); 
-  }
+  
+  serializeJson(doc, Serial);
+  Serial.println(); 
+  
 }
 
 ISR(TIMER4_OVF_vect)                                                           
@@ -25,7 +25,6 @@ ISR(TIMER4_OVF_vect)
   TCNT4 = 49536;
   deadTimeButton_Isr();
   maqEstados_Control();
-  serial();
 }
 
 void interrupt4_OVF_Init()

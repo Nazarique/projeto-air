@@ -8,6 +8,7 @@ char estado = '0';
 void machine_state()
 {
   char botao = 0;
+  float freq_auxiliar = 0;
   static uint8_t cursor = 1;
 
   system_status_t *p_sys_status;
@@ -17,424 +18,404 @@ void machine_state()
 
   switch(estado)
   {
-    case D_TELA_CONFIG_0: // Essa é a tela principal
+    case D_TELA_CONFIG_0:                   // Menu principal parte 1, configura volume pressao e inicia
       botao = read_Button();     
-
-
-      if(!botao)
-      {
+      screen_dynamic(&config_IHM_aux, estado, cursor);
+      if(!botao) {
         break;
       } 
       else if(botao == BTN_CIMA){
         estado = D_TELA_CONFIG_0;
         if(cursor > 1)
         {
-          lcd.setCursor(2, cursor);
+          lcd.setCursor(1,cursor);
           lcd.print(" ");
           cursor--; 
         }
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//seleção do cursor para subida
       else if(botao == BTN_BAIXO){
         estado = D_TELA_CONFIG_0;
         if(cursor < 3)
         {
-          lcd.setCursor(2, cursor);
+          lcd.setCursor(1,cursor);
           lcd.print(" ");
           cursor++; 
         }
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//seleção do cursor para descida
       else if(botao == BTN_DIREITA){ 
         cursor = 1;//RESET CURSOR
         estado = D_TELA_CONFIG_1;
         screen_static(estado);
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//inicia
       else if(botao == BTN_VERDE){
+          config_IHM_aux.h_volume = p_sys_status->s_control.c_angulo_inicial -        //
+                                    p_sys_status->s_control.c_angulo_final;           // Quando o botao verde eh apertado
+                                                                                      // as variaveis sao salvas 
+          config_IHM_aux.h_temp_insp = p_sys_status->s_control.c_tempo_insp_cont;     // na estrutura auxiliar
+                                                                                      // 
+          freq_auxiliar =  60000/(p_sys_status->s_control.c_tempo_exp_cont +          // 
+                                   p_sys_status->s_control.c_tempo_insp_cont +        // A estrutura auxiliar eh o que 
+                                   p_sys_status->s_control.c_tempo_exp_ocioso +       // possibilita a alteracao de 
+                                   p_sys_status->s_control.c_tempo_exp_pause);        // dados na interface
+          config_IHM_aux.h_freq = freq_auxiliar;        //                            //
+          config_IHM_aux.h_pressao = p_sys_status->s_control.c_pressao_cont;          //   
         switch(cursor)
         {
-          case 1:
-            screen_static(D_TELA_INICIAL);
-            screen_dynamic(D_TELA_INICIAL);          
-            break;
-          case 2:
-            cursor = 0
-            screen_static(D_MENU_PRESSAO);
-            screen_dynamic(D_MENU_PRESSAO);          
-            config_IHM_aux->h_temp_insp = controle->c_tempo_insp_cont;
-            config_IHM_aux->h_freq = 60000/(controle->c_tempo_exp_cont +  // Nao sei se
-                                     controle->c_tempo_insp_cont +        // isso da 
-                                     controle->c_tempo_exp_ocioso +       // certo  
-                                     controle->c_tempo_exp_pause);        //   
-                                                                             
-            break; 
-          case 3:
-            cursor = 0
-            screen_static(D_MENU_VOLUME);
-            screen_dynamic(D_MENU_VOLUME);          
-            config_IHM_aux->angulo = controle->controle->c_angulo_final;
-            config_IHM_aux->h_temp_insp = controle->c_tempo_insp_cont;
-            config_IHM_aux->h_freq = 60000/(controle->c_tempo_exp_cont +  // Nao sei se
-                                     controle->c_tempo_insp_cont +        // isso da 
-                                     controle->c_tempo_exp_ocioso +       // certo  
-                                     controle->c_tempo_exp_pause);        //   
-            break;   
-          //colocar um default
+          case 1:                           //
+            estado = D_TELA_INICIAL;        //
+            break;                          // a tela destino eh baseada na opcao 
+          case 2:                           // em que o cursor eh setado
+            cursor = 0;                     //
+            estado = D_MENU_PRESSAO;        //
+            break;                          //
+          case 3:                           //
+            cursor = 0;                     //
+            estado = D_MENU_VOLUME;         //
+            break;                          //
         }
-        //cursor = 1;
-      }//botão verde pressionado 
+          screen_static(estado);
+          screen_dynamic(&config_IHM_aux, estado, cursor);
+      }
       break;
       
-    case D_TELA_CONFIG_1://config 2
+    case D_TELA_CONFIG_1:                   // Menu principal parte 2, com configuracao de PEEP calibracao e desligar motor
       botao = read_Button();
+      screen_dynamic(&config_IHM_aux, estado, cursor);
 
-      if(!botao)
-      {
+      if(!botao) {
         break;
       } 
-      else if(botao == BTN_CIMA)
-      {
+      else if(botao == BTN_CIMA) {
         estado = D_TELA_CONFIG_1;
         if(cursor > 1)
         {
+          lcd.setCursor(1,cursor);
+          lcd.print(" ");
           cursor--; 
         }
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//seleção do cursor para subida
-      else if(botao == BTN_BAIXO)
-      {
+      else if(botao == BTN_BAIXO) {
         estado = D_TELA_CONFIG_1;
         if(cursor < 3)
         {
+          lcd.setCursor(1,cursor);
+          lcd.print(" ");
           cursor++; 
         }
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//seleção do cursor para descida
-      else if(botao == BTN_ESQUERDA)
-      { 
+      else if(botao == BTN_ESQUERDA) { 
         cursor = 1;//RESET CURSOR
         estado = D_TELA_CONFIG_0;
         screen_static(estado);
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//inicia
-      else if(botao == BTN_VERDE)
-      {
-        switch(cursor)
-        {
+      else if(botao == BTN_VERDE){
+        config_IHM_aux.h_peep = p_sys_status->s_control.c_pressao_PEEP;
+        config_IHM_aux.h_pause_exp = p_sys_status->s_control.c_tempo_exp_pause;
+        switch(cursor){
           case 1:
-            screen_static(D_MENU_PEEP);
-            screen_dynamic(D_MENU_PEEP);          
+            estado = D_MENU_PEEP;
             break;
           case 2:
-            screen_static(D_MENU_CALIBRA);
-            screen_dynamic(D_MENU_CALIBRA);          
+            estado = D_MENU_CALIBRA;
             break;   
-          //colocar um default
           case 3:
-            // tem que desligar o motor,
-            // mas nao sei como
+            cursor = 1;
+            estado = D_TELA_CONFIG_0;
+            set_sys_status(0);
             break;
         }
-        cursor = 1;
+        screen_static(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//botão verde pressionado 
       break;
 
-    case D_MENU_PRESSAO://pressão
-      botao = read_Button();
-
-      if(!botao)
-      {
+    case D_MENU_PRESSAO:            //Config de pressão
+      botao = read_Button();        // com ajustes de tempo insp 
+                                    // e freq respiratoria
+      if(!botao){                             
         break;
       } 
       else if(botao == BTN_CIMA){
-        estado = D_MENU_PRESSAO;
         if(cursor > 0)
         {
-          lcd.setCursor(2, cursor);
+          lcd.setCursor(1,cursor);
           lcd.print(" ");
           cursor--; 
         }
-        screen_dynamic(estado);
+        estado = D_MENU_PRESSAO;
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//seleção do cursor para subida
       else if(botao == BTN_BAIXO){
-        estado = D_MENU_PRESSAO;
         if(cursor < 1)
         {
-          lcd.setCursor(2, cursor);
+          lcd.setCursor(1,cursor);
           lcd.print(" ");
           cursor++; 
         }
-        screen_dynamic(estado);
+        estado = D_MENU_PRESSAO;
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//seleção do cursor para descida
       else if(botao == BTN_ESQUERDA){ 
         switch(cursor) {
           case 0: //tempo inspiratorio
-            set_IHM_tempInsp(config_IHM_aux, D_DECREMENTO);
+            set_IHM_tempInsp(&config_IHM_aux, D_DECREMENTO);
             break;
           case 1: //frequencia
-            set_IHM_freqResp(config_IHM_aux, D_DECREMENTO);
+            set_IHM_freqResp(&config_IHM_aux, D_DECREMENTO);
             break;   
         }
-        screen_dynamic(D_MENU_PRESSAO);
+        estado = D_MENU_PRESSAO;
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//Decremento
       else if(botao == BTN_DIREITA){ 
         switch(cursor){
           case 0: //tempo inspiratorio
-            set_IHM_tempInsp(config_IHM_aux, D_INCREMENTO);
+            set_IHM_tempInsp(&config_IHM_aux, D_INCREMENTO);
             break;
           case 1: //frequencia
-            set_IHM_freqResp(config_IHM_aux, D_INCREMENTO);
+            set_IHM_freqResp(&config_IHM_aux, D_INCREMENTO);
             break;   
         }
-        screen_dynamic(D_MENU_PRESSAO);
+        estado = D_MENU_PRESSAO;
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//Incremento
-      else if(botao == BTN_VERDE)
-      {
+      else if(botao == BTN_VERDE) {
         cursor = 1;//RESET CURSOR
-        estado = D_TELA_CONFIG_0;
-        screen_static(estado);
-        //Salva os valores 
-      }//botão verde pressionado 
-      else if(botao == BTN_VERMELHO)
-      {
-        cursor = 1;//RESET CURSOR
-        estado = D_TELA_CONFIG_0;
-        screen_static(estado);
-        //DESCARTA OS VALORES
+        estado = D_TELA_CONFIG_0;            // Salvando valores
+        screen_static(estado);               // 
+
+        set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
+        set_control_tempoExpiratorioIHM(config_IHM_aux.h_freq);
+      }
+      else if(botao == BTN_VERMELHO){
+        cursor = 1;                   //
+        estado = D_TELA_CONFIG_0;     // volta a tela inicial
+        screen_static(estado);        //
       }//botão verde pressionado 
       break;
 
     case D_MENU_VOLUME://volume
       botao = read_Button();
 
-      if(!botao)
-      {
+      if(!botao){
         break;
       } 
-      else if(botao == BTN_CIMA)
-      {
+      else if(botao == BTN_CIMA){
         estado = D_MENU_VOLUME;
         if(cursor > 0)
         {
-          lcd.setCursor(2, cursor);
+          lcd.setCursor(1,cursor);
           lcd.print(" ");
           cursor--; 
         }
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//seleção do cursor para subida
-      else if(botao == BTN_BAIXO)
-      {
+      else if(botao == BTN_BAIXO){
         estado = D_MENU_VOLUME;
         if(cursor < 2)
         {
-          lcd.setCursor(2, cursor);
+          lcd.setCursor(1,cursor);
           lcd.print(" ");
           cursor++; 
         }
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//seleção do cursor para descida
-      else if(botao == BTN_ESQUERDA)
-      { 
+      else if(botao == BTN_ESQUERDA) { 
         switch(cursor)
         {
           case 0: // volume 
-            set_IHM_volume(config_IHM_aux, D_DECREMENTO);
+            set_IHM_volume(&config_IHM_aux, D_DECREMENTO);
             break;
           case 1: // Tempo inspi 
-            set_IHM_tempInsp(config_IHM_aux, D_DECREMENTO);
+            set_IHM_tempInsp(&config_IHM_aux, D_DECREMENTO);
             break;
           case 2: // freq respiratoria 
-            set_IHM_freqResp(config_IHM_aux, D_DECREMENTO);
+            set_IHM_freqResp(&config_IHM_aux, D_DECREMENTO);
             break;   
           //colocar um default
         }
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//Decremento
       else if(botao == BTN_DIREITA){ 
         switch(cursor){
           case 0: // volume 
-            set_IHM_volume(config_IHM_aux, D_INCREMENTO);
+            set_IHM_volume(&config_IHM_aux, D_INCREMENTO);
             break;
           case 1: // Tempo inspi 
-            set_IHM_tempInsp(config_IHM_aux, D_INCREMENTO);
+            set_IHM_tempInsp(&config_IHM_aux, D_INCREMENTO);
             break;
           case 2: // freq respiratoria 
-            set_IHM_freqResp(config_IHM_aux, D_INCREMENTO);
+            set_IHM_freqResp(&config_IHM_aux, D_INCREMENTO);
             break;   
         }
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//Incremento
       else if(botao == BTN_VERDE){
-        cursor = 1;//RESET CURSOR
-        estado = D_TELA_CONFIG_0;
-        screen_static(estado);
-        //Salva os valores 
-      }//botão verde pressionado 
+        cursor = 1;//RESET CURSOR       //
+        estado = D_TELA_CONFIG_0;       // Salva valores
+        screen_static(estado);          //
+
+        set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
+        set_control_tempoExpiratorioIHM(config_IHM_aux.h_freq);
+        set_control_angulo(config_IHM_aux.h_volume);
+      }
       else if(botao == BTN_VERMELHO){
-        cursor = 1;//RESET CURSOR
-        estado = D_TELA_CONFIG_0;
-        screen_static(estado);
-        //DESCATA OS VALORES
+        cursor = 1;//RESET CURSOR      //                      
+        estado = D_TELA_CONFIG_0;      // volta a tela inicial 
+        screen_static(estado);         //                      
       }//botão verde pressionado 
       break;
 
     case D_MENU_PEEP://peep
       botao = read_Button();
 
-      if(!botao)
-      {
+      if(!botao) {
         break;
       } 
-      else if(botao == BTN_CIMA)
-      {
+      else if(botao == BTN_CIMA) {
         estado = D_MENU_PEEP;
-        if(cursor > 0)
+        if(cursor > 1)
         {
-          lcd.setCursor(2, cursor);
+          lcd.setCursor(1,cursor);
           lcd.print(" ");
           cursor--; 
         }
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//seleção do cursor para subida
-      else if(botao == BTN_BAIXO)
-      {
+      else if(botao == BTN_BAIXO) {
         estado = D_MENU_PEEP;
-        if(cursor < 1)
+        if(cursor < 2)
         {
-          lcd.setCursor(2, cursor);
+          lcd.setCursor(1,cursor);
           lcd.print(" ");
           cursor++; 
         }
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//seleção do cursor para descida
       else if(botao == BTN_ESQUERDA){ 
         switch(cursor){
-          case 0: // peep
-            set_IHM_peep(config_IHM_aux, D_DECREMENTO);
+          case 1: // peep
+            set_IHM_peep(&config_IHM_aux, D_DECREMENTO);
             break;
-          case 1: //pausa expiratoria
-            set_IHM_pauseExp(config_IHM_aux, D_DECREMENTO);
+          case 2: //pausa expiratoria
+            set_IHM_pauseExp(&config_IHM_aux, D_DECREMENTO);
             break;
         }
-        screen_dynamic(D_MENU_PEEP);
+        estado = D_MENU_PEEP;
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//Decremento
       else if(botao == BTN_DIREITA){ 
         switch(cursor){
-          case 0: // peep
-            set_IHM_peep(config_IHM_aux, D_INCREMENTO);
+          case 1: // peep
+            set_IHM_peep(&config_IHM_aux, D_INCREMENTO);
             break;
-          case 1: //pausa expiratoria
-            set_IHM_pauseExp(config_IHM_aux, D_INCREMENTO);
+          case 2: //pausa expiratoria
+            set_IHM_pauseExp(&config_IHM_aux, D_INCREMENTO);
             break;
         }
-        screen_dynamic(D_MENU_PEEP);
+        estado = D_MENU_PEEP;
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//Incremento
       else if(botao == BTN_VERDE){
         cursor = 1;//RESET CURSOR
-        estado = D_TELA_CONFIG_0;
-        screen_static(estado);
-        //Salva os valores 
+        estado = D_TELA_CONFIG_0;                       //
+        screen_static(estado);                          // Salva valores
+        set_control_PEEP(config_IHM_aux.h_peep);        //
+        set_control_pause(config_IHM_aux.h_pause_exp);  //
       }//botão verde pressionado 
       else if(botao == BTN_VERMELHO){
-        cursor = 1;//RESET CURSOR
-        estado = D_TELA_CONFIG_0;
-        screen_static(estado);
-        //DESCATA OS VALORES
+        cursor = 1;//RESET CURSOR           //                      
+        estado = D_TELA_CONFIG_0;           // volta a tela inicial 
+        screen_static(estado);              //                      
       }//botão verde pressionado 
       break;
 
     case D_MENU_CALIBRA://calibra
       botao = read_Button();
 
-      if(!botao)
-      {
+      if(!botao) {
         break;
       } 
-      else if(botao == BTN_CIMA)
-      {
+      else if(botao == BTN_CIMA) {
         estado = D_MENU_VOLUME;
         if(cursor > 1)
         {
           cursor--; 
         }
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//seleção do cursor para subida
-      else if(botao == BTN_BAIXO)
-      {
+      else if(botao == BTN_BAIXO) {
         estado = D_MENU_VOLUME;
         if(cursor < 1)
         {
           cursor++; 
         }
-        screen_dynamic(estado);
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//seleção do cursor para descida
-      else if(botao == BTN_ESQUERDA)
-      { 
+      else if(botao == BTN_ESQUERDA) { 
         switch(cursor)
         {
           case 1:
-            screen_dynamic(D_SET_CALIBRA); 
+            estado = D_MENU_CALIBRA; 
+            screen_dynamic(&config_IHM_aux, estado, cursor);
             //SET DECREMENTO         
             break;
           //colocar um default
         }
       }//Decremento
-      else if(botao == BTN_DIREITA)
-      { 
+      else if(botao == BTN_DIREITA) { 
         switch(cursor)
         {
           case 1:
-            screen_dynamic(D_SET_CALIBRA); 
+            screen_dynamic(&config_IHM_aux, estado, cursor); 
             //SET INCREMENTO         
             break;
           //colocar um default
         }
       }//Incremento
-      else if(botao == BTN_VERDE)
-      {
-        cursor = 1;//RESET CURSOR
-        estado = D_TELA_CONFIG_0;
-        screen_static(estado);
-        //Salva os valores 
+      else if(botao == BTN_VERDE) {
+        cursor = 1;//RESET CURSOR   // A opcao de calibragem
+        estado = D_TELA_CONFIG_0;   // ainda nao esta disponivel
+        screen_static(estado);      // mas tem seu espaco aqui
       }//botão verde pressionado 
-      else if(botao == BTN_VERMELHO)
-      {
-        cursor = 1;//RESET CURSOR
-        estado = D_TELA_CONFIG_0;
-        screen_static(estado);
-        //DESCATA OS VALORES
+      else if(botao == BTN_VERMELHO) {
+        cursor = 1;//RESET CURSOR  //                      
+        estado = D_TELA_CONFIG_0;  // volta a tela inicial 
+        screen_static(estado);     //                      
       }//botão verde pressionado 
       break;
 
     case D_TELA_INICIAL://operando - inicio
       botao = read_Button();
-
-      if(!botao)
-      {
-        break;
-      } 
-      else if(botao == BTN_ESQUERDA)
-      {
-        estado = D_TELA_CONFIG_0;  
-        screen_static(estado);
-      }//config
-      else if(botao == BTN_VERMELHO)
-      {
-        estado = D_TELA_INICIAL;  
-        screen_static(estado);
-        set_sys_status(0);
-      }//desliga
-      else if (botao == BTN_VERDE)
-      {
-        estado = D_TELA_INICIAL;
-        screen_static(estado);
-        set_sys_status(1);
+      config_IHM_aux.h_temp_insp = p_sys_status->s_control.c_tempo_insp_cont;
+      screen_dynamic(&config_IHM_aux, estado, cursor);
+      if(!botao) {                        // 
+        break;                            // TODO
+      }                                   // 
+      else if(botao == BTN_VERMELHO) {    // [ ] interface bonita para 
+        estado = D_TELA_CONFIG_0;         //        volume e pressao
+        screen_static(estado);            // [ ] saber o volume com 
+      }//config                           //        base no encoder
+      else if (botao == BTN_VERDE) {      // 
+        estado = D_TELA_INICIAL;          // 
+        screen_static(estado);            // 
+        set_sys_status(1);                // 
       }//liga
       break;  
   }
 }
 
+//        
+//        
+//        Tela Estatica
+//        
+//
 void screen_static(char p)
 {
   switch(p)
@@ -442,13 +423,13 @@ void screen_static(char p)
     case D_TELA_CONFIG_0: //Menu controles pagina 1
       lcd.clear();                                       
       lcd.setCursor(0, 0);                               
-      lcd.print(" AIR --- Controles  ");
-      lcd.setCursor(0, 1);                               
-      lcd.print("   Início           ");
-      lcd.setCursor(0, 2);                               
-      lcd.print("   Pressão          ");
-      lcd.setCursor(0, 3);                               
-      lcd.print("   Volume      (1/2)");
+      lcd.print(" AIR --- Controles  ");       // nao tem muito o que comentar
+      lcd.setCursor(0, 1);                     // acho que eh mais facil olhar          
+      lcd.print("   Iniciar          ");       // a imagem no google drive pra 
+      lcd.setCursor(0, 2);                     // entender o sistema de telas
+      lcd.print("   Pressao          ");       //
+      lcd.setCursor(0, 3);                     // mas as telas estaticas sao basicamente
+      lcd.print("   Volume      (1/2)");       // o que nao vai se mexer (ava) nos menus
       break;
 
     case D_TELA_CONFIG_1: //Menu controles pagina 2
@@ -480,9 +461,9 @@ void screen_static(char p)
       lcd.clear();                                       
 
       lcd.setCursor(0,0);
-      lcd.print("  Volume-  XXXmL    ");
+      lcd.print("  Volume-  XXXXmL   ");
       lcd.setCursor(0,1);
-      lcd.print("  Insp  -  XXXs     ");
+      lcd.print("  Insp  -  XXXXs    ");
       lcd.setCursor(0,2);
       lcd.print("  Freq  -   XXr/min ");
       lcd.setCursor(0,3);
@@ -510,11 +491,11 @@ void screen_static(char p)
     case D_TELA_INICIAL: // tela iniciar 
       lcd.clear();                                       
       lcd.setCursor(0, 0);                               
-      lcd.print(" P/V Corrente: XXX  ");
+      lcd.print(" P/V Corrente:      ");
       lcd.setCursor(0, 1);                               
-      lcd.print(" T. Inspira  : XXX  ");
+      lcd.print(" T. Inspira  :      ");
       lcd.setCursor(0, 2);                               
-      lcd.print(" Frequencia  : XXX  ");
+      lcd.print(" Frequencia  :      ");
       lcd.setCursor(0, 3);                               
       lcd.print(" Retorna            ");
       break;  
@@ -543,120 +524,135 @@ void screen_static(char p)
   }
 }
 
-void screen_dynamic(control_t *controle, config_t *IHM_aux, char p)						//tela dynamic
+//////////////////////////////////////////////////////////////        
+//        Tela Dinamica                                     //
+//////////////////////////////////////////////////////////////        
+
+void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
 {
   char col = 16;
   switch(p)
   {
     case D_TELA_CONFIG_0:
-      lcd.setCursor(2, cursor);   // aqui a gente 
+      lcd.setCursor(1,cursor);    // aqui a gente 
       lcd.print("~");             // coloca o cursor
       break;
 
     case D_TELA_CONFIG_1:
-      lcd.setCursor(2, cursor);   // aqui a gente 
+      lcd.setCursor(1,cursor);    // aqui a gente 
       lcd.print("~");             // coloca o cursor
       break;
 
-    case D_MENU_PRESSAO:	//tela print pressão                                       
-      lcd.setCursor(2, cursor);   // aqui a gente 
+    case D_MENU_PRESSAO:  //tela print pressão                                       
+      lcd.setCursor(1,cursor);    // aqui a gente 
       lcd.print("~");             // coloca o cursor
 
-      lcd.setCursor(11, 0);                               
-      lcd.print(IHM_aux->h_temp_insp);// 
-
-      lcd.setCursor(12, 1);           //                     
-      lcd.print(IHM_aux->h_freq);
-
-      lcd.setCursor(15, 1);           //                     
-      lcd.print(IHM_aux->h_pressao);
+      lcd.setCursor(10, 0);                         //      
+      lcd.print("    ");//                          // Limpamos os valores "anteriores"
+      lcd.setCursor(10, 0);                         //            e
+      lcd.print(IHM_aux->h_temp_insp/1000);         //
+      lcd.print(",");                               // colocamos os valores de 
+      lcd.print((IHM_aux->h_temp_insp%1000)/100);   // tempo insp, frequencia 
+                                                    //
+      lcd.setCursor(11, 1);                         // e -futuramente- pressao
+      lcd.print("   ");//                           //
+      lcd.setCursor(11, 1);                         //       
+      lcd.print(IHM_aux->h_freq);                   //
+                                                    //
+      lcd.setCursor(14, 2);                         //       
+      lcd.print("   ");//                           //
+      lcd.setCursor(14, 2);                         //       
+      lcd.print(IHM_aux->h_pressao);                //
       break;
 
-    case D_MENU_VOLUME:	//tela volume  
+    case D_MENU_VOLUME: //tela volume  
 
-      lcd.setCursor(2, cursor);   // aqui a gente 
+      lcd.setCursor(1,cursor);    // aqui a gente 
       lcd.print("~");             // coloca o cursor
 
-      lcd.setCursor(12, 0);// volume
-      lcd.print(IHM_aux->angulo);//var de ajuste
-
-      lcd.setCursor(12, 1);// insp                               
-      lcd.print(IHM_aux->h_temp_insp);//var de ajuste
-
-      lcd.setCursor(13, 2);// freq                              
-      lcd.print(IHM_aux->angulo);//var de ajuste
-      break;				
+      lcd.setCursor(11, 0);                          //
+      lcd.print("    ");//                           //
+      lcd.setCursor(11, 0);                          //
+      lcd.print(IHM_aux->h_volume);                  // Limpam-se os valores setados
+                                                     // anteriormente e apos isso
+      lcd.setCursor(11, 1);                          // printar os valores de 
+      lcd.print("    ");//                           // calibracao
+      lcd.setCursor(11, 1);                          //
+      lcd.print(IHM_aux->h_temp_insp/1000);          //
+      lcd.print(",");                                //
+      lcd.print((IHM_aux->h_temp_insp%1000)/100);    //
+                                                     //
+      lcd.setCursor(12, 2);                          //
+      lcd.print("  ");//                             //
+      lcd.setCursor(12, 2);                          //
+      lcd.print(IHM_aux->h_freq);                    //
+      break;        
 
     case D_MENU_PEEP:
-      lcd.setCursor(2, cursor);   // aqui a gente 
+      lcd.setCursor(1,cursor);    // aqui a gente 
       lcd.print("~");             // coloca o cursor
-
-      lcd.setCursor(17, 0);   
-      lcd.print(IHM_aux->h_peep);
-
-      lcd.setCursor(16, 1);   
-      lcd.print(IHM_aux->h_pause_exp);
-
-      break;
-
-    case D_MENU_FREQ_RES:	//tela freq                                       
-      lcd.setCursor(col, 0);                               
-      lcd.print(controle->c_pwm_insp);//var atual
-
-      lcd.setCursor(col, 1);                               
-      lcd.print(IHM_aux->pwm);//var de ajuste
-      break;
-
-    case D_MENU_TEMP_INS: //tela tempo insp                        
-      lcd.setCursor(col, 0);                               
-      lcd.print(controle->c_pwm_insp);//var atual
-
-      lcd.setCursor(col, 1);                               
-      lcd.print(IHM_aux->pwm);//var de ajuste
-      break;
-
-    case D_TELA_INICIAL: // tela iniciar // pressão                                    
-      lcd.setCursor(2, 0); //apaga "/V"                              
+                                                      // Limpam-se os valores setados 
+      lcd.setCursor(15, 1);                           // anteriormente e apos isso    
+      lcd.print("  ");//                              // printar os valores de        
+      lcd.setCursor(15, 1);                           // calibracao                   
+      lcd.print(IHM_aux->h_peep);                     //                              
+                                                      //                              
+      lcd.setCursor(15, 2);                           //                              
+      lcd.print("  ");//                              //                              
+      lcd.setCursor(15, 2);                           //                              
+      lcd.print(IHM_aux->h_pause_exp/1000);           //                              
+      lcd.print(",");                                 //
+      lcd.print((IHM_aux->h_pause_exp%1000)/10);      //                              
+                                                                                    
+      break;                                                                        
+                                                                                    
+    case D_MENU_CALIBRA:                              // não fiz nada aqui
+      lcd.setCursor(2, 0);                            // não fiz nada aqui
       lcd.print("  ");
 
-      lcd.setCursor(15, 0);                               
-      lcd.print(config_IHM_aux->h_pressao);
+      lcd.setCursor(15, 0);                           // não fiz nada aqui   
+      lcd.print(IHM_aux->h_pressao);
 
-      lcd.setCursor(15, 1);                               
-      lcd.print(controle->c_tempo_insp_cont);
+      lcd.setCursor(15, 1);                           // não fiz nada aqui   
+      lcd.print(IHM_aux->h_temp_insp);
 
-      lcd.setCursor(15, 2);                               
-      lcd.print(config_IHM_aux->h_freq);
-      break;			
+      lcd.setCursor(15, 2);                           // não fiz nada aqui   
+      lcd.print(IHM_aux->h_freq);
+      break;
 
-    case D_TELA_INICIAL_V: // tela iniciar // volume                                    
-      lcd.setCursor(1, 0); //apaga "P/"                              
-      lcd.print("  ");
-
-      lcd.setCursor(15, 0);                               
-      lcd.print(controle->c_angulo_final);
-
-      lcd.setCursor(15, 1);                               
-      lcd.print(controle->c_tempo_insp_cont);
-
-      lcd.setCursor(15, 2);                               
-      lcd.print(config_IHM_aux->h_freq);
-      break;			
+    case D_TELA_INICIAL: // tela inicial                                    
+      lcd.setCursor(2, 0);                            // 
+      lcd.print("  ");                                // TODO
+                                                      //  [ ] uma tela inicial decente
+      lcd.setCursor(15, 0);                           //  que entenda quando eh volume e  
+      lcd.print(IHM_aux->h_pressao);                  //  pressao
+                                                      //
+      lcd.setCursor(15, 1);                           //
+      lcd.print(IHM_aux->h_temp_insp/1000);//         //
+      lcd.print(",");                                 //
+      lcd.print((IHM_aux->h_temp_insp%1000)/100);     //
+                                                      //
+      lcd.setCursor(15, 2);                           //    
+      lcd.print(IHM_aux->h_freq);
+      break;      
   }
 }
 
-void set_IHM_volume(config_t *IHM_aux, uint8_t p)
+//////////////////////////////////////////////////////////////////////////////////        
+//        Sets de variaveis, incremento e decremento                            //
+//////////////////////////////////////////////////////////////////////////////////        
+void set_IHM_volume(config_t *IHM_aux, uint8_t p)     //seta volume
 {
   switch(p)
   {
     case D_INCREMENTO:  
-        if(IHM_aux->h_volume<=L_VOLUME_SUP)
+        if(IHM_aux->h_volume<L_VOLUME_SUP)
         {
           IHM_aux->h_volume+=10;
         }
         break;
     case D_DECREMENTO:
-        if(IHM_aux->h_volume>=L_VOLUME_INF)
+        if(IHM_aux->h_volume>L_VOLUME_INF)
         {
           IHM_aux->h_volume-=10;
         }
@@ -664,19 +660,19 @@ void set_IHM_volume(config_t *IHM_aux, uint8_t p)
   }
 }
 
-void set_IHM_peep(config_t *IHM_aux, uint8_t p)
+void set_IHM_peep(config_t *IHM_aux, uint8_t p)     // seta Peep
 {
   switch(p)
   {
     case D_INCREMENTO:  
-        if(IHM_aux->h_peep<=L_PEEP_SUP)
+        if(IHM_aux->h_peep<L_PEEP_SUP)
         {
           IHM_aux->h_peep+=1;
         }
         break;
         
     case D_DECREMENTO:
-        if(IHM_aux->h_peep>=L_PEEP_INF)
+        if(IHM_aux->h_peep>L_PEEP_INF)
         {
           IHM_aux->h_peep-=1;
         }
@@ -688,14 +684,14 @@ void set_IHM_pressao(config_t *IHM_aux, uint8_t p) {
   switch(p)
   {
     case D_INCREMENTO:  
-        if(IHM_aux->h_pressao<=L_PRESSAO_SUP)
+        if(IHM_aux->h_pressao<L_PRESSAO_SUP)
         {
           IHM_aux->h_pressao+=5;
         }
         break;
         
     case D_DECREMENTO:
-        if(IHM_aux->h_pressao>=L_PRESSAO_INF)
+        if(IHM_aux->h_pressao>L_PRESSAO_INF)
         {
           IHM_aux->h_pressao-=5;
         }
@@ -708,14 +704,14 @@ void set_IHM_freqResp(config_t *IHM_aux, uint8_t p)
   switch(p)
   {
     case D_INCREMENTO:  
-        if(IHM_aux->h_freq<=L_FREQ_RESP_SUP)
+        if(IHM_aux->h_freq<L_FREQ_RESP_SUP)
         {
           IHM_aux->h_freq+=5;
         }
         break;
         
     case D_DECREMENTO:
-        if(IHM_aux->h_freq>=L_FREQ_RESP_INF)
+        if(IHM_aux->h_freq>L_FREQ_RESP_INF)
         {
           IHM_aux->h_freq-=5;
         }
@@ -728,14 +724,14 @@ void set_IHM_tempInsp(config_t *IHM_aux, uint8_t p)
   switch(p)
   {
     case D_INCREMENTO:  
-        if(IHM_aux->h_temp_insp<=L_TEMP_INSP_SUP)
+        if(IHM_aux->h_temp_insp<L_TEMP_INSP_SUP)
         {
           IHM_aux->h_temp_insp+=100;
         }
         break;
         
     case D_DECREMENTO:
-        if(IHM_aux->h_temp_insp>=L_TEMP_INSP_INF)
+        if(IHM_aux->h_temp_insp>L_TEMP_INSP_INF)
         {
           IHM_aux->h_temp_insp-=100;
         }
@@ -748,21 +744,24 @@ void set_IHM_pauseExp(config_t *IHM_aux, uint8_t p)
   switch(p)
   {
     case D_INCREMENTO:  
-        if(IHM_aux->h_pause_exp<=L_PAUSE_EXP_SUP)
+        if(IHM_aux->h_pause_exp<L_PAUSE_EXP_SUP)
         {
-          IHM_aux->h_pause_exp+=50;                  //
-        }                                            //  Nao acho que precisa ser
-        break;                                       // de 5 em 5 milissegundos
-                                                     //
-    case D_DECREMENTO:                               //
-        if(IHM_aux->h_pause_exp>=L_PAUSE_EXP_INF)    //
-        {                                            //
-          IHM_aux->h_pause_exp-=50;                  //
+          IHM_aux->h_pause_exp+=50;                  
+        }                                             
+        break;                                        
+                                                     
+    case D_DECREMENTO:                               
+        if(IHM_aux->h_pause_exp>L_PAUSE_EXP_INF)     
+        {                                            
+          IHM_aux->h_pause_exp-=50;                  
         }
         break;
   }
 }
 
+///////////////////////////////////////////////////////////////        
+//        Inicializacao                                      //
+///////////////////////////////////////////////////////////////        
 void screen_Init()
 {
   lcd.begin(20, 4);
