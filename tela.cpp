@@ -51,20 +51,21 @@ void machine_state()
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//inicia
       else if(botao == BTN_VERDE){
-          config_IHM_aux.h_volume = p_sys_status->s_control.c_angulo_inicial -        //
-                                    p_sys_status->s_control.c_angulo_final;           // Quando o botao verde eh apertado
+          config_IHM_aux.h_volume = 3451 / 1.85 - (float) p_sys_status->s_control.c_angulo_final / 1.85;        // Quando o botao verde eh apertado
                                                                                       // as variaveis sao salvas 
-          config_IHM_aux.h_temp_insp = p_sys_status->s_control.c_tempo_insp_cont;     // na estrutura auxiliar
+          config_IHM_aux.h_temp_insp = p_sys_status->s_control.c_tempo_insp_IHM;     // na estrutura auxiliar
                                                                                       // 
           freq_auxiliar =  60000/(p_sys_status->s_control.c_tempo_exp_cont +          // 
                                    p_sys_status->s_control.c_tempo_insp_cont +        // A estrutura auxiliar eh o que 
-                                   p_sys_status->s_control.c_tempo_exp_ocioso +       // possibilita a alteracao de 
-                                   p_sys_status->s_control.c_tempo_exp_pause);        // dados na interface
+                                   p_sys_status->s_control.c_tempo_exp_pause);        // possibilita a alteracao de 
+                                                                                      // dados na interface
           config_IHM_aux.h_freq = freq_auxiliar;        //                            //
+          config_IHM_aux.h_prop = (p_sys_status->s_control.c_tempo_exp_ocioso + 550) * 10 / p_sys_status->s_control.c_tempo_insp_IHM;
           config_IHM_aux.h_pressao = p_sys_status->s_control.c_pressao_cont;          //   
         switch(cursor)
         {
           case 1:                           //
+            config_IHM_aux.h_temp_insp = p_sys_status->s_control.c_tempo_insp_cont;     // na estrutura auxiliar
             estado = D_TELA_INICIAL;        //
             break;                          // a tela destino eh baseada na opcao 
           case 2:                           // em que o cursor eh setado
@@ -137,7 +138,7 @@ void machine_state()
 
     case D_MENU_PRESSAO:            //Config de pressão
       botao = read_Button();        // com ajustes de tempo insp 
-                                    // e freq respiratoria
+                                    // e prop respiratoria
       if(!botao){                             
         break;
       } 
@@ -167,7 +168,7 @@ void machine_state()
             set_IHM_tempInsp(&config_IHM_aux, D_DECREMENTO);
             break;
           case 1: //frequencia
-            set_IHM_freqResp(&config_IHM_aux, D_DECREMENTO);
+            set_IHM_proporcao(&config_IHM_aux, D_DECREMENTO);
             break;   
         }
         estado = D_MENU_PRESSAO;
@@ -179,7 +180,7 @@ void machine_state()
             set_IHM_tempInsp(&config_IHM_aux, D_INCREMENTO);
             break;
           case 1: //frequencia
-            set_IHM_freqResp(&config_IHM_aux, D_INCREMENTO);
+            set_IHM_proporcao(&config_IHM_aux, D_INCREMENTO);
             break;   
         }
         estado = D_MENU_PRESSAO;
@@ -188,10 +189,10 @@ void machine_state()
       else if(botao == BTN_VERDE) {
         cursor = 2;//RESET CURSOR
         estado = D_TELA_INICIAL;            // Salvando valores
-        screen_static(estado);               // 
+        screen_static(estado);              // 
 
         set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
-        set_control_tempoExpiratorioIHM(config_IHM_aux.h_freq);
+        set_control_tempoExpiratorioIHM(config_IHM_aux.h_prop);
       }
       else if(botao == BTN_VERMELHO){
         cursor = 1;                   //
@@ -236,7 +237,7 @@ void machine_state()
             set_IHM_tempInsp(&config_IHM_aux, D_DECREMENTO);
             break;
           case 2: // freq respiratoria 
-            set_IHM_freqResp(&config_IHM_aux, D_DECREMENTO);
+            set_IHM_proporcao(&config_IHM_aux, D_DECREMENTO);
             break;   
           //colocar um default
         }
@@ -250,8 +251,8 @@ void machine_state()
           case 1: // Tempo inspi 
             set_IHM_tempInsp(&config_IHM_aux, D_INCREMENTO);
             break;
-          case 2: // freq respiratoria 
-            set_IHM_freqResp(&config_IHM_aux, D_INCREMENTO);
+          case 2: // prop respiratoria 
+            set_IHM_proporcao(&config_IHM_aux, D_INCREMENTO);
             break;   
         }
         screen_dynamic(&config_IHM_aux, estado, cursor);
@@ -262,7 +263,7 @@ void machine_state()
         screen_static(estado);          //
 
         set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
-        set_control_tempoExpiratorioIHM(config_IHM_aux.h_freq);
+        set_control_tempoExpiratorioIHM(config_IHM_aux.h_prop);
         set_control_angulo(config_IHM_aux.h_volume);
       }
       else if(botao == BTN_VERMELHO){
@@ -394,6 +395,11 @@ void machine_state()
     case D_TELA_INICIAL://operando - inicio
       botao = read_Button();
       config_IHM_aux.h_temp_insp = p_sys_status->s_control.c_tempo_insp_cont;
+      freq_auxiliar =  60000/(p_sys_status->s_control.c_tempo_exp_cont +          // 
+                         p_sys_status->s_control.c_tempo_insp_cont +        // A estrutura auxiliar eh o que 
+                         p_sys_status->s_control.c_tempo_exp_pause);        // possibilita a alteracao de 
+                                                                            // dados na interface
+      config_IHM_aux.h_freq = freq_auxiliar;       
       screen_dynamic(&config_IHM_aux, estado, cursor);
       if(!botao) {                        // 
         break;                            // TODO
@@ -450,7 +456,7 @@ void screen_static(char p)
       lcd.setCursor(0,0);
       lcd.print("  Insp :  XXX s     ");
       lcd.setCursor(0,1);
-      lcd.print("  Freq :   XX R/min ");
+      lcd.print("  Prop : 1:XXXs     ");
       lcd.setCursor(0,2);
       lcd.print("    Pressao:  XX cm ");
       lcd.setCursor(0,3);
@@ -463,9 +469,9 @@ void screen_static(char p)
       lcd.setCursor(0,0);
       lcd.print("  Volume : XXXXmL   ");
       lcd.setCursor(0,1);
-      lcd.print("  Insp   : XXXXs    ");
+      lcd.print("  Insp   : XXXX s   ");
       lcd.setCursor(0,2);
-      lcd.print("  Freq   :  XXr/min ");
+      lcd.print("  Prop   : 1:XXX s  ");
       lcd.setCursor(0,3);
       lcd.print(" Retorna      Grava ");
       break;        
@@ -557,7 +563,9 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.setCursor(11, 1);                         // e -futuramente- pressao
       lcd.print("   ");//                           //
       lcd.setCursor(11, 1);                         //       
-      lcd.print(IHM_aux->h_freq);                   //
+      lcd.print(IHM_aux->h_prop/10);                //
+      lcd.print(",");                               // 
+      lcd.print(IHM_aux->h_prop%10);                //
                                                     //
       lcd.setCursor(14, 2);                         //       
       lcd.print("   ");//                           //
@@ -582,10 +590,12 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.print(",");                                //
       lcd.print((IHM_aux->h_temp_insp%1000)/100);    //
                                                      //
-      lcd.setCursor(12, 2);                          //
-      lcd.print("  ");//                             //
-      lcd.setCursor(12, 2);                          //
-      lcd.print(IHM_aux->h_freq);                    //
+      lcd.setCursor(13, 2);                          //
+      lcd.print("   ");//                            //
+      lcd.setCursor(13, 2);                          //
+      lcd.print(IHM_aux->h_prop/10);                 //
+      lcd.print(",");                                // 
+      lcd.print(IHM_aux->h_prop%10);                 //
       break;        
 
     case D_MENU_PEEP:
@@ -617,7 +627,7 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.print(IHM_aux->h_temp_insp);
 
       lcd.setCursor(15, 2);                           // não fiz nada aqui   
-      lcd.print(IHM_aux->h_freq);
+      lcd.print(IHM_aux->h_prop);
       break;
 
     case D_TELA_INICIAL: // tela inicial                                    
@@ -634,6 +644,8 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.print((IHM_aux->h_temp_insp%1000)/100);     //
                                                       //
       lcd.setCursor(15, 2);                           //    
+      lcd.print("   ");jk'
+      lcd.setCursor(15, 2);      //    
       lcd.print(IHM_aux->h_freq);
       break;      
   }
@@ -700,21 +712,21 @@ void set_IHM_pressao(config_t *IHM_aux, uint8_t p) {
   }
 }
 
-void set_IHM_freqResp(config_t *IHM_aux, uint8_t p)
+void set_IHM_proporcao(config_t *IHM_aux, uint8_t p)
 {
   switch(p)
   {
     case D_INCREMENTO:  
-        if(IHM_aux->h_freq<L_FREQ_RESP_SUP)
+        if(IHM_aux->h_prop<L_PROP_RESP_SUP)
         {
-          IHM_aux->h_freq+=5;
+          IHM_aux->h_prop+=2;
         }
         break;
         
     case D_DECREMENTO:
-        if(IHM_aux->h_freq>L_FREQ_RESP_INF)
+        if(IHM_aux->h_prop>L_PROP_RESP_INF)
         {
-          IHM_aux->h_freq-=5;
+          IHM_aux->h_prop-=2;
         }
         break;
   }
