@@ -25,7 +25,7 @@ char detect_Button()
 		if(flag_button.b1)
 		{ 
 			flag_button.b1=0;
-			button = D_CARACTER_BOTAO_1; 
+			button = BTN_VERDE; 
 			flag_button.deadTime=1;
 		}	
 		else
@@ -39,7 +39,7 @@ char detect_Button()
 		if(flag_button.b2)
 		{ 
 			flag_button.b2=0;	
-			button = D_CARACTER_BOTAO_2; 
+			button = BTN_DIREITA; 
 			flag_button.deadTime=1; 
 		}	
 		else
@@ -53,7 +53,7 @@ char detect_Button()
 		if(flag_button.b3)
 		{ 
 			flag_button.b3=0;	
-			button = D_CARACTER_BOTAO_3; 
+			button = BTN_BAIXO; 
 			flag_button.deadTime=1; 
 		}	
 		else
@@ -68,7 +68,7 @@ char detect_Button()
 		if(flag_button.b4)
 		{ 
 			flag_button.b4=0;	
-			button = D_CARACTER_BOTAO_4; 
+			button = BTN_CIMA; 
 			flag_button.deadTime=1; 
 		}	
 		else
@@ -83,7 +83,7 @@ char detect_Button()
 		if(flag_button.b5)
 		{ 
 			flag_button.b5=0;	
-			button = D_CARACTER_BOTAO_5; 
+			button = BTN_VERMELHO; 
 			flag_button.deadTime=1; 
 		}	
 		else
@@ -98,7 +98,7 @@ char detect_Button()
 		if(flag_button.b6)
 		{ 
 			flag_button.b6=0;	
-			button = D_CARACTER_BOTAO_6; 
+			button = BTN_ESQUERDA; 
 			flag_button.deadTime=1; 
 		}	
 		else

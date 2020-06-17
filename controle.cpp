@@ -80,7 +80,7 @@ void maqEstados_Control()
       struct para armazenamento de variaveis é usado, para criar um link
       entre o controle e as alterações que podem ser feitas via IHM.*/
 
-  system_status * p_sys_status;
+  system_status_t * p_sys_status;
   p_sys_status = get_sys_status();
 
   if(p_sys_status->s_respirador)
@@ -89,7 +89,7 @@ void maqEstados_Control()
   }
 }
 
-void control_Inspiracao(system_status *p_sys_status)
+void control_Inspiracao(system_status_t *p_sys_status)
 {
   /* Maq. de Estados: Inspiração
       função para execução dos procedimentos durante a fase
@@ -99,8 +99,6 @@ void control_Inspiracao(system_status *p_sys_status)
   static uint32_t cont_time = 0;
   
   posicao_encoder = encoder.read();
-  
-  p_sys_status->s_control.c_encoder = posicao_encoder;
   
   cont_time++;
   
@@ -119,7 +117,7 @@ void control_Inspiracao(system_status *p_sys_status)
   set_rampa(&p_sys_status->s_control);
 }
 
-void control_Expiracao(system_status *p_sys_status)
+void control_Expiracao(system_status_t *p_sys_status)
 {
   /* Maq. de Estados: Expiração
       função para execução dos procedimentos durante a fase
@@ -129,8 +127,6 @@ void control_Expiracao(system_status *p_sys_status)
   
   uint16_t posicao_encoder;
   posicao_encoder = encoder.read();
-  
-  p_sys_status->s_control.c_encoder = posicao_encoder;
   
   cont_time++;
   if(/*(analogRead(P_SENSOR_PRESSAO) < p_sys_status->s_control.c_pressao_PEEP) && */ cont_time > p_sys_status->s_control.c_tempo_exp_pause)
@@ -169,21 +165,21 @@ void control_Expiracao(system_status *p_sys_status)
 uint8_t compensador(uint16_t tempo_inspiratorio_IHM,
                     uint16_t tempo_inspiratorio, uint8_t pwm_atual)
 {
-	int erro = 0;
-	float kp = -0.1;
+  int erro = 0;
+  float kp = -0.1;
   uint16_t pwm = 0;
 
-	erro = tempo_inspiratorio_IHM - tempo_inspiratorio;
+  erro = tempo_inspiratorio_IHM - tempo_inspiratorio;
     
-	pwm = pwm_atual + (kp*erro) + 1;
+  pwm = pwm_atual + (kp*erro) + 1;
 
   if(pwm > 250)
-	{
-		pwm = 250;
-	} 
+  {
+    pwm = 250;
+  } 
   else if(pwm < 40)
   {
-  	pwm = 40;
+    pwm = 40;
   }
   
    return (uint8_t)pwm; 
@@ -231,7 +227,7 @@ void control_init()
   /* Função responsavél de iniciar parametros de controle, como PWM,
       posição final e inicial.*/
 
-  system_status * p_sys_status;  
+  system_status_t * p_sys_status;  
   p_sys_status = get_sys_status();
 
   pinMode(P_VALVULA_PRESSAO_EXP, OUTPUT);
@@ -241,7 +237,7 @@ void control_init()
   p_sys_status->s_control.c_angulo_inicial  = 3900;
   p_sys_status->s_control.c_angulo_final    = 3100;
 
-  p_sys_status->s_control.c_pressao_PEEP    = 6;
+  p_sys_status->s_control.c_pressao_PEEP    = 3;
     
   p_sys_status->s_control.c_tempo_exp_pause = 400;//350~550
   p_sys_status->s_control.c_tempo_exp_ocioso = 1100;
@@ -253,6 +249,10 @@ void control_init()
                                                
   p_sys_status->s_control.c_pwm_requerido = p_sys_status->s_control.c_pwm_insp;
   
+  p_sys_status->s_control.c_tempo_exp_ocioso = 550;
+  p_sys_status->s_control.c_tempo_exp_pause = 350;
+  p_sys_status->s_control.c_pressao_cont = 15;
+
   //-*
   PonteiroDeFuncao = control_Expiracao;
 }

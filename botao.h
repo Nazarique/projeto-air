@@ -8,23 +8,23 @@
 	#endif
 
 
-		#define			D_CARACTER_BOTAO_1	85
-		#define			D_CARACTER_BOTAO_2	85
-		#define			D_CARACTER_BOTAO_3	70
-		#define			D_CARACTER_BOTAO_4	80
-		#define			D_CARACTER_BOTAO_5	82
-		#define			D_CARACTER_BOTAO_6	33
+	#define			BTN_VERDE	      85
+	#define			BTN_DIREITA	    84
+	#define			BTN_BAIXO	      70
+	#define			BTN_CIMA	      80
+	#define			BTN_VERMELHO	  82
+	#define			BTN_ESQUERDA	  33
 		
 
 		typedef struct {
-		    char b1:1;
-		    char b2:1;
-		    char b3:1;
-		    char b4:1;
-		    char b5:1;
-		    char b6:1;
-		    char deadTime:1;
-		    char   :1;
+		    uint8_t b1:1;
+		    uint8_t b2:1;
+		    uint8_t b3:1;
+		    uint8_t b4:1;
+		    uint8_t b5:1;
+		    uint8_t b6:1;
+		    uint8_t deadTime:1;
+		    uint8_t   :1;
 		  } button_t;
 
 		char detect_Button();
