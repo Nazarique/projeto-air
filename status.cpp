@@ -8,6 +8,11 @@ system_status_t *get_sys_status()
 	return &my_sys_status;
 }
 
+control_t *get_control()
+{
+  return &my_sys_status.s_control;
+}
+
 void *set_sys_status(uint8_t status)
 {	
 	/* Função que liga ou desliga todo sistema de controle,
@@ -27,9 +32,11 @@ void *set_sys_status(uint8_t status)
 	}	
 }
 
-void *set_control_angulo(uint16_t angulo) 
+void *set_control_angulo(uint16_t volume_ihm) 
 {
-   my_sys_status.s_control.c_angulo_final = my_sys_status.s_control.c_angulo_inicial - angulo;
+   float angulo = -1.85*volume_ihm + 3451;
+   if(angulo < 2850) angulo = 2850;
+   my_sys_status.s_control.c_angulo_final = (uint16_t) angulo;
 }
 
 void *set_control_PEEP(uint8_t peep)
@@ -42,14 +49,11 @@ void *set_control_tempoInspiratorioIHM(uint16_t tempo_insp)
    my_sys_status.s_control.c_tempo_insp_IHM = tempo_insp;
 }
 
-void *set_control_tempoExpiratorioIHM(uint16_t frequencia)
-{
+void *set_control_tempoExpiratorioIHM(uint8_t proporcao) //  proporcao seria 10 (1,0), 15 (1,5)
+{                                                        //
   float provisorio;
-  provisorio = 60000/frequencia - (float)(my_sys_status.s_control.c_tempo_insp_cont + my_sys_status.s_control.c_tempo_exp_cont +
-                                              my_sys_status.s_control.c_tempo_exp_pause);
-  if(provisorio < 0){
-    provisorio = 0;
-  }
+  provisorio = my_sys_status.s_control.c_tempo_insp_IHM * proporcao / 10 - 550;
+  if(provisorio<0) provisorio = 0;
   my_sys_status.s_control.c_tempo_exp_ocioso = provisorio;
 }
 

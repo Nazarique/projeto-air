@@ -9,6 +9,7 @@ extern "C"{
     {
         uint16_t c_angulo_final;
         uint16_t c_angulo_inicial;
+        uint16_t c_angulo_encoder;
 
         uint16_t c_tempo_insp_cont;
         uint16_t c_tempo_insp_IHM;
@@ -37,12 +38,13 @@ extern "C"{
 
 
 	system_status_t *get_sys_status();
-	void *set_sys_status(uint8_t status);
-	void *set_control_angulo(uint16_t angulo);
-	void *set_control_PEEP(uint8_t peep);
-    void *set_control_tempoInspiratorioIHM(uint16_t tempo_insp);
-    void *set_control_tempoExpiratorioIHM(uint16_t frequencia);
-    void *set_control_pause(uint16_t delay);
+  control_t *get_control(); void *set_sys_status(uint8_t status);
+  void *set_sys_status(uint8_t status);
+  void *set_control_angulo(uint16_t angulo);
+  void *set_control_PEEP(uint8_t peep);
+  void *set_control_tempoInspiratorioIHM(uint16_t tempo_insp);
+  void *set_control_tempoExpiratorioIHM(uint8_t proporcao);
+  void *set_control_pause(uint16_t delay);
 
 	#ifdef __cplusplus
 		} // extern "C"

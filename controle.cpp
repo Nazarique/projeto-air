@@ -99,6 +99,7 @@ void control_Inspiracao(system_status_t *p_sys_status)
   static uint32_t cont_time = 0;
   
   posicao_encoder = encoder.read();
+  p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
   
   cont_time++;
   
@@ -128,8 +129,9 @@ void control_Expiracao(system_status_t *p_sys_status)
   uint16_t posicao_encoder;
   posicao_encoder = encoder.read();
   
+  p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
   cont_time++;
-  if(/*(analogRead(P_SENSOR_PRESSAO) < p_sys_status->s_control.c_pressao_PEEP) && */ cont_time > p_sys_status->s_control.c_tempo_exp_pause)
+  if(/*((uint8_t)((analogRead(P_SENSOR_PRESSAO)-48)*0.1105) > p_sys_status->s_control.c_pressao_PEEP) && */cont_time > p_sys_status->s_control.c_tempo_exp_pause)
   {
     digitalWrite(P_VALVULA_PRESSAO_EXP, HIGH);
   }
@@ -198,7 +200,7 @@ uint8_t palpite(uint16_t tempo_inspiratorio_IHM, uint16_t angulo_init, uint16_t 
   //tempo_inspiratorio_IHM *= 1000; //isso é porque na IHM não usa ms e sim s
   float volume = (angulo_init - angulo_final)*0.08789;
   float a = 250;
-  float b = 30;
+  float b = 40;
   float resultado = 100;
   float pwm_raiz = 0;
   

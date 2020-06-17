@@ -2,22 +2,27 @@
 
 void serial()
 {
-  data dado;
-  dado.pressao = (analogRead(P_SENSOR_PRESSAO)-48)*0.1105;  
-  dado.fluxo = dado.pressao/2;
-  dado.volume = dado.pressao*2;
+  digitalWrite(27,LOW);
   
-  const int capacity = JSON_OBJECT_SIZE(3);//nosso documento Json possui no 3 valores;  
-  StaticJsonDocument<capacity> doc;
-
-  doc["pressao"] = dado.pressao;
-  doc["fluxo"] = dado.fluxo;
-  doc["volume"] = dado.volume;
-  
-  
-  serializeJson(doc, Serial);
-  Serial.println(); 
-  
+  if(Serial.read() == '1'){
+    digitalWrite(27,HIGH);
+    control_t * control;
+    control = get_control();
+    
+    data dado;
+    dado.angulo = control->c_angulo_encoder;
+    dado.pressao = (analogRead(P_SENSOR_PRESSAO)-48)*0.1105;
+    
+    const int capacity = JSON_OBJECT_SIZE(2);//nosso documento Json possui no 2 valores;  
+    StaticJsonDocument<capacity> doc;
+    
+    doc["pressao"] = dado.pressao;
+    doc["angulo"] = dado.angulo;
+   
+    
+    serializeJson(doc, Serial);
+    Serial.println(); 
+  } 
 }
 
 ISR(TIMER4_OVF_vect)                                                           
@@ -25,6 +30,7 @@ ISR(TIMER4_OVF_vect)
   TCNT4 = 49536;
   deadTimeButton_Isr();
   maqEstados_Control();
+  serial();
 }
 
 void interrupt4_OVF_Init()
