@@ -99,6 +99,7 @@ void control_Inspiracao(system_status_t *p_sys_status)
   static uint32_t cont_time = 0;
   
   posicao_encoder = encoder.read();
+  p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
   
   cont_time++;
   
@@ -117,6 +118,7 @@ void control_Inspiracao(system_status_t *p_sys_status)
   set_rampa(&p_sys_status->s_control);
 }
 
+bool flag_peep = 1;
 void control_Expiracao(system_status_t *p_sys_status)
 {
   /* Maq. de Estados: Expiração
@@ -125,18 +127,23 @@ void control_Expiracao(system_status_t *p_sys_status)
   */
   static uint32_t cont_time = 0;
   
+  
   uint16_t posicao_encoder;
   posicao_encoder = encoder.read();
   
+  p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
   cont_time++;
-  if(/*(analogRead(P_SENSOR_PRESSAO) < p_sys_status->s_control.c_pressao_PEEP) && */ cont_time > p_sys_status->s_control.c_tempo_exp_pause)
+  if(/*((uint8_t)((analogRead(P_SENSOR_PRESSAO)-48)*0.1105) > p_sys_status->s_control.c_pressao_PEEP) &&*/ cont_time > p_sys_status->s_control.c_tempo_exp_pause && flag_peep == 1)
   {
     digitalWrite(P_VALVULA_PRESSAO_EXP, HIGH);
+    flag_peep = 1;
   }
-//  else
-//  {
-//    digitalWrite(P_VALVULA_PRESSAO_EXP, LOW); 
-//  }
+
+  if(p_sys_status->s_control.c_pressao_PEEP > ((uint8_t)((analogRead(P_SENSOR_PRESSAO)-48)*0.1105))){
+    flag_peep = 0;
+    digitalWrite(P_VALVULA_PRESSAO_EXP, LOW);
+    
+  }
   
   if(posicao_encoder > (p_sys_status->s_control.c_angulo_inicial) || posicao_encoder < 200)
   { 
@@ -158,6 +165,7 @@ void control_Expiracao(system_status_t *p_sys_status)
 
     PonteiroDeFuncao = control_Inspiracao;
     digitalWrite(P_VALVULA_PRESSAO_EXP, LOW);
+    flag_peep = 1;
   }
   set_rampa(&p_sys_status->s_control);
 }
@@ -198,7 +206,7 @@ uint8_t palpite(uint16_t tempo_inspiratorio_IHM, uint16_t angulo_init, uint16_t 
   //tempo_inspiratorio_IHM *= 1000; //isso é porque na IHM não usa ms e sim s
   float volume = (angulo_init - angulo_final)*0.08789;
   float a = 250;
-  float b = 30;
+  float b = 40;
   float resultado = 100;
   float pwm_raiz = 0;
   
@@ -237,7 +245,7 @@ void control_init()
   p_sys_status->s_control.c_angulo_inicial  = 3900;
   p_sys_status->s_control.c_angulo_final    = 3100;
 
-  p_sys_status->s_control.c_pressao_PEEP    = 3;
+  p_sys_status->s_control.c_pressao_PEEP    = 2;
     
   p_sys_status->s_control.c_tempo_exp_pause = 400;//350~550
   p_sys_status->s_control.c_tempo_exp_ocioso = 1100;
