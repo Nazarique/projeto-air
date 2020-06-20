@@ -2,7 +2,6 @@
 //12/06
 
 
-int tempo = millis();
 void desliga()
 {
   set_sys_status(0);
@@ -25,21 +24,14 @@ void setup()
   pinMode(S_SENSOR_INDUTIVO, INPUT);
   attachInterrupt(digitalPinToInterrupt(S_SENSOR_INDUTIVO), desliga, FALLING);
 
-
   pinMode(23,OUTPUT);
   pinMode(25,OUTPUT);
   pinMode(27,OUTPUT);
   pinMode(29,OUTPUT);
-
-  //digitalWrite(23,HIGH);
-  //digitalWrite(25,HIGH);
-  digitalWrite(27,HIGH);
-  //digitalWrite(29,HIGH);
-  
+  digitalWrite(27,LOW);
 }
 
 void loop() 
 {
   machine_state();
-  //serial();
 }

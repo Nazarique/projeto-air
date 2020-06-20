@@ -644,7 +644,7 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.print((IHM_aux->h_temp_insp%1000)/100);     //
                                                       //
       lcd.setCursor(15, 2);                           //    
-      lcd.print("   ");jk'
+      lcd.print("   ");
       lcd.setCursor(15, 2);      //    
       lcd.print(IHM_aux->h_freq);
       break;      
