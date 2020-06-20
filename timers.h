@@ -9,11 +9,10 @@
 
 	typedef struct Data{
 
-    	float pressao = 0;
-    	float fluxo   = 0;
-    	float volume  = 0;
+    	float pressao;
+      uint16_t angulo;
 	} data;
-
+ 
 		void interrupt4_OVF_Init();
 		void serial();
 
