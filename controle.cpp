@@ -89,26 +89,30 @@ void maqEstados_Control()
   }
 }
 
-void control_Inspiracao(system_status_t *p_sys_status)
+bool flag_peep = 1;
+
+void control_Inspiracao_volume(system_status_t *p_sys_status)
 {
   /* Maq. de Estados: Inspiração
       função para execução dos procedimentos durante a fase
       de inspiração.
   */
-  uint16_t posicao_encoder;
+  uint16_t posicao_encoder = 0;
   static uint32_t cont_time = 0;
   
   posicao_encoder = encoder.read();
   p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
   
   cont_time++;
-  
-  if (posicao_encoder < (p_sys_status->s_control.c_angulo_final) &&  posicao_encoder > 200)
+
+  if(analogRead(P_SENSOR_PRESSAO) > 46 && analogRead(P_SENSOR_PRESSAO) < 50) p_sys_status->s_alarm = ALARM_VAZAMENTO; 
+
+  if(posicao_encoder < (p_sys_status->s_control.c_angulo_final) &&  posicao_encoder > 200)
   { 
     p_sys_status->s_control.c_deadTime_Motor = 1;
     p_sys_status->s_control.c_pwm_requerido  = 250;
     p_sys_status->s_control.c_pwm_atual      = 0; 
-    p_sys_status->s_control.c_flag_exp_ocioso       = 1;
+    p_sys_status->s_control.c_flag_exp_ocioso= 1;
     p_sys_status->s_control.c_direcao        = 0;
     p_sys_status->s_control.c_tempo_insp_cont = cont_time;
     cont_time = 0;
@@ -118,7 +122,41 @@ void control_Inspiracao(system_status_t *p_sys_status)
   set_rampa(&p_sys_status->s_control);
 }
 
-bool flag_peep = 1;
+void control_Inspiracao_pressao(system_status_t *p_sys_status)
+{
+  /* Maq. de Estados: Inspiração
+      função para execução dos procedimentos durante a fase
+      de inspiração.
+  */
+  uint16_t posicao_encoder = 0;
+  static uint32_t cont_time = 0;
+  uint16_t aux_pressao_lida = ( (analogRead(P_SENSOR_PRESSAO) -48 ) * 0.1105 );
+  
+  posicao_encoder = encoder.read();
+  p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
+  
+  cont_time++;
+
+  //VAZAMENTO ALARME
+  if(analogRead(P_SENSOR_PRESSAO) > 46 && analogRead(P_SENSOR_PRESSAO) < 50) p_sys_status->s_alarm = ALARM_VAZAMENTO; 
+
+  if(aux_pressao_lida > p_sys_status->s_control.c_takaoka ||  posicao_encoder < 2900) // 2900 É A POSIÇÃO LIMITE NO MOMENTO
+  { 
+    if(posicao_encoder < 2900) p_sys_status->s_alarm = ALARM_VOLUME_MAX; //prioridade
+
+    p_sys_status->s_control.c_deadTime_Motor = 1;
+    p_sys_status->s_control.c_pwm_requerido  = 250;
+    p_sys_status->s_control.c_pwm_atual      = 0; 
+    p_sys_status->s_control.c_flag_exp_ocioso= 1;
+    p_sys_status->s_control.c_direcao        = 0;
+    p_sys_status->s_control.c_tempo_insp_cont = cont_time;
+    cont_time = 0;
+    stop_Motor();       
+    PonteiroDeFuncao = control_Expiracao;
+  }
+  set_rampa(&p_sys_status->s_control);
+}
+
 void control_Expiracao(system_status_t *p_sys_status)
 {
   /* Maq. de Estados: Expiração
@@ -128,22 +166,28 @@ void control_Expiracao(system_status_t *p_sys_status)
   static uint32_t cont_time = 0;
   
   
-  uint16_t posicao_encoder;
+  uint16_t posicao_encoder = 0;
+  uint16_t aux_pressao_lida = ( (analogRead(P_SENSOR_PRESSAO) -48 ) * 0.1105 );
   posicao_encoder = encoder.read();
   
   p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
   cont_time++;
-  if(/*((uint8_t)((analogRead(P_SENSOR_PRESSAO)-48)*0.1105) > p_sys_status->s_control.c_pressao_PEEP) &&*/ cont_time > p_sys_status->s_control.c_tempo_exp_pause && flag_peep == 1)
+
+  if(cont_time > p_sys_status->s_control.c_tempo_exp_pause && flag_peep == 1)
   {
-    digitalWrite(P_VALVULA_PRESSAO_EXP, HIGH);
+    digitalWrite(P_VALVULA_PRESSAO_EXP, HIGH);//abriu val
     flag_peep = 1;
   }
 
-  if(p_sys_status->s_control.c_pressao_PEEP > ((uint8_t)((analogRead(P_SENSOR_PRESSAO)-48)*0.1105))){
+
+  if(p_sys_status->s_control.c_pressao_PEEP > aux_pressao_lida && flag_peep){
     flag_peep = 0;
-    digitalWrite(P_VALVULA_PRESSAO_EXP, LOW);
+    digitalWrite(P_VALVULA_PRESSAO_EXP, LOW);//fechou val
     
-  }
+  }else if( aux_pressao_lida > (5 + p_sys_status->s_control.c_pressao_PEEP)  && !flag_peep){
+    p_sys_status->s_alarm =  ALARM_ALTA_PEEP;
+
+  } 
   
   if(posicao_encoder > (p_sys_status->s_control.c_angulo_inicial) || posicao_encoder < 200)
   { 
@@ -161,11 +205,19 @@ void control_Expiracao(system_status_t *p_sys_status)
                                                           
     p_sys_status->s_control.c_pwm_requerido = p_sys_status->s_control.c_pwm_insp;
     cont_time = 0;
-    stop_Motor();   
+    stop_Motor(); 
 
-    PonteiroDeFuncao = control_Inspiracao;
     digitalWrite(P_VALVULA_PRESSAO_EXP, LOW);
     flag_peep = 1;
+
+    if(p_sys_status->s_modo_de_oper == MODO_OPERACAO_VOLUME) 
+    {
+      PonteiroDeFuncao = control_Inspiracao_volume;
+    }
+    else if(p_sys_status->s_modo_de_oper == MODO_OPERACAO_PRESSAO)
+    {
+      PonteiroDeFuncao = control_Inspiracao_pressao;
+    }  
   }
   set_rampa(&p_sys_status->s_control);
 }
@@ -242,6 +294,8 @@ void control_init()
   encoder.begin();
   //pré definições
   //-*
+  p_sys_status->s_modo_de_oper = MODO_OPERACAO_VOLUME;
+  
   p_sys_status->s_control.c_angulo_inicial  = 3900;
   p_sys_status->s_control.c_angulo_final    = 3100;
 
