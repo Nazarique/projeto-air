@@ -33,6 +33,7 @@ extern "C"{
 	typedef struct
 	{
 		uint8_t   s_respirador;
+		uint8_t   s_alarm;
 		control_t s_control;
 	} system_status_t;
 

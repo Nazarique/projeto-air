@@ -6,6 +6,12 @@
   #ifdef __cplusplus
   extern "C"{
   #endif
+    define ALARM_PRESSAO 
+    define ALARM_DESLIGADO 
+    define ALARM_PRESSAO 
+    define ALARM_PRESSAO 
+    define ALARM_PRESSAO 
+    define ALARM_PRESSAO 
     
     typedef void (*tipoFuncao_p)(system_status_t *p_sys_status);
 

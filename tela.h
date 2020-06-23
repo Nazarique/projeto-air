@@ -26,8 +26,8 @@ extern "C"{
 #define     L_VOLUME_SUP      300
 #define     L_VOLUME_INF      150
 
-#define     L_PEEP_SUP            5
-#define     L_PEEP_INF            3
+#define     L_PEEP_SUP            25
+#define     L_PEEP_INF            0
 
 #define     L_PRESSAO_SUP     60
 #define     L_PRESSAO_INF     10
