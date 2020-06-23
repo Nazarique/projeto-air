@@ -13,6 +13,28 @@ control_t *get_control()
   return &my_sys_status.s_control;
 }
 
+char *get_mod_operacao_IHM()
+{
+	if(my_sys_status.s_modo_de_oper == MODO_OPERACAO_VOLUME) 
+    {
+      return 'V';
+    }
+    else if(my_sys_status.s_modo_de_oper == MODO_OPERACAO_PRESSAO)
+    {
+      return 'P';
+    }
+}
+
+uint8_t *get_sys_alarm()
+{
+  return my_sys_status.s_alarm;
+}
+
+void *set_mod_operacao(uint8_t modo)
+{
+	my_sys_status.s_modo_de_oper = modo;
+}
+
 void *set_sys_status(uint8_t status)
 {	
 	/* Função que liga ou desliga todo sistema de controle,
@@ -24,11 +46,14 @@ void *set_sys_status(uint8_t status)
 	{
 		//if de proteção, o status só pode ser 1 ou 0;
 		my_sys_status.s_respirador = 0;
-                stop_Motor();
+		my_sys_status.s_alarm = ALARM_DESLIGADO;
+
+        stop_Motor();
 	}
 	else if(status == 1)
 	{
 		my_sys_status.s_respirador = 1;
+		my_sys_status.s_alarm = ALARM_LIGADO;
 	}	
 }
 
