@@ -13,9 +13,9 @@ extern "C"{
 #define     D_MENU_PRESSAO      '2'
 #define     D_MENU_VOLUME       '3'
 #define     D_MENU_PEEP         '4'
-#define     D_MENU_CALIBRA          '5'
+#define     D_MENU_CALIBRA      '5'
 #define     D_TELA_INICIAL      '6'
-#define     D_TELA_COLLAB         '9'
+#define     D_TELA_COLLAB       '9'
 
     //            SET
 #define     D_INCREMENTO       1 
@@ -23,14 +23,14 @@ extern "C"{
 
 
     //    LIMITES das variáveis da IHM INF e SUP 
-#define     L_VOLUME_SUP      300
-#define     L_VOLUME_INF      150
+#define     L_VOLUME_SUP      	300
+#define     L_VOLUME_INF      	150
 
-#define     L_PEEP_SUP            25
-#define     L_PEEP_INF            0
+#define     L_PEEP_SUP          25
+#define     L_PEEP_INF          0
 
-#define     L_PRESSAO_SUP     60
-#define     L_PRESSAO_INF     10
+#define     L_PRESSAO_SUP   	60
+#define     L_PRESSAO_INF     	10
 
 #define     L_PROP_RESP_SUP     30
 #define     L_PROP_RESP_INF     10

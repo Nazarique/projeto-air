@@ -189,8 +189,9 @@ void machine_state()
       else if(botao == BTN_VERDE) {
         cursor = 2;//RESET CURSOR
         estado = D_TELA_INICIAL;            // Salvando valores
-        screen_static(estado);              // 
-
+        screen_static(estado);   
+                   // 
+        set_mod_operacao(MODO_OPERACAO_PRESSAO);
         set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
         set_control_tempoExpiratorioIHM(config_IHM_aux.h_prop);
       }
@@ -262,6 +263,7 @@ void machine_state()
         estado = D_TELA_INICIAL;       // Salva valores
         screen_static(estado);          //
 
+        set_mod_operacao(MODO_OPERACAO_PRESSAO);
         set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
         set_control_tempoExpiratorioIHM(config_IHM_aux.h_prop);
         set_control_angulo(config_IHM_aux.h_volume);
@@ -497,7 +499,7 @@ void screen_static(char p)
     case D_TELA_INICIAL: // tela iniciar 
       lcd.clear();                                       
       lcd.setCursor(0, 0);                               
-      lcd.print(" P/V Corrente:      ");
+      lcd.print("     Corrente:      ");
       lcd.setCursor(0, 1);                               
       lcd.print(" T. Inspira  :      ");
       lcd.setCursor(0, 2);                               
@@ -631,8 +633,8 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       break;
 
     case D_TELA_INICIAL: // tela inicial                                    
-      lcd.setCursor(cursor, 0);                       // 
-      lcd.print("  ");                                // TODO
+      lcd.setCursor(1, 0);                            // 
+      lcd.print(get_mod_operacao_IHM());              // TODO
                                                       //  [ ] uma tela inicial decente
       lcd.setCursor(15, 0);                           //  que entenda quando eh volume e  
       if(cursor == 2){lcd.print(IHM_aux->h_pressao);} //   pressao
