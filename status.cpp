@@ -12,7 +12,28 @@ control_t *get_control()
 {
   return &my_sys_status.s_control;
 }
-
+//get encoder, retorna o valor da posição do encoder
+uint16_t get_control_anguloEncoder()
+{
+  return my_sys_status.s_control.c_angulo_encoder;
+}
+//get modo de operação, retorna um char para IHM simbolizar qual é o modo de operação 
+char get_sys_modOperacaoIHM()
+{
+  if(my_sys_status.s_modo_de_oper == MODO_OPERACAO_VOLUME) 
+    {
+      return 'V';
+    }
+    else if(my_sys_status.s_modo_de_oper == MODO_OPERACAO_PRESSAO)
+    {
+      return 'P';
+    }
+}
+//set função para mudar o modo de operação, no momento tempos volume e pressão
+void *set_sys_modOperacao(uint8_t modo)
+{
+  my_sys_status.s_modo_de_oper = modo;
+}
 void *set_sys_status(uint8_t status)
 {	
 	/* Função que liga ou desliga todo sistema de controle,
@@ -62,7 +83,7 @@ void *set_control_pause(uint16_t delay)
    my_sys_status.s_control.c_tempo_exp_pause = delay;
 }
 
-void *set_control_pause(uint8_t pressao-ihm)
+void *set_control_pressao(uint8_t pressao_ihm)
 {
-   my_sys_status.s_control.c_pressao_cont = pressao-ihm;
+   my_sys_status.s_control.c_pressao_cont = pressao_ihm;
 }
