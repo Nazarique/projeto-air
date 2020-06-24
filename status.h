@@ -32,7 +32,6 @@ extern "C"{
 
         uint8_t  c_pressao_PEEP;
         uint8_t  c_pressao_cont;
-        uint8_t  c_takaoka;
 
         uint8_t  c_direcao; 
         uint8_t  c_deadTime_Motor;
@@ -47,22 +46,24 @@ extern "C"{
 	{
 		uint8_t   s_respirador;
 		uint8_t   s_alarm;
-    uint8_t   s_modo_de_oper;//0 - volume, 1 - pressão
+    uint8_t   s_modo_de_oper; //0 - volume, 1 - pressão
 		control_t s_control;
 	} system_status_t;
 
 
-	system_status_t *get_sys_status();
-  control_t *get_control(); void *set_sys_status(uint8_t status);
+  system_status_t *get_sys_status();
+  control_t *get_control(); 
   uint8_t *get_sys_alarm();
-  char *get_mod_operacao_IHM();
-  void *set_mod_operacao(uint8_t modo);
+  uint16_t *get_control_anguloEncoder();
+  char *get_sys_modOperacaoIHM();
+  void *set_sys_modOperacao(uint8_t modo);
   void *set_sys_status(uint8_t status);
   void *set_control_angulo(uint16_t angulo);
   void *set_control_PEEP(uint8_t peep);
   void *set_control_tempoInspiratorioIHM(uint16_t tempo_insp);
   void *set_control_tempoExpiratorioIHM(uint8_t proporcao);
   void *set_control_pause(uint16_t delay);
+  
 	#ifdef __cplusplus
 		} // extern "C"
 	#endif

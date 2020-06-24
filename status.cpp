@@ -1,19 +1,34 @@
 
 #include "bibliotecas.h"
-
+/*  Esta lib é dedicada para armazenar variáveis globais
+      variáveis usadas na IHM e no controle.
+*/
 static system_status_t my_sys_status = {0};
 
+//get principal, usando este get o endereço da struct my_sys_status é retornada
 system_status_t *get_sys_status()
 {
 	return &my_sys_status;
 }
 
+//get controle, usando este get o endereço da struct controle é retornada
 control_t *get_control()
 {
   return &my_sys_status.s_control;
 }
+//get alarme, retorna um valor numerico para comunicação serial
+uint8_t *get_sys_alarm()
+{
+  return my_sys_status.s_alarm;
+}
 
-char *get_mod_operacao_IHM()
+//get encoder, retorna o valor da posição do encoder
+uint16_t *get_control_anguloEncoder()
+{
+  return my_sys_status.s_control.c_angulo_encoder;
+}
+//get modo de operação, retorna um char para IHM simbolizar qual é o modo de operação 
+char *get_sys_modOperacaoIHM()
 {
 	if(my_sys_status.s_modo_de_oper == MODO_OPERACAO_VOLUME) 
     {
@@ -25,16 +40,14 @@ char *get_mod_operacao_IHM()
     }
 }
 
-uint8_t *get_sys_alarm()
-{
-  return my_sys_status.s_alarm;
-}
 
-void *set_mod_operacao(uint8_t modo)
+//set função para mudar o modo de operação, no momento tempos volume e pressão
+void *set_sys_modOperacao(uint8_t modo)
 {
 	my_sys_status.s_modo_de_oper = modo;
 }
 
+//set função para mudar o estado da flag para inicialização de sistema 
 void *set_sys_status(uint8_t status)
 {	
 	/* Função que liga ou desliga todo sistema de controle,
@@ -48,7 +61,7 @@ void *set_sys_status(uint8_t status)
 		my_sys_status.s_respirador = 0;
 		my_sys_status.s_alarm = ALARM_DESLIGADO;
 
-        stop_Motor();
+    stop_Motor();
 	}
 	else if(status == 1)
 	{
@@ -57,10 +70,11 @@ void *set_sys_status(uint8_t status)
 	}	
 }
 
+//set controle de angulo 
 void *set_control_angulo(uint16_t volume_ihm) 
 {
-   float angulo = -1.85*volume_ihm + 3451;
-   if(angulo < 2850) angulo = 2850;
+   float angulo = -1.85*volume_ihm + 3451.0;
+   if(angulo < 2850) angulo = 2850.0;
    my_sys_status.s_control.c_angulo_final = (uint16_t) angulo;
 }
 
