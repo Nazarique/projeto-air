@@ -1,6 +1,7 @@
 #include "bibliotecas.h"
 //12/06
 
+
 void desliga()
 {
   set_sys_status(0);
