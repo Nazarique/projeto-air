@@ -9,8 +9,9 @@
 
 	typedef struct Data{
 
-    	float pressao;
+      float pressao;
       uint16_t angulo;
+      uint8_t alarm;
 	} data;
  
 		void interrupt4_OVF_Init();
