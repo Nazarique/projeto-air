@@ -36,7 +36,7 @@ extern "C"{
 #define     L_PROP_RESP_INF     10
 
 #define     L_TEMP_INSP_SUP     1800
-#define     L_TEMP_INSP_INF     1000
+#define     L_TEMP_INSP_INF     900
 
 #define     L_PAUSE_EXP_SUP     500
 #define     L_PAUSE_EXP_INF     350
