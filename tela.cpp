@@ -1,4 +1,4 @@
-﻿#include "bibliotecas.h"
+#include "bibliotecas.h"
 
 
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_DB7, LCD_DB6, LCD_DB5, LCD_DB4);
@@ -170,17 +170,23 @@ void machine_state()
           case 1: //frequencia
             set_IHM_proporcao(&config_IHM_aux, D_DECREMENTO);
             break;   
+          case 2: //frequencia
+            set_IHM_proporcao(&config_IHM_aux, D_DECREMENTO);
+            break;   
         }
         estado = D_MENU_PRESSAO;
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//Decremento
       else if(botao == BTN_DIREITA){ 
         switch(cursor){
-          case 0: //tempo inspiratorio
+          case 0://tempo inspiratorio
             set_IHM_tempInsp(&config_IHM_aux, D_INCREMENTO);
             break;
           case 1: //frequencia
             set_IHM_proporcao(&config_IHM_aux, D_INCREMENTO);
+            break;   
+          case 2: //pressao
+            set_IHM_pressao(&config_IHM_aux, D_INCREMENTO);
             break;   
         }
         estado = D_MENU_PRESSAO;
@@ -189,11 +195,12 @@ void machine_state()
       else if(botao == BTN_VERDE) {
         cursor = 2;//RESET CURSOR
         estado = D_TELA_INICIAL;            // Salvando valores
-        screen_static(estado);   
-                   // 
+        screen_static(estado);              // 
+
         set_sys_modOperacao(MODO_OPERACAO_PRESSAO);
         set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
         set_control_tempoExpiratorioIHM(config_IHM_aux.h_prop);
+        set_control_pressao(config_IHM_aux.h_pressao);
       }
       else if(botao == BTN_VERMELHO){
         cursor = 1;                   //
@@ -460,7 +467,7 @@ void screen_static(char p)
       lcd.setCursor(0,1);
       lcd.print("  Prop : 1:XXXs     ");
       lcd.setCursor(0,2);
-      lcd.print("    Pressao:  XX cm ");
+      lcd.print("  Pressao:    XX cm ");
       lcd.setCursor(0,3);
       lcd.print(" Retorna      Grava ");
       break;
@@ -499,7 +506,7 @@ void screen_static(char p)
     case D_TELA_INICIAL: // tela iniciar 
       lcd.clear();                                       
       lcd.setCursor(0, 0);                               
-      lcd.print("     Corrente:      ");
+      lcd.print(" P/V Corrente:      ");
       lcd.setCursor(0, 1);                               
       lcd.print(" T. Inspira  :      ");
       lcd.setCursor(0, 2);                               
@@ -633,12 +640,12 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       break;
 
     case D_TELA_INICIAL: // tela inicial                                    
-      lcd.setCursor(1, 0);                            // 
-      lcd.print(get_sys_modOperacaoIHM());              // TODO
+      lcd.setCursor(cursor, 0);                       // 
+      lcd.print(get_sys_modOperacao);                 // TODO
                                                       //  [ ] uma tela inicial decente
       lcd.setCursor(15, 0);                           //  que entenda quando eh volume e  
-      if(cursor == 2){lcd.print(IHM_aux->h_pressao);} //   pressao
-      if(cursor == 1){lcd.print(IHM_aux->h_volume);}  //
+      if(get_sys_modOperacao == 'P'){lcd.print(IHM_aux->h_pressao);} //   pressao
+      if(get_sys_modOperacao == 'V'){lcd.print(IHM_aux->h_volume);}  //
                                                       //
       lcd.setCursor(15, 1);                           //
       lcd.print(IHM_aux->h_temp_insp/1000);//         //
@@ -769,6 +776,26 @@ void set_IHM_pauseExp(config_t *IHM_aux, uint8_t p)
         if(IHM_aux->h_pause_exp>L_PAUSE_EXP_INF)     
         {                                            
           IHM_aux->h_pause_exp-=50;                  
+        }
+        break;
+  }
+}
+
+void set_IHM_pressao(config_t *IHM_aux, uint8_t p)
+{
+  switch(p)
+  {
+    case D_INCREMENTO:  
+        if(IHM_aux->h_pressao<L_PAUSE_EXP_SUP)
+        {
+          IHM_aux->h_pressao+=1;                  
+        }                                             
+        break;                                        
+                                                     
+    case D_DECREMENTO:                               
+        if(IHM_aux->h_pressao>L_PAUSE_EXP_INF)     
+        {                                            
+          IHM_aux->h_pressao-=1;                  
         }
         break;
   }
