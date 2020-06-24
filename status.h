@@ -1,4 +1,4 @@
-#ifndef STATUS_H
+﻿#ifndef STATUS_H
 #define STATUS_H
 
 #ifdef __cplusplus
@@ -6,10 +6,10 @@ extern "C"{
 #endif
     #define    ALARM_DESLIGADO      0//set sys ligado
     #define    ALARM_LIGADO         1//set sys ligado
-    #define    ALARM_PRESSAO_ALTA   2 
-    #define    ALARM_PRESSAO_BAIXA  3
+    #define    ALARM_PRESSAO_ALTA   2//inspiração 
+    #define    ALARM_PRESSAO_BAIXA  3//inspiração
     #define    ALARM_ALTA_PEEP      4//expiração
-    #define    ALARM_VAZAMENTO      5//inspiração_volume
+    #define    ALARM_VAZAMENTO      5//inspiração
     #define    ALARM_VOLUME_MAX     6//inspiração_pressão
     
 
@@ -53,9 +53,9 @@ extern "C"{
 
   system_status_t *get_sys_status();
   control_t *get_control(); 
-  uint8_t *get_sys_alarm();
-  uint16_t *get_control_anguloEncoder();
-  char *get_sys_modOperacaoIHM();
+  uint8_t get_sys_alarm();
+  uint16_t get_control_anguloEncoder();
+  char get_sys_modOperacaoIHM();
   void *set_sys_modOperacao(uint8_t modo);
   void *set_sys_status(uint8_t status);
   void *set_control_angulo(uint16_t angulo);

@@ -133,6 +133,9 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
   static uint32_t cont_time = 0;
   //variável aux para armazenar a posição do encoder
   uint16_t posicao_encoder = 0;
+
+  //variável aux para armazenar a pressão lida
+  uint16_t aux_pressao_lida = ( (analogRead(P_SENSOR_PRESSAO) -48 ) * 0.1105 );
   
   posicao_encoder = encoder.read();
   p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
@@ -143,7 +146,26 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
     que sua leitura é a mesma da pressão ambiente, por este motivo, sempre que seu valor estiver dentro 
     da conição do IF sabemos que há algum vazemento */
 
-  if(analogRead(P_SENSOR_PRESSAO) > 46 && analogRead(P_SENSOR_PRESSAO) < 50) p_sys_status->s_alarm = ALARM_VAZAMENTO; 
+
+  if(analogRead(P_SENSOR_PRESSAO) > 46 && analogRead(P_SENSOR_PRESSAO) < 50)
+  {
+    p_sys_status->s_alarm = ALARM_VAZAMENTO;
+  } 
+  else
+  {
+    p_sys_status->s_alarm = ALARM_LIGADO;
+  }
+  
+  if(aux_pressao_lida > (p_sys_status->s_control.c_pressao_cont + 5)){
+    p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
+  }
+  else if(aux_pressao_lida < (p_sys_status->s_control.c_pressao_cont - 5)) {
+    p_sys_status->s_alarm = ALARM_PRESSAO_BAIXA; 
+  }
+  else
+  {
+    p_sys_status->s_alarm = ALARM_LIGADO;
+  }
 /* No modo de operação via volume precisamos realizar uma troca entre inspiração e expiração
     de acordo com a posição do encoder, pois o delta de angulo do encoder, esta diretamente ligado ao 
     volume setado para inspiração do paciênte. Para melhor controle é usado um range no if. */  
@@ -192,16 +214,36 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
     que sua leitura é a mesma da pressão ambiente, por este motivo, sempre que seu valor estiver dentro 
     da conição do IF sabemos que há algum vazemento */
 
-  if(analogRead(P_SENSOR_PRESSAO) > 46 && analogRead(P_SENSOR_PRESSAO) < 50) p_sys_status->s_alarm = ALARM_VAZAMENTO; 
+  if(analogRead(P_SENSOR_PRESSAO) > 46 && analogRead(P_SENSOR_PRESSAO) < 50)
+  {
+    p_sys_status->s_alarm = ALARM_VAZAMENTO;
+  } 
+  else
+  {
+    p_sys_status->s_alarm = ALARM_LIGADO;
+  }
+  
+  if(aux_pressao_lida > (p_sys_status->s_control.c_pressao_cont + 5))
+  {
+    p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
+  }
+  else if(aux_pressao_lida < (p_sys_status->s_control.c_pressao_cont - 5)) 
+  {
+    p_sys_status->s_alarm = ALARM_PRESSAO_BAIXA; 
+  }
+  else
+  {
+    p_sys_status->s_alarm = ALARM_LIGADO;
+  }
 /* No modo de operação via pressão precisamos realizar uma troca entre inspiração e expiração
     de acordo com a pressão que é lida no sensor de pressão, se a pressão real alcançar a pressão 
     estipulada para inspiração do paciênte ocorre a troca. Caso o encoder chegue na posição de 
     volume maxímo a troca também acontece. */
 
-  if(aux_pressao_lida > p_sys_status->s_control.c_pressao_cont ||  posicao_encoder < 2900) //2900 É A POSIÇÃO LIMITE NO MOMENTO
+  if(aux_pressao_lida > p_sys_status->s_control.c_pressao_cont ||  posicao_encoder < 2800) //2900 É A POSIÇÃO LIMITE NO MOMENTO
   { 
     //Caso o encoder chegue na posição de volume maxímo um alarme é acionado.
-    if(posicao_encoder < 2900) p_sys_status->s_alarm = ALARM_VOLUME_MAX; //PRIORIDADE
+    if(posicao_encoder < 2800) p_sys_status->s_alarm = ALARM_VOLUME_MAX; //PRIORIDADE
 
     // o motor inverte rotação, assim usamos um dead time para inversão. 
     p_sys_status->s_control.c_deadTime_Motor = 1;
@@ -399,9 +441,9 @@ void control_init()
   pinMode(P_VALVULA_PRESSAO_EXP, OUTPUT);
   encoder.begin();
   //pré definições
-    p_sys_status->s_modo_de_oper = MODO_OPERACAO_VOLUME;
+    p_sys_status->s_modo_de_oper = MODO_OPERACAO_PRESSAO;
     
-    p_sys_status->s_control.c_angulo_inicial = 3900;
+    p_sys_status->s_control.c_angulo_inicial = 3800;
     p_sys_status->s_control.c_angulo_final = 2850;
 
     p_sys_status->s_control.c_pressao_PEEP = 2;
@@ -419,7 +461,7 @@ void control_init()
     
     p_sys_status->s_control.c_tempo_exp_ocioso = 550;
     p_sys_status->s_control.c_tempo_exp_pause = 350;
-    p_sys_status->s_control.c_pressao_cont = 15;
+    p_sys_status->s_control.c_pressao_cont = 25;
     
   //pinteiro de função responsavel pela inversão na maquina de estado para controle
   PonteiroDeFuncao = control_Expiracao;

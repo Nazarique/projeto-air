@@ -1,4 +1,4 @@
-
+﻿
 #include "bibliotecas.h"
 /*  Esta lib é dedicada para armazenar variáveis globais
       variáveis usadas na IHM e no controle.
@@ -17,18 +17,18 @@ control_t *get_control()
   return &my_sys_status.s_control;
 }
 //get alarme, retorna um valor numerico para comunicação serial
-uint8_t *get_sys_alarm()
+uint8_t get_sys_alarm()
 {
   return my_sys_status.s_alarm;
 }
 
 //get encoder, retorna o valor da posição do encoder
-uint16_t *get_control_anguloEncoder()
+uint16_t get_control_anguloEncoder()
 {
   return my_sys_status.s_control.c_angulo_encoder;
 }
 //get modo de operação, retorna um char para IHM simbolizar qual é o modo de operação 
-char *get_sys_modOperacaoIHM()
+char get_sys_modOperacaoIHM()
 {
 	if(my_sys_status.s_modo_de_oper == MODO_OPERACAO_VOLUME) 
     {

@@ -1,4 +1,4 @@
-#include "bibliotecas.h"
+﻿#include "bibliotecas.h"
 
 
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_DB7, LCD_DB6, LCD_DB5, LCD_DB4);
@@ -191,7 +191,7 @@ void machine_state()
         estado = D_TELA_INICIAL;            // Salvando valores
         screen_static(estado);   
                    // 
-        set_mod_operacao(MODO_OPERACAO_PRESSAO);
+        set_sys_modOperacao(MODO_OPERACAO_PRESSAO);
         set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
         set_control_tempoExpiratorioIHM(config_IHM_aux.h_prop);
       }
@@ -263,7 +263,7 @@ void machine_state()
         estado = D_TELA_INICIAL;       // Salva valores
         screen_static(estado);          //
 
-        set_mod_operacao(MODO_OPERACAO_PRESSAO);
+        set_sys_modOperacao(MODO_OPERACAO_PRESSAO);
         set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
         set_control_tempoExpiratorioIHM(config_IHM_aux.h_prop);
         set_control_angulo(config_IHM_aux.h_volume);
@@ -634,7 +634,7 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
 
     case D_TELA_INICIAL: // tela inicial                                    
       lcd.setCursor(1, 0);                            // 
-      lcd.print(get_mod_operacao_IHM());              // TODO
+      lcd.print(get_sys_modOperacaoIHM());              // TODO
                                                       //  [ ] uma tela inicial decente
       lcd.setCursor(15, 0);                           //  que entenda quando eh volume e  
       if(cursor == 2){lcd.print(IHM_aux->h_pressao);} //   pressao
