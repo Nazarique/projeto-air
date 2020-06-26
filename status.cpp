@@ -37,8 +37,7 @@ void *set_sys_modOperacao(uint8_t modo)
 void *set_sys_status(uint8_t status)
 {	
 	/* Função que liga ou desliga todo sistema de controle,
-		qdo ligado o motor funciona, qdo desligado o 
-		motor não é acionado.
+		qdo ligado o motor funciona, qdo desligado o motor não é acionado.
 	*/
 
 	if(status == 0)

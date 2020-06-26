@@ -53,7 +53,7 @@ extern "C"{
 
 
 	system_status_t *get_sys_status();
-  control_t *get_control(); void *set_sys_status(uint8_t status);
+  control_t *get_control();
   uint8_t get_sys_alarm();
   uint16_t get_control_anguloEncoder();
   char get_sys_modOperacaoIHM();
