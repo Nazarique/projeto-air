@@ -3,7 +3,7 @@
 
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_DB7, LCD_DB6, LCD_DB5, LCD_DB4);
 
-char estado = '0';
+static char estado = '0';
 
 void machine_state()
 {
@@ -270,7 +270,7 @@ void machine_state()
         estado = D_TELA_INICIAL;       // Salva valores
         screen_static(estado);          //
 
-        set_sys_modOperacao(MODO_OPERACAO_PRESSAO);
+        set_sys_modOperacao(MODO_OPERACAO_VOLUME);
         set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
         set_control_tempoExpiratorioIHM(config_IHM_aux.h_prop);
         set_control_angulo(config_IHM_aux.h_volume);

@@ -31,7 +31,7 @@ ISR(TIMER4_OVF_vect)
   maqEstados_Control();
   
   if(--cont==0){
-    //serial();
+    serial();
     cont = 100;
   }
   

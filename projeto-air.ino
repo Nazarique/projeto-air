@@ -18,8 +18,6 @@ void setup()
   screen_Init();
   interrupt4_OVF_Init();
   control_init();
-
-  //set_sys_status(1);//inicializa controle
   
   pinMode(S_SENSOR_INDUTIVO, INPUT);
   attachInterrupt(digitalPinToInterrupt(S_SENSOR_INDUTIVO), desliga, FALLING);
