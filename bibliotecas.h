@@ -5,7 +5,7 @@
 	#include <stdint.h>
 	#include <Arduino.h>
  	#include <math.h>
-  #include <ArduinoJson.h>
+	#include <ArduinoJson.h>
 	#include <LiquidCrystal.h>
 	#include <AS5045.h>
 	

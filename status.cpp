@@ -12,6 +12,11 @@ control_t *get_control()
 {
   return &my_sys_status.s_control;
 }
+uint8_t get_sys_alarm()
+{
+  return my_sys_status.s_alarm;
+}
+
 //get encoder, retorna o valor da posição do encoder
 uint16_t get_control_anguloEncoder()
 {
@@ -37,14 +42,15 @@ void *set_sys_modOperacao(uint8_t modo)
 void *set_sys_status(uint8_t status)
 {	
 	/* Função que liga ou desliga todo sistema de controle,
-		qdo ligado o motor funciona, qdo desligado o motor não é acionado.
+		qdo ligado o motor funciona, qdo desligado o 
+		motor não é acionado.
 	*/
 
 	if(status == 0)
 	{
 		//if de proteção, o status só pode ser 1 ou 0;
 		my_sys_status.s_respirador = 0;
-                stop_Motor();
+    stop_Motor();
 	}
 	else if(status == 1)
 	{
