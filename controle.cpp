@@ -154,22 +154,23 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
     p_sys_status->s_alarm = ALARM_LIGADO;
   }
   
-  if(aux_pressao_lida > (p_sys_status->s_control.c_pressao_cont + 5)){
-    p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
-  }
-  else if(aux_pressao_lida < (p_sys_status->s_control.c_pressao_cont - 5)) {
-    p_sys_status->s_alarm = ALARM_PRESSAO_BAIXA; 
-  }
-  else
-  {
-    p_sys_status->s_alarm = ALARM_LIGADO;
-  }
+
 /* No modo de operação via volume precisamos realizar uma troca entre inspiração e expiração
     de acordo com a posição do encoder, pois o delta de angulo do encoder, esta diretamente ligado ao 
     volume setado para inspiração do paciênte. Para melhor controle é usado um range no if. */  
 
-  if(posicao_encoder < (p_sys_status->s_control.c_angulo_final) &&  posicao_encoder > 200)
+  if(posicao_encoder < (p_sys_status->s_control.c_angulo_final) &&  posicao_encoder > 200 || aux_pressao_lida > L_PRESSAO_SUP)
   {
+      if(aux_pressao_lida > (p_sys_status->s_control.c_pressao_cont + 5)){
+          p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
+      }
+      else if(aux_pressao_lida < (p_sys_status->s_control.c_pressao_cont - 5)) {
+          p_sys_status->s_alarm = ALARM_PRESSAO_BAIXA; 
+      }
+      else
+      {
+          p_sys_status->s_alarm = ALARM_LIGADO;
+      }
     // o motor inverte rotação, assim usamos um dead time para inversão.  
     p_sys_status->s_control.c_deadTime_Motor = 1;
     p_sys_status->s_control.c_pwm_requerido  = 250;
@@ -221,18 +222,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
     p_sys_status->s_alarm = ALARM_LIGADO;
   }
   
-  if(aux_pressao_lida > (p_sys_status->s_control.c_pressao_cont + 5))
-  {
-    p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
-  }
-  else if(aux_pressao_lida < (p_sys_status->s_control.c_pressao_cont - 5)) 
-  {
-    p_sys_status->s_alarm = ALARM_PRESSAO_BAIXA; 
-  }
-  else
-  {
-    p_sys_status->s_alarm = ALARM_LIGADO;
-  }
+
 /* No modo de operação via pressão precisamos realizar uma troca entre inspiração e expiração
     de acordo com a pressão que é lida no sensor de pressão, se a pressão real alcançar a pressão 
     estipulada para inspiração do paciênte ocorre a troca. Caso o encoder chegue na posição de 
@@ -242,7 +232,19 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
   { 
     //Caso o encoder chegue na posição de volume maxímo um alarme é acionado.
     if(posicao_encoder < 2800) p_sys_status->s_alarm = ALARM_VOLUME_MAX; //PRIORIDADE
-
+    
+    if(aux_pressao_lida > (p_sys_status->s_control.c_pressao_cont + 5))
+    {
+      p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
+    }
+    else if(aux_pressao_lida < (p_sys_status->s_control.c_pressao_cont - 5)) 
+    {
+      p_sys_status->s_alarm = ALARM_PRESSAO_BAIXA; 
+    }
+    else
+    {
+      p_sys_status->s_alarm = ALARM_LIGADO;
+    }
     // o motor inverte rotação, assim usamos um dead time para inversão. 
     p_sys_status->s_control.c_deadTime_Motor = 1;
     p_sys_status->s_control.c_pwm_requerido  = 250;
@@ -421,7 +423,8 @@ uint8_t palpite(uint16_t tempo_inspiratorio_IHM, uint16_t angulo_init, uint16_t 
     }
   }
   return (uint8_t)pwm_raiz;
-}                
+}
+
 //
 //
 //

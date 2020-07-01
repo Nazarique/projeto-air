@@ -21,7 +21,7 @@
     uint8_t compensador(uint16_t tempo_inspiratorio_IHM,
                         uint16_t tempo_inspiratorio, 
                         uint8_t pwm);
-                        
+                                                
     uint8_t palpite(uint16_t tempo_inspiratorio_IHM, 
                     uint16_t angulo_init, 
                     uint16_t angulo_final);                    
