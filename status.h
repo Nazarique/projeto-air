@@ -5,18 +5,16 @@
 extern "C"{
 #endif
 
-    #define    ALARM_DESLIGADO      0//set sys ligado
-    #define    ALARM_LIGADO         1//set sys ligado
+    #define    ALARM_DESLIGADO      0//set sistema desligado
+    #define    ALARM_LIGADO         1//set sistema ligado
     #define    ALARM_PRESSAO_ALTA   2//inspiração 
     #define    ALARM_PRESSAO_BAIXA  3//inspiração
     #define    ALARM_ALTA_PEEP      4//expiração
     #define    ALARM_VAZAMENTO      5//inspiração
     #define    ALARM_VOLUME_MAX     6//inspiração_pressão
-    
 
     #define    MODO_OPERACAO_VOLUME  0     
     #define    MODO_OPERACAO_PRESSAO 7
-
 
     typedef struct 
     {

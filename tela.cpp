@@ -3,7 +3,7 @@
 
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_DB7, LCD_DB6, LCD_DB5, LCD_DB4);
 
-static char estado = '0';
+char estado = '0';
 
 void machine_state()
 {
@@ -51,13 +51,13 @@ void machine_state()
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//inicia
       else if(botao == BTN_VERDE){
-          config_IHM_aux.h_volume = 3451 / 1.85 - (float) p_sys_status->s_control.c_angulo_final / 1.85;        // Quando o botao verde eh apertado
+          config_IHM_aux.h_volume = 3451.0 / 1.85 - (float) p_sys_status->s_control.c_angulo_final / 1.85;        // Quando o botao verde eh apertado
                                                                                       // as variaveis sao salvas 
           config_IHM_aux.h_temp_insp = p_sys_status->s_control.c_tempo_insp_IHM;     // na estrutura auxiliar
                                                                                       // 
-          freq_auxiliar =  60000/(p_sys_status->s_control.c_tempo_exp_cont +          // 
-                                   p_sys_status->s_control.c_tempo_insp_cont +        // A estrutura auxiliar eh o que 
-                                   p_sys_status->s_control.c_tempo_exp_pause);        // possibilita a alteracao de 
+          freq_auxiliar =  60000.0/(float)(p_sys_status->s_control.c_tempo_exp_cont +          // 
+                                           p_sys_status->s_control.c_tempo_insp_cont +        // A estrutura auxiliar eh o que 
+                                           p_sys_status->s_control.c_tempo_exp_pause);        // possibilita a alteracao de 
                                                                                       // dados na interface
           config_IHM_aux.h_freq = freq_auxiliar;        //                            //
           config_IHM_aux.h_prop = (p_sys_status->s_control.c_tempo_exp_ocioso + 550) * 10 / p_sys_status->s_control.c_tempo_insp_IHM;
@@ -404,7 +404,8 @@ void machine_state()
     case D_TELA_INICIAL://operando - inicio
       botao = read_Button();
       config_IHM_aux.h_temp_insp = p_sys_status->s_control.c_tempo_insp_cont;
-      freq_auxiliar =  60000/(p_sys_status->s_control.c_tempo_exp_cont +          // 
+
+      freq_auxiliar =  60000.0/(float)(p_sys_status->s_control.c_tempo_exp_cont +          // 
                          p_sys_status->s_control.c_tempo_insp_cont +        // A estrutura auxiliar eh o que 
                          p_sys_status->s_control.c_tempo_exp_pause);        // possibilita a alteracao de 
                                                                             // dados na interface
@@ -565,21 +566,21 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.setCursor(10, 0);                         //      
       lcd.print("    ");//                          // Limpamos os valores "anteriores"
       lcd.setCursor(10, 0);                         //            e
-      lcd.print(IHM_aux->h_temp_insp/1000);         //
+      lcd.print((uint8_t)(IHM_aux->h_temp_insp/1000));         //
       lcd.print(",");                               // colocamos os valores de 
-      lcd.print((IHM_aux->h_temp_insp%1000)/100);   // tempo insp, frequencia 
+      lcd.print((uint8_t)((IHM_aux->h_temp_insp%1000)/100));   // tempo insp, frequencia 
                                                     //
       lcd.setCursor(11, 1);                         // e -futuramente- pressao
       lcd.print("   ");//                           //
       lcd.setCursor(11, 1);                         //       
-      lcd.print(IHM_aux->h_prop/10);                //
+      lcd.print((uint8_t)(IHM_aux->h_prop/10));                //
       lcd.print(",");                               // 
-      lcd.print(IHM_aux->h_prop%10);                //
+      lcd.print((uint8_t)(IHM_aux->h_prop%10));                //
                                                     //
       lcd.setCursor(14, 2);                         //       
       lcd.print("   ");//                           //
       lcd.setCursor(14, 2);                         //       
-      lcd.print(IHM_aux->h_pressao);                //
+      lcd.print((uint8_t)(IHM_aux->h_pressao));                //
       break;
 
     case D_MENU_VOLUME: //tela volume  
@@ -590,21 +591,21 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.setCursor(11, 0);                          //
       lcd.print("    ");//                           //
       lcd.setCursor(11, 0);                          //
-      lcd.print(IHM_aux->h_volume);                  // Limpam-se os valores setados
+      lcd.print((uint8_t)(IHM_aux->h_volume));                  // Limpam-se os valores setados
                                                      // anteriormente e apos isso
       lcd.setCursor(11, 1);                          // printar os valores de 
       lcd.print("    ");//                           // calibracao
       lcd.setCursor(11, 1);                          //
-      lcd.print(IHM_aux->h_temp_insp/1000);          //
+      lcd.print((uint8_t)(IHM_aux->h_temp_insp/1000));          //
       lcd.print(",");                                //
-      lcd.print((IHM_aux->h_temp_insp%1000)/100);    //
+      lcd.print((uint8_t)((IHM_aux->h_temp_insp%1000)/100));    //
                                                      //
       lcd.setCursor(13, 2);                          //
       lcd.print("   ");//                            //
       lcd.setCursor(13, 2);                          //
-      lcd.print(IHM_aux->h_prop/10);                 //
+      lcd.print((uint8_t)(IHM_aux->h_prop/10));                 //
       lcd.print(",");                                // 
-      lcd.print(IHM_aux->h_prop%10);                 //
+      lcd.print((uint8_t)(IHM_aux->h_prop%10));                 //
       break;        
 
     case D_MENU_PEEP:
@@ -614,14 +615,14 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.setCursor(14, 1);                           // anteriormente e apos isso    
       lcd.print("  ");//                              // printar os valores de        
       lcd.setCursor(14, 1);                           // calibracao                   
-      lcd.print(IHM_aux->h_peep);                     //                              
+      lcd.print((uint8_t)(IHM_aux->h_peep));                     //                              
                                                       //                              
       lcd.setCursor(14, 2);                           //                              
       lcd.print("  ");//                              //                              
       lcd.setCursor(14, 2);                           //                              
       lcd.print(IHM_aux->h_pause_exp/1000);           //                              
       lcd.print(",");                                 //
-      lcd.print((IHM_aux->h_pause_exp%1000)/10);      //                              
+      lcd.print((uint8_t)((IHM_aux->h_pause_exp%1000)/10));      //                              
                                                                                     
       break;                                                                        
                                                                                     
@@ -630,13 +631,13 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.print("  ");
 
       lcd.setCursor(15, 0);                           // não fiz nada aqui   
-      lcd.print(IHM_aux->h_pressao);
+      lcd.print((uint8_t)(IHM_aux->h_pressao));
 
       lcd.setCursor(15, 1);                           // não fiz nada aqui   
-      lcd.print(IHM_aux->h_temp_insp);
+      lcd.print((uint8_t)(IHM_aux->h_temp_insp));
 
       lcd.setCursor(15, 2);                           // não fiz nada aqui   
-      lcd.print(IHM_aux->h_prop);
+      lcd.print((uint8_t)(IHM_aux->h_prop));
       break;
 
     case D_TELA_INICIAL: // tela inicial                                    
@@ -648,14 +649,14 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       if(get_sys_modOperacaoIHM() == 'V'){lcd.print(IHM_aux->h_volume);}  //
                                                       //
       lcd.setCursor(15, 1);                           //
-      lcd.print(IHM_aux->h_temp_insp/1000);//         //
+      lcd.print((uint8_t)(IHM_aux->h_temp_insp/1000));//         //
       lcd.print(",");                                 //
-      lcd.print((IHM_aux->h_temp_insp%1000)/100);     //
+      lcd.print((uint8_t)((IHM_aux->h_temp_insp%1000)/100));     //
                                                       //
       lcd.setCursor(15, 2);                           //    
       lcd.print("   ");
       lcd.setCursor(15, 2);      //    
-      lcd.print(IHM_aux->h_freq);
+      lcd.print((uint8_t)(IHM_aux->h_freq));
       break;      
   }
 }
@@ -791,6 +792,6 @@ void screen_Init()
   screen_static(D_TELA_COLLAB);
   screen_static(estado);
 
-  pinMode(LCD_PWM, OUTPUT);
-  OCR1C = 120; // AJUSTE DA TELA 
+  pinMode(LCD_PWM, INPUT);
+  //OCR1C = 120; // AJUSTE DA TELA 
 }

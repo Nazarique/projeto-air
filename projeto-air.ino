@@ -1,5 +1,5 @@
 #include "bibliotecas.h"
-//12/06
+//12/08
 
 
 void desliga()
@@ -20,16 +20,30 @@ void setup()
   control_init();
   
   pinMode(S_SENSOR_INDUTIVO, INPUT);
-  attachInterrupt(digitalPinToInterrupt(S_SENSOR_INDUTIVO), desliga, FALLING);
+  //attachInterrupt(digitalPinToInterrupt(S_SENSOR_INDUTIVO), desliga, FALLING);
 
-  pinMode(23,OUTPUT);
-  pinMode(25,OUTPUT);
-  pinMode(27,OUTPUT);
-  pinMode(29,OUTPUT);
-  digitalWrite(27,LOW);
+  
+  pinMode(L_LED_AMARELO, OUTPUT);
+  pinMode(L_LED_AZUL, OUTPUT);
+  pinMode(L_LED_VERDE, OUTPUT);
+  pinMode(L_LED_VERMELHO, OUTPUT);
+  
+  digitalWrite(L_LED_AMARELO, HIGH);
+  digitalWrite(L_LED_AZUL, HIGH);
+  digitalWrite(L_LED_VERDE, HIGH);
+  digitalWrite(L_LED_VERMELHO, HIGH);
+
+ // pinMode(B_ALARM_BUZZER, OUTPUT);
+  
+  uint8_t pwm_buzzer = 255;
+  
+  pinMode(B_ALARM_BUZZER, OUTPUT);
+  //digitalWrite(B_ALARM_BUZZER, pwm_buzzer);
+  
 }
 
 void loop() 
 {
-  machine_state();
+ machine_state();
+
 }

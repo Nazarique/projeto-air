@@ -8,12 +8,12 @@
 	#endif
 
 
-	#define			BTN_VERDE	      85
-	#define			BTN_DIREITA	    84
-	#define			BTN_BAIXO	      70
-	#define			BTN_CIMA	      80
-	#define			BTN_VERMELHO	  82
-	#define			BTN_ESQUERDA	  33
+	#define			BTN_VERDE	      'g'
+	#define			BTN_DIREITA	    'd'
+	#define			BTN_BAIXO	      'b'
+	#define			BTN_CIMA	      'c'
+	#define			BTN_VERMELHO	  'r'
+	#define			BTN_ESQUERDA	  'e'
 		
 
 		typedef struct {

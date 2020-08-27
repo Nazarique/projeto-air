@@ -29,11 +29,10 @@ void direct_Motor(uint8_t p, uint8_t duty)
 
 void motor_Init()
 {
-  TCCR1A = 0b10101001; 
+  TCCR1A = 0b10100001; 
   TCCR1B = 0b00001010; 
 
   pinMode(DRIVE_PWM_R, OUTPUT);
-  
   pinMode(DRIVE_PWM_L, OUTPUT);
   pinMode(DRIVE_EN_R, OUTPUT);
   pinMode(DRIVE_EN_L, OUTPUT);

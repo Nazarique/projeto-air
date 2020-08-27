@@ -29,7 +29,7 @@ extern "C"{
 #define     L_PEEP_SUP            25
 #define     L_PEEP_INF            0
 
-#define     L_PRESSAO_SUP     40
+#define     L_PRESSAO_SUP     50
 #define     L_PRESSAO_INF     6
 
 #define     L_PROP_RESP_SUP     30

@@ -140,7 +140,7 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
   p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
   
   cont_time++;
-
+  
 /* teste de vazamento, quando sensor de pressão tem um valor proximo de 48, sabemos
     que sua leitura é a mesma da pressão ambiente, por este motivo, sempre que seu valor estiver dentro 
     da conição do IF sabemos que há algum vazemento */
@@ -159,9 +159,9 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
     de acordo com a posição do encoder, pois o delta de angulo do encoder, esta diretamente ligado ao 
     volume setado para inspiração do paciênte. Para melhor controle é usado um range no if. */  
 
-  if(posicao_encoder < (p_sys_status->s_control.c_angulo_final) &&  posicao_encoder > 200 || aux_pressao_lida > L_PRESSAO_SUP)
+   if(posicao_encoder < (p_sys_status->s_control.c_angulo_final) &&  posicao_encoder > 200 || aux_pressao_lida > L_PRESSAO_SUP)
   {
-      if(aux_pressao_lida > (p_sys_status->s_control.c_pressao_cont + 5)){
+      if(aux_pressao_lida > 40){
           p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
       }
       else if(aux_pressao_lida < (p_sys_status->s_control.c_pressao_cont - 5)) {
@@ -176,7 +176,7 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
     p_sys_status->s_control.c_pwm_requerido  = 250;
     p_sys_status->s_control.c_pwm_atual      = 0; 
     p_sys_status->s_control.c_flag_exp_ocioso= 1;
-    p_sys_status->s_control.c_direcao        = 0;
+    p_sys_status->s_control.c_direcao        = D_ROTACAO_0_DESCIDA;
     p_sys_status->s_control.c_tempo_insp_cont = cont_time;
     cont_time = 0;
     stop_Motor();       
@@ -233,7 +233,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
     //Caso o encoder chegue na posição de volume maxímo um alarme é acionado.
     if(posicao_encoder < 2800) p_sys_status->s_alarm = ALARM_VOLUME_MAX; //PRIORIDADE
     
-    if(aux_pressao_lida > (p_sys_status->s_control.c_pressao_cont + 5))
+    if(aux_pressao_lida > 40)
     {
       p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
     }
@@ -250,7 +250,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
     p_sys_status->s_control.c_pwm_requerido  = 250;
     p_sys_status->s_control.c_pwm_atual      = 0; 
     p_sys_status->s_control.c_flag_exp_ocioso= 1;
-    p_sys_status->s_control.c_direcao        = 0;
+    p_sys_status->s_control.c_direcao        = D_ROTACAO_0_DESCIDA;
     p_sys_status->s_control.c_tempo_insp_cont = cont_time;
     cont_time = 0;
     stop_Motor();       
@@ -283,14 +283,13 @@ void control_Expiracao(system_status_t *p_sys_status)
   cont_time++;
 
   //A condição do if verifica se o tempo de pausa expiratória ja foi contado
-  //E deixa em ativo uma flag para manter a verificação da PEEP  
+  //E deixa em ativo uma flag para manter a verificação da PEEP
   if(cont_time > p_sys_status->s_control.c_tempo_exp_pause && flag_peep)
   {
     //abriu válvula
     digitalWrite(P_VALVULA_PRESSAO_EXP, HIGH);
     flag_peep = 1;
   }
-
   //A condição do if verifica se a pressão atual é menor que a PEEP
   //Caso a pressão estiver menor, a válvula fecha para mantér a PEEP
   if(p_sys_status->s_control.c_pressao_PEEP > aux_pressao_lida && flag_peep){
@@ -313,7 +312,7 @@ void control_Expiracao(system_status_t *p_sys_status)
     // o motor inverte rotação, assim usamos um dead time para inversão. 
     p_sys_status->s_control.c_deadTime_Motor = 1;
     p_sys_status->s_control.c_pwm_atual      = 0;
-    p_sys_status->s_control.c_direcao        = 1;
+    p_sys_status->s_control.c_direcao        = D_ROTACAO_1_SUBIDA;
     p_sys_status->s_control.c_tempo_exp_cont = cont_time;
 
     //se o tempo de inspiração anterior for diferente de zero
@@ -442,17 +441,18 @@ void control_init()
   pinMode(P_VALVULA_PRESSAO_EXP, OUTPUT);
   encoder.begin();
   //pré definições
-    p_sys_status->s_modo_de_oper = MODO_OPERACAO_PRESSAO;
+    p_sys_status->s_modo_de_oper = MODO_OPERACAO_VOLUME;
     
-    p_sys_status->s_control.c_angulo_inicial = 3800;
-    p_sys_status->s_control.c_angulo_final = 2850;
+    p_sys_status->s_control.c_angulo_inicial = 3400;
+    p_sys_status->s_control.c_angulo_final = 2800;
 
-    p_sys_status->s_control.c_pressao_PEEP = 2;
+    p_sys_status->s_control.c_pressao_PEEP = 10;
       
     p_sys_status->s_control.c_tempo_exp_pause = 400;//350~550
-    p_sys_status->s_control.c_tempo_exp_ocioso = 1100;
+    p_sys_status->s_control.c_tempo_exp_ocioso = 1300;
     p_sys_status->s_control.c_tempo_insp_IHM  = 900;
-
+    
+    p_sys_status->s_control.c_pwm_insp = 200;
     //chute colocado na gaveta
     p_sys_status->s_control.c_pwm_insp = palpite(p_sys_status->s_control.c_tempo_insp_IHM,
                                                  p_sys_status->s_control.c_angulo_inicial,

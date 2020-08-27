@@ -29,17 +29,36 @@
 	#define			LCD_PWM						13
 
 	// 				BOTÕES
-    #define         B_bt1                       41
-    #define         B_bt2                       39
-    #define         B_bt3                       37
-    #define         B_bt4                       35
+//prototipo 1
+  
+//    #define         B_bt1                       41 
+//    #define         B_bt2                       39
+//    #define         B_bt3                       37
+//    #define         B_bt4                       35
+//    #define         B_bt5                       33
+//    #define         B_bt6                       31
+
+//prototipo 2
+    #define         B_bt1                       31
+    #define         B_bt2                       35
+    #define         B_bt3                       39
+    #define         B_bt4                       41
     #define         B_bt5                       33
-    #define         B_bt6                       31
+    #define         B_bt6                       37
 
-    #define         P_VALVULA_PRESSAO_EXP		46	
-    #define         P_SENSOR_PRESSAO			0
-    #define         S_SENSOR_INDUTIVO			2
 
+    #define         P_VALVULA_PRESSAO_EXP		    46	
+    #define         P_SENSOR_PRESSAO			      0
+    #define         S_SENSOR_INDUTIVO			      2
+    #define         B_ALARM_BUZZER              3
+
+
+    //LED
+    #define  L_LED_AMARELO                        23
+    #define  L_LED_AZUL                           25
+    #define  L_LED_VERDE                          27
+    #define  L_LED_VERMELHO                       29
+  
 
   #ifdef __cplusplus
   } // extern "C"
