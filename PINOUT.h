@@ -41,8 +41,8 @@
 //prototipo 2
     #define         B_bt1                       31
     #define         B_bt2                       35
-    #define         B_bt3                       39
-    #define         B_bt4                       41
+    #define         B_bt3                       41
+    #define         B_bt4                       39
     #define         B_bt5                       33
     #define         B_bt6                       37
 
@@ -56,8 +56,8 @@
     //LED
     #define  L_LED_AMARELO                        23
     #define  L_LED_AZUL                           25
-    #define  L_LED_VERDE                          27
-    #define  L_LED_VERMELHO                       29
+    #define  L_LED_VERDE                          29
+    #define  L_LED_VERMELHO                       27
   
 
   #ifdef __cplusplus
