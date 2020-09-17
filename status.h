@@ -20,7 +20,7 @@ extern "C"{
     {
         uint16_t c_angulo_final;
         uint16_t c_angulo_inicial;
-        uint16_t c_angulo_encoder;
+        uint32_t c_angulo_encoder;
 
         uint16_t c_tempo_insp_cont;
         uint16_t c_tempo_insp_IHM;

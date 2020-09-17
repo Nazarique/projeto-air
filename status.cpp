@@ -61,7 +61,7 @@ void *set_sys_status(uint8_t status)
 void *set_control_angulo(uint16_t volume_ihm) 
 {
    float angulo = -1.85*volume_ihm + 3451;
-   if(angulo < 2850) angulo = 2850;
+   if(angulo < POSICAO_INF_LIMITE) angulo = POSICAO_INF_LIMITE;
    my_sys_status.s_control.c_angulo_final = (uint16_t) angulo;
 }
 
