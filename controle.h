@@ -6,7 +6,9 @@
   #ifdef __cplusplus
   extern "C"{
   #endif
-    
+
+    #define POSICAO_SUP_LIMITE 1750
+    #define POSICAO_INF_LIMITE 1000
     
     typedef void (*tipoFuncao_p)(system_status_t *p_sys_status);
 
