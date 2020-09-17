@@ -3,7 +3,7 @@
 
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_DB7, LCD_DB6, LCD_DB5, LCD_DB4);
 
-char estado = '0';
+static char estado = '0';
 
 void machine_state()
 {
@@ -20,8 +20,8 @@ void machine_state()
   {
     case D_TELA_CONFIG_0:                   // Menu principal parte 1, configura volume pressao e inicia
       botao = read_Button();     
-      screen_dynamic(&config_IHM_aux, estado, cursor);
       if(!botao) {
+        //screen_dynamic(&config_IHM_aux, estado, cursor);
         break;
       } 
       else if(botao == BTN_CIMA){
@@ -61,7 +61,8 @@ void machine_state()
                                                                                       // dados na interface
           config_IHM_aux.h_freq = freq_auxiliar;        //                            //
           config_IHM_aux.h_prop = (p_sys_status->s_control.c_tempo_exp_ocioso + 550) * 10 / p_sys_status->s_control.c_tempo_insp_IHM;
-          config_IHM_aux.h_pressao = p_sys_status->s_control.c_pressao_cont;          //   
+          config_IHM_aux.h_pressao = p_sys_status->s_control.c_pressao_cont;          // 
+
         switch(cursor)
         {
           case 1:                           //
@@ -84,9 +85,9 @@ void machine_state()
       
     case D_TELA_CONFIG_1:                   // Menu principal parte 2, com configuracao de PEEP calibracao e desligar motor
       botao = read_Button();
-      screen_dynamic(&config_IHM_aux, estado, cursor);
 
       if(!botao) {
+        //screen_dynamic(&config_IHM_aux, estado, cursor);
         break;
       } 
       else if(botao == BTN_CIMA) {
@@ -206,6 +207,7 @@ void machine_state()
         cursor = 1;                   //
         estado = D_TELA_CONFIG_0;     // volta a tela inicial
         screen_static(estado);        //
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//botão verde pressionado 
       break;
 
@@ -269,6 +271,7 @@ void machine_state()
         cursor = 1;//RESET CURSOR       //
         estado = D_TELA_INICIAL;       // Salva valores
         screen_static(estado);          //
+        screen_dynamic(&config_IHM_aux, estado, cursor);
 
         set_sys_modOperacao(MODO_OPERACAO_VOLUME);
         set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
@@ -279,6 +282,7 @@ void machine_state()
         cursor = 1;//RESET CURSOR      //                      
         estado = D_TELA_CONFIG_0;      // volta a tela inicial 
         screen_static(estado);         //                      
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//botão verde pressionado 
       break;
 
@@ -336,6 +340,8 @@ void machine_state()
         cursor = 1;//RESET CURSOR
         estado = D_TELA_CONFIG_0;                       //
         screen_static(estado);                          // Salva valores
+        screen_dynamic(&config_IHM_aux, estado, cursor);
+
         set_control_PEEP(config_IHM_aux.h_peep);        //
         set_control_pause(config_IHM_aux.h_pause_exp);  //
       }//botão verde pressionado 
@@ -343,6 +349,7 @@ void machine_state()
         cursor = 1;//RESET CURSOR           //                      
         estado = D_TELA_CONFIG_0;           // volta a tela inicial 
         screen_static(estado);              //                      
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//botão verde pressionado 
       break;
 
@@ -393,11 +400,13 @@ void machine_state()
         cursor = 1;//RESET CURSOR   // A opcao de calibragem
         estado = D_TELA_CONFIG_0;   // ainda nao esta disponivel
         screen_static(estado);      // mas tem seu espaco aqui
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//botão verde pressionado 
       else if(botao == BTN_VERMELHO) {
         cursor = 1;//RESET CURSOR  //                      
         estado = D_TELA_CONFIG_0;  // volta a tela inicial 
-        screen_static(estado);     //                      
+        screen_static(estado);     //                   
+        screen_dynamic(&config_IHM_aux, estado, cursor);   
       }//botão verde pressionado 
       break;
 
@@ -417,10 +426,12 @@ void machine_state()
       else if(botao == BTN_VERMELHO) {    // [ ] interface bonita para 
         estado = D_TELA_CONFIG_0;         //        volume e pressao
         screen_static(estado);            // [ ] saber o volume com 
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }//config                           //        base no encoder
       else if (botao == BTN_VERDE) {      // 
         estado = D_TELA_INICIAL;          // 
         screen_static(estado);            // 
+        screen_dynamic(&config_IHM_aux, estado, cursor);
         set_sys_status(1);                // 
       }//liga
       break;  
@@ -437,7 +448,7 @@ void screen_static(char p)
   switch(p)
   {
     case D_TELA_CONFIG_0: //Menu controles pagina 1
-      lcd.clear();                                       
+      lcd.clear();                                    
       lcd.setCursor(0, 0);                               
       lcd.print(" AIR --- Controles  ");       // nao tem muito o que comentar
       lcd.setCursor(0, 1);                     // acho que eh mais facil olhar          
@@ -449,7 +460,7 @@ void screen_static(char p)
       break;
 
     case D_TELA_CONFIG_1: //Menu controles pagina 2
-      lcd.clear();                                       
+      lcd.clear();                                     
       lcd.setCursor(0,0);
       lcd.print(" AIR --- Controles  ");
       lcd.setCursor(0,1);
@@ -461,8 +472,7 @@ void screen_static(char p)
       break;    
 
     case D_MENU_PRESSAO:  //tela pressão
-      lcd.clear();                                       
-
+      lcd.clear(); 
       lcd.setCursor(0,0);
       lcd.print("  Insp :  XXX s     ");
       lcd.setCursor(0,1);
@@ -474,8 +484,7 @@ void screen_static(char p)
       break;
 
     case D_MENU_VOLUME: //tela volume
-      lcd.clear();                                       
-
+      lcd.clear();  
       lcd.setCursor(0,0);
       lcd.print("  Volume : XXXXmL   ");
       lcd.setCursor(0,1);
@@ -498,6 +507,7 @@ void screen_static(char p)
 
     case D_MENU_CALIBRA:
       lcd.clear();
+
       lcd.setCursor(0,1);
       lcd.print("  TESTE      :  XX  ");
       lcd.setCursor(0,3);
@@ -788,10 +798,15 @@ void set_IHM_pauseExp(config_t *IHM_aux, uint8_t p)
 ///////////////////////////////////////////////////////////////        
 void screen_Init()
 {
-  lcd.begin(20, 4);
-  screen_static(D_TELA_COLLAB);
-  screen_static(estado);
-
   pinMode(LCD_PWM, INPUT);
   //OCR1C = 120; // AJUSTE DA TELA 
+  
+  lcd.begin(20, 4);
+  screen_static(D_TELA_COLLAB);
+
+  { //configurações para tela inicial
+    screen_static(estado);
+    lcd.setCursor(1,1);    // aqui a gente 
+    lcd.print("~");             // coloca o cursor
+  }
 }
