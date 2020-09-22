@@ -1,6 +1,6 @@
 #include "bibliotecas.h"
 
-button_t flag_button = {0};
+button_t flag_button;
 
 void deadTimeButton_Isr()                                                      
 {
@@ -15,7 +15,7 @@ void deadTimeButton_Isr()
     }
   }
 }
-
+//----------------------------------------------------------------------------------------------------------------
 char detect_Button()
 {
 	char button = 0;
@@ -109,7 +109,7 @@ char detect_Button()
 	} 
 	return button;
 }
-
+//----------------------------------------------------------------------------------------------------------------
 char read_Button()
 {
 	char button = 0;
@@ -120,9 +120,11 @@ char read_Button()
  
 	return button;
 }
-
+//----------------------------------------------------------------------------------------------------------------
 void button_Init()
 {
+	memset(&flag_button, 0, sizeof(button_t));
+	//limpando memória da struct
 	pinMode(B_bt1, INPUT);
 	pinMode(B_bt2, INPUT);
 	pinMode(B_bt3, INPUT);
