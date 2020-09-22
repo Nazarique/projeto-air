@@ -40,6 +40,7 @@ uint8_t rampa(uint8_t pwm, uint8_t pwm_atual)
 // Contadores/set Rampa
 //
 //
+//----------------------------------------------------------------------------------------------------------------
 void set_rampa(control_t *motor)
 {
   /* Função que verifica se houve um deadTime, após a verificação ela aciona
@@ -100,6 +101,7 @@ void set_rampa(control_t *motor)
 // maq. de estados de controle
 //
 //
+//----------------------------------------------------------------------------------------------------------------
 void maqEstados_Control()
 {
   /* Maquina de estados para controle de inspração e expiração, uma 
@@ -125,6 +127,7 @@ void maqEstados_Control()
 // Controle de inspiração no modo volume
 //
 //
+//----------------------------------------------------------------------------------------------------------------
 void control_Inspiracao_volume(system_status_t *p_sys_status)
 {
   /* Maq. de Estados: Inspiração volume
@@ -179,7 +182,7 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
     p_sys_status->s_control.c_pwm_requerido  = 250;
     p_sys_status->s_control.c_pwm_atual      = 0; 
     p_sys_status->s_control.c_flag_exp_ocioso= 1;
-    p_sys_status->s_control.c_direcao        = D_ROTACAO_0_DESCIDA;
+    p_sys_status->s_control.c_direcao        = D_ROTACAO_0_SUBIDA;
     p_sys_status->s_control.c_tempo_insp_cont = cont_time;
     cont_time = 0;
     stop_Motor();       
@@ -194,6 +197,7 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
 // Controle de inspiração no modo pressão
 //
 //
+//----------------------------------------------------------------------------------------------------------------
 void control_Inspiracao_pressao(system_status_t *p_sys_status)
 {
   /* Maq. de Estados: Inspiração pressão
@@ -235,9 +239,9 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
   if(aux_pressao_lida > p_sys_status->s_control.c_pressao_cont ||  posicao_encoder < POSICAO_INF_LIMITE) //2900 É A POSIÇÃO LIMITE NO MOMENTO
   { 
     //Caso o encoder chegue na posição de volume maxímo um alarme é acionado.
-    if(posicao_encoder < 2800) p_sys_status->s_alarm = ALARM_VOLUME_MAX; //PRIORIDADE
+    if(posicao_encoder < POSICAO_SUP_LIMITE) p_sys_status->s_alarm = ALARM_VOLUME_MAX; //PRIORIDADE
     
-    if(aux_pressao_lida > 40)
+    if(aux_pressao_lida > L_PRESSAO_SUP)
     {
       p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
     }
@@ -254,7 +258,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
     p_sys_status->s_control.c_pwm_requerido  = 250;
     p_sys_status->s_control.c_pwm_atual      = 0; 
     p_sys_status->s_control.c_flag_exp_ocioso= 1;
-    p_sys_status->s_control.c_direcao        = D_ROTACAO_0_DESCIDA;//subir
+    p_sys_status->s_control.c_direcao        = D_ROTACAO_0_SUBIDA;//subir
     p_sys_status->s_control.c_tempo_insp_cont = cont_time;
     cont_time = 0;
     stop_Motor();       
@@ -269,6 +273,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
 // Controle de expiração
 //
 //
+//----------------------------------------------------------------------------------------------------------------
 void control_Expiracao(system_status_t *p_sys_status)
 {
   /* Maq. de Estados: Expiração
@@ -317,7 +322,7 @@ void control_Expiracao(system_status_t *p_sys_status)
     // o motor inverte rotação, assim usamos um dead time para inversão. 
     p_sys_status->s_control.c_deadTime_Motor = 1;
     p_sys_status->s_control.c_pwm_atual      = 0;
-    p_sys_status->s_control.c_direcao        = D_ROTACAO_1_SUBIDA;
+    p_sys_status->s_control.c_direcao        = D_ROTACAO_1_DESCIDA;
     p_sys_status->s_control.c_tempo_exp_cont = cont_time;
 
     //se o tempo de inspiração anterior for diferente de zero
@@ -357,6 +362,7 @@ void control_Expiracao(system_status_t *p_sys_status)
 // Compensador
 //
 //
+//----------------------------------------------------------------------------------------------------------------
 uint8_t compensador(uint16_t tempo_inspiratorio_IHM,
                     uint16_t tempo_inspiratorio, uint8_t pwm_atual)
 {
@@ -383,7 +389,7 @@ uint8_t compensador(uint16_t tempo_inspiratorio_IHM,
     pwm = 40;
   }
   
-   return pwm; 
+   return (uint8_t)pwm; 
 }
 //
 //
@@ -391,6 +397,7 @@ uint8_t compensador(uint16_t tempo_inspiratorio_IHM,
 // Palpite
 //
 //
+//----------------------------------------------------------------------------------------------------------------
 uint8_t palpite(uint16_t tempo_inspiratorio_IHM, uint16_t angulo_init, uint16_t angulo_final){
   /*Esta função usa uma equação polinomial de 3° grau para achar o valor mais proximo
       do PWM para ter um tempo de inspiração igual ao que foi iniciado, assim o controle via
@@ -435,40 +442,15 @@ uint8_t palpite(uint16_t tempo_inspiratorio_IHM, uint16_t angulo_init, uint16_t 
 // control_init
 //
 //
+//----------------------------------------------------------------------------------------------------------------
 void control_init()
 {
   /* Função responsavél de iniciar parametros de controle, como PWM,
       posição final e inicial.*/
 
-  system_status_t * p_sys_status;  
-  p_sys_status = get_sys_status();
-
   pinMode(P_VALVULA_PRESSAO_EXP, OUTPUT);
   encoder.begin();
-  //pré definições
-    p_sys_status->s_modo_de_oper = MODO_OPERACAO_PRESSAO;
-    
-    p_sys_status->s_control.c_angulo_inicial = POSICAO_SUP_LIMITE;
-    p_sys_status->s_control.c_angulo_final = 800;
 
-    p_sys_status->s_control.c_pressao_PEEP = 10;
-      
-    p_sys_status->s_control.c_tempo_exp_pause = 400;//350~550
-    p_sys_status->s_control.c_tempo_exp_ocioso = 1300;
-    p_sys_status->s_control.c_tempo_insp_IHM  = 900;
-    
-    p_sys_status->s_control.c_pwm_insp = 200;
-    //chute colocado na gaveta
-    p_sys_status->s_control.c_pwm_insp = palpite(p_sys_status->s_control.c_tempo_insp_IHM,
-                                                 p_sys_status->s_control.c_angulo_inicial,
-                                                 p_sys_status->s_control.c_angulo_final);
-                                                 
-    p_sys_status->s_control.c_pwm_requerido = p_sys_status->s_control.c_pwm_insp;
-    
-    p_sys_status->s_control.c_tempo_exp_ocioso = 550;
-    p_sys_status->s_control.c_tempo_exp_pause = 350;
-    p_sys_status->s_control.c_pressao_cont = 25;
-    
-  //pinteiro de função responsavel pela inversão na maquina de estado para controle
+  //ponteiro de função responsavel pela inversão na maquina de estado para controle
   PonteiroDeFuncao = control_Expiracao;
 }
