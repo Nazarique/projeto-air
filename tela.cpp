@@ -12,16 +12,16 @@ void machine_state()
   static uint8_t cursor = 1;
 
   system_status_t *p_sys_status;
-  config_t config_IHM_aux;
-
   p_sys_status = get_sys_status();
+  
+  static config_t config_IHM_aux = {0};
 
   switch(estado)
   {
     case D_TELA_CONFIG_0:                   // Menu principal parte 1, configura volume pressao e inicia
       botao = read_Button();     
       if(!botao) {
-        //screen_dynamic(&config_IHM_aux, estado, cursor);
+       
         break;
       } 
       else if(botao == BTN_CIMA){
@@ -443,6 +443,7 @@ void machine_state()
 //        Tela Estatica
 //        
 //
+//----------------------------------------------------------------------------------------------------------------
 void screen_static(char p)
 {
   switch(p)
@@ -533,19 +534,17 @@ void screen_static(char p)
       lcd.setCursor(0, 2);                                
       lcd.print(" RESETING.");
 
-      delay(500);                                         
+      delay(100);                                         
       lcd.print(".");
 
-      delay(500);
+      delay(100);
       lcd.print(".");
 
-      delay(500);
+      delay(100);
       lcd.print(".");
 
-      delay(500);
+      delay(100);
       lcd.print(".");
-
-      delay(500);
       break;
   }
 }
@@ -553,7 +552,7 @@ void screen_static(char p)
 //////////////////////////////////////////////////////////////        
 //        Tela Dinamica                                     //
 //////////////////////////////////////////////////////////////        
-
+//----------------------------------------------------------------------------------------------------------------
 void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
 {
   char col = 16;
@@ -673,7 +672,8 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
 
 //////////////////////////////////////////////////////////////////////////////////        
 //        Sets de variaveis, incremento e decremento                            //
-//////////////////////////////////////////////////////////////////////////////////        
+////////////////////////////////////////////////////////////////////////////////// 
+//----------------------------------------------------------------------------------------------------------------       
 void set_IHM_volume(config_t *IHM_aux, uint8_t p)     //seta volume
 {
   switch(p)
@@ -692,7 +692,7 @@ void set_IHM_volume(config_t *IHM_aux, uint8_t p)     //seta volume
         break;
   }
 }
-
+//----------------------------------------------------------------------------------------------------------------
 void set_IHM_peep(config_t *IHM_aux, uint8_t p)     // seta Peep
 {
   switch(p)
@@ -712,7 +712,7 @@ void set_IHM_peep(config_t *IHM_aux, uint8_t p)     // seta Peep
         break;
   }
 }
-
+//----------------------------------------------------------------------------------------------------------------
 void set_IHM_pressao(config_t *IHM_aux, uint8_t p) {
   switch(p)
   {
@@ -731,7 +731,7 @@ void set_IHM_pressao(config_t *IHM_aux, uint8_t p) {
         break;
   }
 }
-
+//----------------------------------------------------------------------------------------------------------------
 void set_IHM_proporcao(config_t *IHM_aux, uint8_t p)
 {
   switch(p)
@@ -751,7 +751,7 @@ void set_IHM_proporcao(config_t *IHM_aux, uint8_t p)
         break;
   }
 }
-
+//----------------------------------------------------------------------------------------------------------------
 void set_IHM_tempInsp(config_t *IHM_aux, uint8_t p)
 {
   switch(p)
@@ -771,7 +771,7 @@ void set_IHM_tempInsp(config_t *IHM_aux, uint8_t p)
         break;
   }
 }
-
+//----------------------------------------------------------------------------------------------------------------
 void set_IHM_pauseExp(config_t *IHM_aux, uint8_t p)
 {
   switch(p)
@@ -791,11 +791,10 @@ void set_IHM_pauseExp(config_t *IHM_aux, uint8_t p)
         break;
   }
 }
-
-
 ///////////////////////////////////////////////////////////////        
 //        Inicializacao                                      //
-///////////////////////////////////////////////////////////////        
+/////////////////////////////////////////////////////////////// 
+//----------------------------------------------------------------------------------------------------------------       
 void screen_Init()
 {
   pinMode(LCD_PWM, INPUT);
