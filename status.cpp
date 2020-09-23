@@ -3,7 +3,7 @@ volatile system_status_t my_sys_status;
 
 system_status_t *get_sys_status()
 {
-	return &my_sys_status;
+  return &my_sys_status;
 }
 //----------------------------------------------------------------------------------------------------------------
 control_t *get_control()
@@ -42,22 +42,22 @@ void *set_sys_modOperacao(uint8_t modo)
 }
 //----------------------------------------------------------------------------------------------------------------
 void *set_sys_status(uint8_t status)
-{	
-	/* Função que liga ou desliga todo sistema de controle,
-		qdo ligado o motor funciona, qdo desligado o 
-		motor não é acionado.
-	*/
+{ 
+  /* Função que liga ou desliga todo sistema de controle,
+    qdo ligado o motor funciona, qdo desligado o 
+    motor não é acionado.
+  */
 
-	if(status == 0)
-	{
-		//if de proteção, o status só pode ser 1 ou 0;
-		my_sys_status.s_respirador = 0;
+  if(status == 0)
+  {
+    //if de proteção, o status só pode ser 1 ou 0;
+    my_sys_status.s_respirador = 0;
     stop_Motor();
-	}
-	else if(status == 1)
-	{
-		my_sys_status.s_respirador = 1;
-	}	
+  }
+  else if(status == 1)
+  {
+    my_sys_status.s_respirador = 1;
+  } 
 }
 //----------------------------------------------------------------------------------------------------------------
 void *set_control_angulo(uint16_t volume_ihm) 
@@ -142,31 +142,26 @@ void *set_control_pressao(uint8_t pressao_ihm)
 //----------------------------------------------------------------------------------------------------------------
 void sys_status_Init()
 {
-  memset(&my_sys_status, 0, sizeof(system_status_t));
+    memset(&my_sys_status, 0, sizeof(system_status_t));
 
     //pré definições
-    my_sys_status->s_modo_de_oper = MODO_OPERACAO_PRESSAO;
-    
-    my_sys_status->s_control.c_angulo_inicial = POSICAO_SUP_LIMITE;
-    my_sys_status->s_control.c_angulo_final = 800;
-
-    my_sys_status->s_control.c_pressao_PEEP = 10;
-      
-    my_sys_status->s_control.c_tempo_exp_pause = 400;//350~550
-    my_sys_status->s_control.c_tempo_exp_ocioso = 1300;
-    my_sys_status->s_control.c_tempo_insp_IHM  = 900;
-    
-    my_sys_status->s_control.c_pwm_insp = 200;
+    my_sys_status.s_modo_de_oper = MODO_OPERACAO_PRESSAO;
+    my_sys_status.s_control.c_angulo_inicial = POSICAO_SUP_LIMITE;
+    my_sys_status.s_control.c_angulo_final = POSICAO_INF_LIMITE;
+    my_sys_status.s_control.c_pressao_PEEP = L_PEEP_INF + 5;
+    my_sys_status.s_control.c_tempo_exp_pause = 400;//350~550
+    my_sys_status.s_control.c_tempo_exp_ocioso = 550;
+    my_sys_status.s_control.c_pwm_insp = L_TEMP_INSP_INF + 100;
+    my_sys_status.s_control.c_tempo_insp_cont = L_TEMP_INSP_INF;
+    my_sys_status.s_control.c_tempo_insp_IHM = L_TEMP_INSP_INF;
     //chute colocado na gaveta
     // my_sys_status->s_control.c_pwm_insp = palpite(my_sys_status->s_control.c_tempo_insp_IHM,
     //                                              my_sys_status->s_control.c_angulo_inicial,
     //                                              my_sys_status->s_control.c_angulo_final);
                                                  
-    my_sys_status->s_control.c_pwm_requerido = my_sys_status->s_control.c_pwm_insp;
-    
-    my_sys_status->s_control.c_tempo_exp_ocioso = 550;
-    my_sys_status->s_control.c_tempo_exp_pause = 350;
-    my_sys_status->s_control.c_pressao_cont = 25;
+    my_sys_status.s_control.c_pwm_requerido = my_sys_status.s_control.c_pwm_insp;
+    my_sys_status.s_control.c_pressao_cont = L_PRESSAO_SUP - 10;
+    my_sys_status.s_control.c_tempo_exp_cont = 1;
     
   //limpando memória da struct
 }
