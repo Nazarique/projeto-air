@@ -1,21 +1,8 @@
 #include "bibliotecas.h"
 
-#define    ALARM_DESLIGADO      0//set sistema desligado
-#define    ALARM_LIGADO         1//set sistema ligado
-#define    ALARM_PRESSAO_ALTA   2//inspiração 
-#define    ALARM_PRESSAO_BAIXA  3//inspiração
-#define    ALARM_ALTA_PEEP      4//expiração
-#define    ALARM_VAZAMENTO      5//inspiração
-#define    ALARM_VOLUME_MAX     6//inspiração_pressão
-
-#define    MODO_OPERACAO_VOLUME  0     
-#define    MODO_OPERACAO_PRESSAO 7
-
-
-uint8_t pwm_buzzer = 255;
-
 void alarmes(){
 
+uint8_t pwm_buzzer = 255;
  
   switch(get_sys_alarm()) {
   
@@ -73,11 +60,12 @@ void alarmes(){
       
   }
 }
+//----------------------------------------------------------------------------------------------------------------       
 void serial()
 {  
-  //digitalWrite(27,!digitalRead(27));
-  
-  data dado = {0};
+  data dado;
+  memset(&dado, 0, sizeof(data));
+
   dado.alarm = get_sys_alarm();
   dado.angulo = get_control_anguloEncoder();
   dado.pressao = (analogRead(P_SENSOR_PRESSAO)-48)*0.1105;
@@ -93,11 +81,11 @@ void serial()
   Serial.println(); 
   
 }
-
+//----------------------------------------------------------------------------------------------------------------       
 ISR(TIMER4_OVF_vect)                                                           
 { 
   TCNT4 = 49536;
-  static uint16_t cont = 300;
+  static uint16_t cont = 300;//contator de 300ms
   deadTimeButton_Isr();
   maqEstados_Control();
   
@@ -108,12 +96,24 @@ ISR(TIMER4_OVF_vect)
   }
   
 }
-
+//----------------------------------------------------------------------------------------------------------------       
 void interrupt4_OVF_Init()
 {  
   TCCR4A = 0x00;                                                               
   TCCR4B = 0x01;                                                               
   TCNT4 = 49536;                                                               
   TIMSK4 = 0x01;          
+
+  pinMode(L_LED_AMARELO, OUTPUT);
+  pinMode(L_LED_AZUL, OUTPUT);
+  pinMode(L_LED_VERDE, OUTPUT);
+  pinMode(L_LED_VERMELHO, OUTPUT);
+  
+  digitalWrite(L_LED_AMARELO, HIGH);
+  digitalWrite(L_LED_AZUL, HIGH);
+  digitalWrite(L_LED_VERDE, HIGH);
+  digitalWrite(L_LED_VERMELHO, HIGH);
+
+  pinMode(B_ALARM_BUZZER, OUTPUT);
   // --- Time counter =  ( ( 2^16 - 49536)   x   (Prescaler=1)  /  16E+6 = 1ms ---                                                     
-}                                                                            //  end ini interrupt
+}//  end init interrupt
