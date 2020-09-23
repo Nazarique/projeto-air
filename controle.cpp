@@ -137,7 +137,7 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
   //variável cont_time responsável por contar o tempo em que a função é exucutada
   static uint32_t cont_time = 0;
   //variável aux para armazenar a posição do encoder
-  unsigned int posicao_encoder = 0;
+  uint16_t posicao_encoder = 0;
   //variável aux para armazenar a pressão lida
   uint16_t aux_pressao_lida = ( (analogRead(P_SENSOR_PRESSAO) -48 ) * 0.1105 );
   
@@ -207,7 +207,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
   //variável cont_time responsável por contar o tempo em que a função é exucutada
   static uint32_t cont_time = 0;
   //variável aux para armazenar a posição do encoder
-  unsigned int posicao_encoder = 0;
+  uint16_t posicao_encoder = 0;
   //variável aux para armazenar a pressão lida
   uint16_t aux_pressao_lida = ( (analogRead(P_SENSOR_PRESSAO) -48 ) * 0.1105 );
   
@@ -283,7 +283,7 @@ void control_Expiracao(system_status_t *p_sys_status)
   //variável cont_time responsável por contar o tempo em que a função é exucutada
   static uint32_t cont_time = 0;
   //variável aux para armazenar a posição do encoder
-  unsigned int posicao_encoder = 0;
+  uint16_t posicao_encoder = 0;
   //variável aux para armazenar a pressão lida
   uint16_t aux_pressao_lida = ( (analogRead(P_SENSOR_PRESSAO) -48 ) * 0.1105 );
 
