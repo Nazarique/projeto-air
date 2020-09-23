@@ -5,6 +5,25 @@ LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_DB7, LCD_DB6, LCD_DB5, LCD_DB4);
 
 static char estado = '0';
 
+config_t get_IHM_default()
+{
+  config_t IHM;
+  memset(&IHM, 0, sizeof(config_t));
+
+  control_t *s_control;
+  s_control = get_control();
+
+  IHM.h_peep = s_control->c_pressao_PEEP;
+  IHM.h_pressao = s_control->c_pressao_cont;
+  IHM.h_prop = L_PROP_RESP_INF;
+  IHM.h_volume = L_VOLUME_SUP;
+  IHM.h_freq = 20;
+  IHM.h_temp_insp = s_control->c_tempo_insp_IHM + s_control->c_tempo_exp_pause;
+  IHM.h_pause_exp = s_control->c_tempo_exp_pause;
+
+  return IHM;
+}
+
 void machine_state()
 {
   char botao = 0;
@@ -14,8 +33,8 @@ void machine_state()
   system_status_t *p_sys_status;
   p_sys_status = get_sys_status();
   
-  static config_t config_IHM_aux = {0};
-
+  static config_t config_IHM_aux = get_IHM_default();
+  // inicia uma variavel do tipo IHM_config zerando a struct e forncendo valores iniciais
   switch(estado)
   {
     case D_TELA_CONFIG_0:                   // Menu principal parte 1, configura volume pressao e inicia
