@@ -376,9 +376,22 @@ uint8_t compensador(uint16_t tempo_inspiratorio_IHM,
   float kp = -0.12;
   uint8_t pwm = 0;
 
-  erro = tempo_inspiratorio_IHM - tempo_inspiratorio;
-    
+  erro = (int16_t)(tempo_inspiratorio_IHM - tempo_inspiratorio);
   pwm = pwm_atual + (kp * erro) + 1;
+
+  //*****TESTE CONTROLADOR PI
+  // sem utilizar ponto flutuante
+  
+  // static int16_t erro_1 = 1;
+  // int16_t erro = 0;
+  // static uint8_t pwm_1 = pwm_atual;
+  // uint8_t pwm = 0;
+  // uint8_t kp = 1;  
+  // uint8_t ki  = 2;  
+
+  //erro = (int16_t)(tempo_inspiratorio_IHM - tempo_inspiratorio);
+  //pwm = (uint8_t)((kp + ki)*erro - (kp*erro_1) + pwm_1);
+  // Controlador PI  em equação a diferenças 
 
   if(pwm > 250)
   {
@@ -388,6 +401,11 @@ uint8_t compensador(uint16_t tempo_inspiratorio_IHM,
   {
     pwm = 40;
   }
+  //*****TESTE CONTROLADOR PI
+
+  //pwm_1 = (uint8_t)pwm;
+  //erro_1 = erro;
+  //aramazena variável anterior
   
    return (uint8_t)pwm; 
 }
