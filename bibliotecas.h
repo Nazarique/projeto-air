@@ -33,7 +33,7 @@
 #define	  D_ROTACAO_1_DESCIDA   1
 
 #define   POSICAO_SUP_LIMITE 1750
-#define   POSICAO_INF_LIMITE 1000
+#define   POSICAO_INF_LIMITE 800
 
 #define	  BTN_VERDE   'g'
 #define	  BTN_DIREITA   'd'
