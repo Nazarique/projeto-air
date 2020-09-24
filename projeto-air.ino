@@ -28,5 +28,9 @@ void setup()
 //----------------------------------------------------------------------------------------------------------------       
 void loop() 
 {
+ static control_t *s_cont;
+ cont = get_control();
+
  machine_state();
+ Serial.println((int16_t)(cont->c_tempo_insp_IHM - cont->c_tempo_insp_cont))
 }
