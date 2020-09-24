@@ -33,7 +33,6 @@ void *set_IHM_default(config_t *IHM)
 void machine_state()
 {
   char botao = 0;
-  float freq_auxiliar = 0;
   static uint8_t cursor = 1;
 
   static config_t config_IHM_aux;
