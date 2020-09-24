@@ -54,8 +54,8 @@ void set_rampa(control_t *motor)
   static uint8_t cont5 = 5;
   static uint8_t rampa_Motor = 0;
 
-//Contador dead time para motor 
-//Este contador mantém o motor desligado na troca de rotação
+  //Contador dead time para motor 
+  //Este contador mantém o motor desligado na troca de rotação
   if(motor->c_deadTime_Motor)
   {
     if(--cont35==0)                                                           
@@ -64,8 +64,8 @@ void set_rampa(control_t *motor)
       motor->c_deadTime_Motor = 0; 
     }
   }
-//Contador para expiração
-//Este contador mantém a válvula de expiração fechada pelo tempo solicitado   
+  //Contador para expiração
+  //Este contador mantém a válvula de expiração fechada pelo tempo solicitado   
   else if(motor->c_flag_exp_ocioso)                                                        
   {
     if(--cont_exp==0)                                                           
@@ -74,8 +74,8 @@ void set_rampa(control_t *motor)
       motor->c_flag_exp_ocioso = 0; 
     }
   }
-//Contador rampa de PWM
-//Este contador incrementa conta o intervalo de tempo para o incremento da rampa para o PWM
+  //Contador rampa de PWM
+  //Este contador incrementa conta o intervalo de tempo para o incremento da rampa para o PWM
   else if(rampa_Motor)
   {
     if(--cont5==0)                                                           
@@ -84,8 +84,8 @@ void set_rampa(control_t *motor)
       rampa_Motor = 0;                                                                                                              
     }
   }
-//Set rampa
-/*  Após a verificação do contador de incremento para rampa, há um aumento no valor do PWM
+  //Set rampa
+  /*  Após a verificação do contador de incremento para rampa, há um aumento no valor do PWM
       até eu valor alcançar o valor requerito */ 
   else if(!rampa_Motor)
   {
@@ -111,9 +111,9 @@ void maqEstados_Control()
   system_status_t * p_sys_status;
   p_sys_status = get_sys_status();
 
-// variável s_respirador é responsável em sinalizar se o sistema está ativo ou não
-// s_respirador == 1, sistema ligado
-// s_respirador == 0, sistema desligado 
+  // variável s_respirador é responsável em sinalizar se o sistema está ativo ou não
+  // s_respirador == 1, sistema ligado
+  // s_respirador == 0, sistema desligado 
   if(p_sys_status->s_respirador)
   {
     //maq. estados de controle...  
@@ -147,7 +147,7 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
   
   cont_time++;
   
-/* teste de vazamento, quando sensor de pressão tem um valor proximo de 48, sabemos
+  /* teste de vazamento, quando sensor de pressão tem um valor proximo de 48, sabemos
     que sua leitura é a mesma da pressão ambiente, por este motivo, sempre que seu valor estiver dentro 
     da conição do IF sabemos que há algum vazemento */
 
@@ -161,12 +161,12 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
   }
   
 
-/* No modo de operação via volume precisamos realizar uma troca entre inspiração e expiração
+  /* No modo de operação via volume precisamos realizar uma troca entre inspiração e expiração
     de acordo com a posição do encoder, pois o delta de angulo do encoder, esta diretamente ligado ao 
     volume setado para inspiração do paciênte. Para melhor controle é usado um range no if. */  
 
    if(posicao_encoder < (p_sys_status->s_control.c_angulo_final) || aux_pressao_lida > L_PRESSAO_SUP)
-  {
+   {
       if(aux_pressao_lida > 40){
           p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
       }
@@ -217,7 +217,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
   
   cont_time++;
 
-/* teste de vazamento, quando sensor de pressão tem um valor proximo de 48, sabemos
+  /* teste de vazamento, quando sensor de pressão tem um valor proximo de 48, sabemos
     que sua leitura é a mesma da pressão ambiente, por este motivo, sempre que seu valor estiver dentro 
     da conição do IF sabemos que há algum vazemento */
 
@@ -231,7 +231,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
   }
   
 
-/* No modo de operação via pressão precisamos realizar uma troca entre inspiração e expiração
+  /* No modo de operação via pressão precisamos realizar uma troca entre inspiração e expiração
     de acordo com a pressão que é lida no sensor de pressão, se a pressão real alcançar a pressão 
     estipulada para inspiração do paciênte ocorre a troca. Caso o encoder chegue na posição de 
     volume maxímo a troca também acontece. */
@@ -323,7 +323,7 @@ void control_Expiracao(system_status_t *p_sys_status)
     p_sys_status->s_control.c_deadTime_Motor = 1;
     p_sys_status->s_control.c_pwm_atual      = 0;
     p_sys_status->s_control.c_direcao        = D_ROTACAO_1_DESCIDA;
-    p_sys_status->s_control.c_tempo_exp_cont = cont_time;
+    p_sys_status->s_control.c_tempo_exp_cont = cont_time - p_sys_status->s_control.c_tempo_exp_pause;
 
     //se o tempo de inspiração anterior for diferente de zero
     //um compensador é usado para setar o pwm requerido de acordo com o tempo de inspiração setado
