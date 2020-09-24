@@ -20,7 +20,8 @@ void *set_IHM_default(config_t *IHM)
   // dados na interface
   IHM->h_freq  = 60000.0/(float)(s_control->c_tempo_exp_cont +         
                                 s_control->c_tempo_insp_cont +        
-                                s_control->c_tempo_exp_pause);                                                               
+                                s_control->c_tempo_exp_pause); 
+                                                                                              
   IHM->h_temp_insp = s_control->c_tempo_insp_IHM + s_control->c_tempo_exp_pause;
   IHM->h_pause_exp = s_control->c_tempo_exp_pause;
 

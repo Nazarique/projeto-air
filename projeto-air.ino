@@ -2,12 +2,12 @@
 
 void desliga()
 {
-  static uint16_t cont_ind = 1000;
+  static uint16_t cont_ind = 5000;
   
   if(--cont_ind==0){
     set_sys_status(0);
     stop_Motor();
-    cont_ind = 1000;
+    cont_ind = 5000;
     Serial.println("sensor");
   }
 }
@@ -28,5 +28,10 @@ void setup()
 //----------------------------------------------------------------------------------------------------------------       
 void loop() 
 {
+ static control_t *s_cont;
+ cont = get_control();
+
  machine_state();
+ Serial.println((int16_t)(cont->c_tempo_insp_IHM - cont->c_tempo_insp_cont))
+
 }
