@@ -5,23 +5,29 @@ LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_DB7, LCD_DB6, LCD_DB5, LCD_DB4);
 
 static char estado = '0';
 
-config_t get_IHM_default()
+void *set_IHM_default(config_t *IHM)
 {
-  config_t IHM;
-  memset(&IHM, 0, sizeof(config_t));
+  memset(IHM, 0, sizeof(config_t));
 
   control_t *s_control;
   s_control = get_control();
 
-  IHM.h_peep = s_control->c_pressao_PEEP;
-  IHM.h_pressao = s_control->c_pressao_cont;
-  IHM.h_prop = L_PROP_RESP_INF;
-  IHM.h_volume = L_VOLUME_SUP;
-  IHM.h_freq = 20;
-  IHM.h_temp_insp = s_control->c_tempo_insp_IHM + s_control->c_tempo_exp_pause;
-  IHM.h_pause_exp = s_control->c_tempo_exp_pause;
+  IHM->h_peep = s_control->c_pressao_PEEP;
+  IHM->h_pressao = s_control->c_pressao_cont;
+  IHM->h_volume = L_VOLUME_SUP;
+  // A estrutura auxiliar eh o que 
+  // possibilita a alteracao de
+  // dados na interface
+  IHM->h_freq  = 60000.0/(float)(s_control->c_tempo_exp_cont +         
+                                s_control->c_tempo_insp_cont +        
+                                s_control->c_tempo_exp_pause);                                                               
+  IHM->h_temp_insp = s_control->c_tempo_insp_IHM + s_control->c_tempo_exp_pause;
+  IHM->h_pause_exp = s_control->c_tempo_exp_pause;
 
-  return IHM;
+  // Quando o botao verde eh apertado
+  // as variaveis sao salvas
+  IHM->h_volume = (3451.0 / 1.85 - (float) s_control->c_angulo_final / 1.85);                                                                          
+  IHM->h_prop = (s_control->c_tempo_exp_ocioso  * 10) /(s_control->c_tempo_insp_IHM + s_control->c_tempo_exp_pause);
 }
 
 void machine_state()
@@ -30,10 +36,9 @@ void machine_state()
   float freq_auxiliar = 0;
   static uint8_t cursor = 1;
 
-  system_status_t *p_sys_status;
-  p_sys_status = get_sys_status();
+  static config_t config_IHM_aux;
+  set_IHM_default(&config_IHM_aux);
   
-  static config_t config_IHM_aux = get_IHM_default();
   // inicia uma variavel do tipo IHM_config zerando a struct e forncendo valores iniciais
   switch(estado)
   {
@@ -70,22 +75,9 @@ void machine_state()
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//inicia
       else if(botao == BTN_VERDE){
-          config_IHM_aux.h_volume = 3451.0 / 1.85 - (float) p_sys_status->s_control.c_angulo_final / 1.85;        // Quando o botao verde eh apertado
-                                                                                      // as variaveis sao salvas 
-          config_IHM_aux.h_temp_insp = p_sys_status->s_control.c_tempo_insp_IHM;     // na estrutura auxiliar
-                                                                                      // 
-          freq_auxiliar =  60000.0/(float)(p_sys_status->s_control.c_tempo_exp_cont +          // 
-                                           p_sys_status->s_control.c_tempo_insp_cont +        // A estrutura auxiliar eh o que 
-                                           p_sys_status->s_control.c_tempo_exp_pause);        // possibilita a alteracao de 
-                                                                                      // dados na interface
-          config_IHM_aux.h_freq = freq_auxiliar;        //                            //
-          config_IHM_aux.h_prop = (p_sys_status->s_control.c_tempo_exp_ocioso + 550) * 10 / p_sys_status->s_control.c_tempo_insp_IHM;
-          config_IHM_aux.h_pressao = p_sys_status->s_control.c_pressao_cont;          // 
-
         switch(cursor)
         {
           case 1:                           //
-            config_IHM_aux.h_temp_insp = p_sys_status->s_control.c_tempo_insp_cont;     // na estrutura auxiliar
             estado = D_TELA_INICIAL;        //
             break;                          // a tela destino eh baseada na opcao 
           case 2:                           // em que o cursor eh setado
@@ -136,8 +128,6 @@ void machine_state()
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//inicia
       else if(botao == BTN_VERDE){
-        config_IHM_aux.h_peep = p_sys_status->s_control.c_pressao_PEEP;
-        config_IHM_aux.h_pause_exp = p_sys_status->s_control.c_tempo_exp_pause;
         switch(cursor){
           case 1:
             estado = D_MENU_PEEP;
@@ -431,13 +421,6 @@ void machine_state()
 
     case D_TELA_INICIAL://operando - inicio
       botao = read_Button();
-      config_IHM_aux.h_temp_insp = p_sys_status->s_control.c_tempo_insp_cont;
-
-      freq_auxiliar =  60000.0/(float)(p_sys_status->s_control.c_tempo_exp_cont +          // 
-                         p_sys_status->s_control.c_tempo_insp_cont +        // A estrutura auxiliar eh o que 
-                         p_sys_status->s_control.c_tempo_exp_pause);        // possibilita a alteracao de 
-                                                                            // dados na interface
-      config_IHM_aux.h_freq = freq_auxiliar;       
       screen_dynamic(&config_IHM_aux, estado, cursor);
       if(!botao) {                        // 
         break;                            // TODO
@@ -698,15 +681,25 @@ void set_IHM_volume(config_t *IHM_aux, uint8_t p)     //seta volume
   switch(p)
   {
     case D_INCREMENTO:  
-        if(IHM_aux->h_volume<L_VOLUME_SUP)
+        if(IHM_aux->h_volume < L_VOLUME_SUP)
         {
           IHM_aux->h_volume+=10;
         }
+        else
+        {
+          //caso aconteça de não estar dentre nenhuma opção
+          break;
+        }
         break;
     case D_DECREMENTO:
-        if(IHM_aux->h_volume>L_VOLUME_INF)
+        if(IHM_aux->h_volume > L_VOLUME_INF)
         {
           IHM_aux->h_volume-=10;
+        }
+        else
+        {
+          //caso aconteça de não estar dentre nenhuma opção
+          break;
         }
         break;
   }
@@ -721,12 +714,22 @@ void set_IHM_peep(config_t *IHM_aux, uint8_t p)     // seta Peep
         {
           IHM_aux->h_peep+=1;
         }
+        else
+        {
+          //caso aconteça de não estar dentre nenhuma opção
+          break;
+        }
         break;
         
     case D_DECREMENTO:
         if(IHM_aux->h_peep>L_PEEP_INF)
         {
           IHM_aux->h_peep-=1;
+        }
+        else
+        {
+          //caso aconteça de não estar dentre nenhuma opção
+          break;
         }
         break;
   }
@@ -740,12 +743,22 @@ void set_IHM_pressao(config_t *IHM_aux, uint8_t p) {
         {
           IHM_aux->h_pressao+=1;
         }
+        else
+        {
+          //caso aconteça de não estar dentre nenhuma opção
+          break;
+        }
         break;
         
     case D_DECREMENTO:
         if(IHM_aux->h_pressao>L_PRESSAO_INF)
         {
           IHM_aux->h_pressao-=1;
+        }
+        else
+        {
+          //caso aconteça de não estar dentre nenhuma opção
+          break;
         }
         break;
   }
@@ -760,12 +773,22 @@ void set_IHM_proporcao(config_t *IHM_aux, uint8_t p)
         {
           IHM_aux->h_prop+=2;
         }
+        else
+        {
+          //caso aconteça de não estar dentre nenhuma opção
+          break;
+        }
         break;
         
     case D_DECREMENTO:
         if(IHM_aux->h_prop>L_PROP_RESP_INF)
         {
           IHM_aux->h_prop-=2;
+        }
+        else
+        {
+          //caso aconteça de não estar dentre nenhuma opção
+          break;
         }
         break;
   }
@@ -780,12 +803,22 @@ void set_IHM_tempInsp(config_t *IHM_aux, uint8_t p)
         {
           IHM_aux->h_temp_insp+=100;
         }
+        else
+        {
+          //caso aconteça de não estar dentre nenhuma opção
+          break;
+        }
         break;
         
     case D_DECREMENTO:
         if(IHM_aux->h_temp_insp>L_TEMP_INSP_INF)
         {
           IHM_aux->h_temp_insp-=100;
+        }
+        else
+        {
+          //caso aconteça de não estar dentre nenhuma opção
+          break;
         }
         break;
   }
@@ -799,6 +832,11 @@ void set_IHM_pauseExp(config_t *IHM_aux, uint8_t p)
         if(IHM_aux->h_pause_exp<L_PAUSE_EXP_SUP)
         {
           IHM_aux->h_pause_exp+=50;                  
+        }
+        else
+        {
+          //caso aconteça de não estar dentre nenhuma opção
+          break;
         }                                             
         break;                                        
                                                      
@@ -806,6 +844,11 @@ void set_IHM_pauseExp(config_t *IHM_aux, uint8_t p)
         if(IHM_aux->h_pause_exp>L_PAUSE_EXP_INF)     
         {                                            
           IHM_aux->h_pause_exp-=50;                  
+        }
+        else
+        {
+          //caso aconteça de não estar dentre nenhuma opção
+          break;
         }
         break;
   }
