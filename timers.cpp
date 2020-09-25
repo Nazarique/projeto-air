@@ -2,9 +2,10 @@
 
 void alarmes(){
 
-uint8_t pwm_buzzer = 255;
- 
-  switch(get_sys_alarm()) {
+  uint8_t pwm_buzzer = 255;
+  uint8_t var = get_sys_alarm();
+  char mod = get_sys_modOperacaoIHM();
+  switch(var) {
   
   case 0:
       digitalWrite(L_LED_VERDE, LOW);
@@ -46,13 +47,11 @@ uint8_t pwm_buzzer = 255;
       digitalWrite(B_ALARM_BUZZER, 0);
     break;
   }
-  switch(get_sys_modOperacaoIHM()){
+  switch(mod){
     case 'P':
       digitalWrite(L_LED_AZUL, HIGH);
       digitalWrite(L_LED_AMARELO, LOW);
       break;
-
-   
    case 'V':
       digitalWrite(L_LED_AMARELO, HIGH);
       digitalWrite(L_LED_AZUL, LOW);
@@ -63,12 +62,12 @@ uint8_t pwm_buzzer = 255;
 //----------------------------------------------------------------------------------------------------------------       
 void serial()
 {  
-  data dado;
+  volatile data dado;
   memset(&dado, 0, sizeof(data));
 
   dado.alarm = get_sys_alarm();
   dado.angulo = get_control_anguloEncoder();
-  dado.pressao = (analogRead(P_SENSOR_PRESSAO)-48)*0.1105;
+  dado.pressao = (int16_t)((analogRead(P_SENSOR_PRESSAO)- 48)*0.1105);
   
   const int capacity = JSON_OBJECT_SIZE(3);//nosso documento Json possui no 3 valores;  
   StaticJsonDocument<capacity> doc;
@@ -89,7 +88,8 @@ ISR(TIMER4_OVF_vect)
   deadTimeButton_Isr();
   maqEstados_Control();
   
-  if(--cont==0){
+  if(--cont==0)
+  {
     serial();
     alarmes();
     cont = 300;

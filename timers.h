@@ -10,7 +10,7 @@ extern "C"{
 
 typedef struct Data{
 
-	float pressao;
+	int16_t pressao;
 	uint16_t angulo;
 	uint8_t alarm;
 } data;
