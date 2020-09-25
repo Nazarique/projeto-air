@@ -1,4 +1,5 @@
 #include "bibliotecas.h"
+
 volatile system_status_t my_sys_status;
 
 system_status_t *get_sys_status()
@@ -87,6 +88,11 @@ void *set_control_tempoInspiratorioIHM(uint16_t tempo_insp)
 {
   uint16_t tempo = 0;
   tempo = (tempo_insp - my_sys_status.s_control.c_tempo_exp_pause);
+  /* Na IHM o valor que é mostrado para p usuario é a 
+    soma do tempo de inpiração + pausa inspiratória, ou seja, o valor mostrado 
+    é o tempo inspiratório. Para configurar este valor, é passado para o 
+    controlador o tempo apenas de inspiração*/
+
   
   if(L_TEMP_INSP_SUP < tempo)
   {
@@ -169,7 +175,7 @@ void sys_status_Init()
     my_sys_status.s_control.c_tempo_exp_cont = 1;
     my_sys_status.s_control.c_tempo_exp_pause = L_PAUSE_EXP_INF;//350~550
     my_sys_status.s_control.c_tempo_exp_ocioso = L_TEMP_EXP_INF;
-    my_sys_status.s_control.c_tempo_insp_cont = L_TEMP_INSP_INF;
+    my_sys_status.s_control.c_tempo_insp_cont = 1;
     my_sys_status.s_control.c_tempo_insp_IHM = L_TEMP_INSP_INF;
     //chute colocado na gaveta
     // my_sys_status->s_control.c_pwm_insp = palpite(my_sys_status->s_control.c_tempo_insp_IHM,
