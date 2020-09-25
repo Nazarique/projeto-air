@@ -425,6 +425,7 @@ void machine_state()
 
     case D_TELA_INICIAL://operando - inicio
       botao = read_Button();
+      screen_dynamic(&config_IHM_aux, estado, cursor);
       if(!botao) {                        // 
         break;                            // TODO
       }                                   // 
@@ -710,17 +711,26 @@ void set_IHM_volume(config_t *IHM_aux, uint8_t p)     //seta volume
 //----------------------------------------------------------------------------------------------------------------
 void set_IHM_peep(config_t *IHM_aux, uint8_t p)     // seta Peep
 {
+  
   switch(p)
-  {
-    case D_INCREMENTO:  
-        if(IHM_aux->h_peep<L_PEEP_SUP)
+  { 
+    case D_INCREMENTO:
+        if(IHM_aux->h_peep + 5 > IHM_aux->h_pressao) 
         {
-          IHM_aux->h_peep+=1;
-        }
+          IHM_aux->h_peep -= 1;
+          break;
+         }  
         else
         {
-          //caso aconteça de não estar dentre nenhuma opção
-          break;
+          if(IHM_aux->h_peep<L_PEEP_SUP)
+          {
+            IHM_aux->h_peep+=1;
+          }
+          else
+          {
+            //caso aconteça de não estar dentre nenhuma opção
+            break;
+          }
         }
         break;
         
@@ -742,7 +752,7 @@ void set_IHM_pressao(config_t *IHM_aux, uint8_t p) {
   switch(p)
   {
     case D_INCREMENTO:  
-        if(IHM_aux->h_pressao<L_PRESSAO_SUP)
+        if(IHM_aux->h_pressao < L_PRESSAO_SUP)
         {
           IHM_aux->h_pressao+=1;
         }
@@ -754,14 +764,22 @@ void set_IHM_pressao(config_t *IHM_aux, uint8_t p) {
         break;
         
     case D_DECREMENTO:
-        if(IHM_aux->h_pressao>L_PRESSAO_INF)
+        if(IHM_aux->h_peep + 5 > IHM_aux->h_pressao) 
         {
-          IHM_aux->h_pressao-=1;
-        }
+          IHM_aux->h_pressao += 1;
+          break;
+         }
         else
         {
-          //caso aconteça de não estar dentre nenhuma opção
-          break;
+          if(IHM_aux->h_pressao>L_PRESSAO_INF)
+          {
+            IHM_aux->h_pressao-=1;
+          }
+          else
+          {
+            //caso aconteça de não estar dentre nenhuma opção
+            break;
+          }
         }
         break;
   }
