@@ -17,7 +17,8 @@ typedef struct {
     uint16_t h_pause_exp;
 } config_t;
 
-void *set_IHM_default();
+config_t get_IHM_default();
+void set_IHM_default(config_t *IHM);
 void machine_state();
 void screen_static(char p);//tela Static
 void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor); 
