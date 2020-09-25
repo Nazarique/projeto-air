@@ -7,7 +7,6 @@
 #include <math.h>
 #include <ArduinoJson.h>
 #include <LiquidCrystal.h>
-#include <AS5045.h>
 #include "status.h"
 #include "PINOUT.h"
 #include "botao.h"
@@ -17,6 +16,9 @@
 #include "controle.h"
 //--------------------------------------------------------------------------------------------------------
 //definições
+#define   S_ENCODER_AS5045  
+//idef usados para a escolha do encoder
+
 #define   ALARM_DESLIGADO   0//set sistema desligado
 #define   ALARM_LIGADO   1//set sistema ligado
 #define   ALARM_PRESSAO_ALTA   2//inspiração 
@@ -86,7 +88,7 @@
 // (INSPIRAÇÃO + PAUSA ) / EXPIRAÇÃO
 
 #define   L_TEMP_INSP_SUP   1800
-#define   L_TEMP_INSP_INF   1000
+#define   L_TEMP_INSP_INF   900
 //tempo limite para inspiração, chamado de temp_insp + temp_pause, 
 //no controle a contagem é feita apenas do tempo onde o motor
 //se encontra dewscendo com a válvula fechada, mas na IHM

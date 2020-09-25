@@ -1,6 +1,16 @@
 ﻿#include "bibliotecas.h"
 
+#ifdef S_ENCODER_AS5045
+#include <AS5045.h>
+
 AS5045 encoder(AS_SPI_SS, AS_SPI_SCK, AS_SPI_MISO);
+#endif
+
+#ifdef S_ENCODER_AS5047
+#include <AS5X47.h>
+
+AS5X47 encoder(AS_SPI_SS, AS_SPI_SCK, AS_SPI_MISO);
+#endif
 
 static bool flag_peep = 1;
 
@@ -19,7 +29,7 @@ uint8_t rampa(uint8_t pwm, uint8_t pwm_atual)
       PWM desejado.*/
 
   uint8_t passo = 10;
-
+  
   if(pwm_atual == pwm)
   {
     return pwm_atual;
@@ -31,8 +41,8 @@ uint8_t rampa(uint8_t pwm, uint8_t pwm_atual)
   else if(pwm_atual < pwm)    
   {
     return (pwm_atual + passo);
-
   }
+  
 }
 //
 //
@@ -209,7 +219,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
   //variável aux para armazenar a posição do encoder
   uint16_t posicao_encoder = 0;
   //variável aux para armazenar a pressão lida
-  uint16_t aux_pressao_lida = ( (analogRead(P_SENSOR_PRESSAO) -48 ) * 0.1105 );
+  uint16_t aux_pressao_lida = (uint16_t)( (analogRead(P_SENSOR_PRESSAO) -48 ) * 0.1105 );
   
   posicao_encoder = encoder.read();
   
@@ -407,7 +417,7 @@ uint8_t compensador(uint16_t tempo_inspiratorio_IHM,
   //erro_1 = erro;
   //aramazena variável anterior
   
-   return (uint8_t)pwm; 
+   return ((uint8_t)pwm); 
 }
 //
 //
