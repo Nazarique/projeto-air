@@ -5,45 +5,51 @@ LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_DB7, LCD_DB6, LCD_DB5, LCD_DB4);
 
 static char estado = '0';
 
-void *set_IHM_default(config_t *IHM)
+config_t get_IHM_default()
 {
-  memset(IHM, 0, sizeof(config_t));
-
+  config_t IHM;
+  memset(&IHM, 0, sizeof(config_t));
+  set_IHM_default(&IHM);
+   
+  return IHM;
+}
+//----------------------------------------------------------------------------------------------------------------
+void set_IHM_default(config_t *IHM)
+{
+  
   control_t *s_control;
   s_control = get_control();
-
+  
   IHM->h_peep = s_control->c_pressao_PEEP;
   IHM->h_pressao = s_control->c_pressao_cont;
-  IHM->h_volume = L_VOLUME_SUP;
   // A estrutura auxiliar eh o que 
   // possibilita a alteracao de
   // dados na interface
-  IHM->h_freq  = 60000.0/(float)(s_control->c_tempo_exp_cont +         
-                                s_control->c_tempo_insp_cont +        
-                                s_control->c_tempo_exp_pause); 
+  IHM->h_freq  = (60000/(s_control->c_tempo_exp_cont +         
+                         s_control->c_tempo_insp_cont +        
+                         s_control->c_tempo_exp_pause)); 
                                                                                               
   IHM->h_temp_insp = s_control->c_tempo_insp_IHM + s_control->c_tempo_exp_pause;
   IHM->h_pause_exp = s_control->c_tempo_exp_pause;
 
   // Quando o botao verde eh apertado
   // as variaveis sao salvas
-  IHM->h_volume = (3451.0 / 1.85 - (float) s_control->c_angulo_final / 1.85);                                                                          
+  IHM->h_volume = 10;//(3451.0 / 1.85 - (float) s_control->c_angulo_final / 1.85);                                                                          
   IHM->h_prop = (s_control->c_tempo_exp_ocioso  * 10) /(s_control->c_tempo_insp_IHM + s_control->c_tempo_exp_pause);
 }
-
+//----------------------------------------------------------------------------------------------------------------
 void machine_state()
 {
   char botao = 0;
   static uint8_t cursor = 1;
 
-  static config_t config_IHM_aux;
-  set_IHM_default(&config_IHM_aux);
+  static config_t config_IHM_aux = get_IHM_default();
   
   // inicia uma variavel do tipo IHM_config zerando a struct e forncendo valores iniciais
   switch(estado)
   {
     case D_TELA_CONFIG_0:                   // Menu principal parte 1, configura volume pressao e inicia
-      botao = read_Button();     
+      botao = read_Button();    
       if(!botao) {
        
         break;
@@ -96,9 +102,7 @@ void machine_state()
       
     case D_TELA_CONFIG_1:                   // Menu principal parte 2, com configuracao de PEEP calibracao e desligar motor
       botao = read_Button();
-
       if(!botao) {
-        //screen_dynamic(&config_IHM_aux, estado, cursor);
         break;
       } 
       else if(botao == BTN_CIMA) {
@@ -421,7 +425,6 @@ void machine_state()
 
     case D_TELA_INICIAL://operando - inicio
       botao = read_Button();
-      screen_dynamic(&config_IHM_aux, estado, cursor);
       if(!botao) {                        // 
         break;                            // TODO
       }                                   // 
