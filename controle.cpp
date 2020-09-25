@@ -9,6 +9,7 @@ AS5045 encoder(AS_SPI_SS, AS_SPI_SCK, AS_SPI_MISO);
 #ifdef S_ENCODER_AS5047
 #include <AS5X47.h>
 
+#define read readAngle
 AS5X47 encoder(AS_SPI_SS, AS_SPI_SCK, AS_SPI_MISO);
 #endif
 
