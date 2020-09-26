@@ -7,6 +7,9 @@
 extern "C"{
 #endif
 
+#define freq(a, b, c) ((uint16_t)(60000./(a + b + c)))
+#define T_insp(a, b) ((uint16_t)(a + b ))
+
 typedef struct {  
     uint8_t  h_peep;
     uint8_t  h_pressao;

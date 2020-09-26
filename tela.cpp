@@ -25,17 +25,17 @@ void set_IHM_default(config_t *IHM)
   // A estrutura auxiliar eh o que 
   // possibilita a alteracao de
   // dados na interface
-  IHM->h_freq  = (60000/(s_control->c_tempo_exp_cont +         
-                         s_control->c_tempo_insp_cont +        
-                         s_control->c_tempo_exp_pause)); 
+  IHM->h_freq  = freq(s_control->c_tempo_exp_cont,         
+                      s_control->c_tempo_insp_cont,
+                      s_control->c_tempo_exp_pause); 
                                                                                               
-  IHM->h_temp_insp = s_control->c_tempo_insp_IHM + s_control->c_tempo_exp_pause;
+  IHM->h_temp_insp = T_insp(s_control->c_tempo_insp_IHM, s_control->c_tempo_exp_pause);
   IHM->h_pause_exp = s_control->c_tempo_exp_pause;
 
   // Quando o botao verde eh apertado
   // as variaveis sao salvas
-  IHM->h_volume = 10;//(3451.0 / 1.85 - (float) s_control->c_angulo_final / 1.85);                                                                          
-  IHM->h_prop = (s_control->c_tempo_exp_ocioso  * 10) /(s_control->c_tempo_insp_IHM + s_control->c_tempo_exp_pause);
+  IHM->h_volume = (uint16_t)(3451.0 / 1.85 - (float) s_control->c_angulo_final / 1.85);                                                                          
+  IHM->h_prop = (uint16_t)((s_control->c_tempo_exp_ocioso  * 10) /(s_control->c_tempo_insp_IHM + s_control->c_tempo_exp_pause));
 }
 //----------------------------------------------------------------------------------------------------------------
 void machine_state()
@@ -77,10 +77,13 @@ void machine_state()
       else if(botao == BTN_DIREITA){ 
         cursor = 1;//RESET CURSOR
         estado = D_TELA_CONFIG_1;
+         set_IHM_default(&IHM);
+
         screen_static(estado);
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//inicia
       else if(botao == BTN_VERDE){
+        set_IHM_default(config_t *IHM);
         switch(cursor)
         {
           case 1:                           //
@@ -128,10 +131,13 @@ void machine_state()
       else if(botao == BTN_ESQUERDA) { 
         cursor = 1;//RESET CURSOR
         estado = D_TELA_CONFIG_0;
+        set_IHM_default(&IHM);
+
         screen_static(estado);
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//inicia
       else if(botao == BTN_VERDE){
+        set_IHM_default(config_t *IHM);
         switch(cursor){
           case 1:
             estado = D_MENU_PEEP;
@@ -211,14 +217,16 @@ void machine_state()
         estado = D_TELA_INICIAL;            // Salvando valores
         screen_static(estado);              // 
 
-        set_sys_modOperacao(MODO_OPERACAO_PRESSAO);
-        set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
-        set_control_tempoExpiratorioIHM(config_IHM_aux.h_prop);
-        set_control_pressao(config_IHM_aux.h_pressao);
+        set_sys_modOperacao((uint8_t)MODO_OPERACAO_PRESSAO);
+        set_control_tempoInspiratorioIHM((uint16_t)config_IHM_aux.h_temp_insp);
+        set_control_tempoExpiratorioIHM((uint8_t)config_IHM_aux.h_prop);
+        set_control_pressao((uint8_t)config_IHM_aux.h_pressao);
       }
       else if(botao == BTN_VERMELHO){
         cursor = 1;                   //
         estado = D_TELA_CONFIG_0;     // volta a tela inicial
+        set_IHM_default(&IHM);
+
         screen_static(estado);        //
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//botão verde pressionado 
@@ -286,14 +294,16 @@ void machine_state()
         screen_static(estado);          //
         screen_dynamic(&config_IHM_aux, estado, cursor);
 
-        set_sys_modOperacao(MODO_OPERACAO_VOLUME);
-        set_control_tempoInspiratorioIHM(config_IHM_aux.h_temp_insp);
-        set_control_tempoExpiratorioIHM(config_IHM_aux.h_prop);
-        set_control_angulo(config_IHM_aux.h_volume);
+        set_sys_modOperacao((uint8_t)MODO_OPERACAO_VOLUME);
+        set_control_tempoInspiratorioIHM((uint16_t)config_IHM_aux.h_temp_insp);
+        set_control_tempoExpiratorioIHM((uint8_t)config_IHM_aux.h_prop);
+        set_control_angulo((uint16_t)config_IHM_aux.h_volume);
       }
       else if(botao == BTN_VERMELHO){
         cursor = 1;//RESET CURSOR      //                      
         estado = D_TELA_CONFIG_0;      // volta a tela inicial 
+        set_IHM_default(&IHM);
+
         screen_static(estado);         //                      
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//botão verde pressionado 
@@ -355,12 +365,14 @@ void machine_state()
         screen_static(estado);                          // Salva valores
         screen_dynamic(&config_IHM_aux, estado, cursor);
 
-        set_control_PEEP(config_IHM_aux.h_peep);        //
-        set_control_pause(config_IHM_aux.h_pause_exp);  //
+        set_control_PEEP((uint8_t)config_IHM_aux.h_peep);        //
+        set_control_pause((uint16_t)config_IHM_aux.h_pause_exp);  //
       }//botão verde pressionado 
       else if(botao == BTN_VERMELHO){
         cursor = 1;//RESET CURSOR           //                      
         estado = D_TELA_CONFIG_0;           // volta a tela inicial 
+        set_IHM_default(&IHM);
+
         screen_static(estado);              //                      
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//botão verde pressionado 
@@ -417,7 +429,9 @@ void machine_state()
       }//botão verde pressionado 
       else if(botao == BTN_VERMELHO) {
         cursor = 1;//RESET CURSOR  //                      
-        estado = D_TELA_CONFIG_0;  // volta a tela inicial 
+        estado = D_TELA_CONFIG_0;  // volta a tela inicial
+        set_IHM_default(&IHM);
+
         screen_static(estado);     //                   
         screen_dynamic(&config_IHM_aux, estado, cursor);   
       }//botão verde pressionado 
@@ -431,6 +445,8 @@ void machine_state()
       }                                   // 
       else if(botao == BTN_VERMELHO) {    // [ ] interface bonita para 
         estado = D_TELA_CONFIG_0;         //        volume e pressao
+        set_IHM_default(&IHM);
+
         screen_static(estado);            // [ ] saber o volume com 
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//config                           //        base no encoder
