@@ -63,25 +63,25 @@ void set_rampa(control_t *motor)
   static uint8_t rampa_Motor = 0;
   static uint8_t flagSetar = 0;
 
-  static system_timer timer_35;
-  static system_timer timer_5;
+  static system_timer timer_dead_time;
+  static system_timer timer_periodo_rampa;
   static system_timer timer_ocioso;
 
   if(!flagSetar)
   {
     flagSetar = 1;
-    timer_set(&timer_35, 350);
-    timer_set(&timer_5, 5);
+    timer_set(&timer_dead_time, T_DEAD_TIME_MOTOR);
+    timer_set(&timer_periodo_rampa, T_PERIODO_DA_RAMPA);
     timer_set(&timer_ocioso, (uint32_t)motor->c_tempo_exp_ocioso);
   }
   //Contador dead time para motor 
   //Este contador mantém o motor desligado na troca de rotação
   if(motor->c_deadTime_Motor)
   {
-    if(timer_expired(&timer_35))
+    if(timer_expired(&timer_dead_time))
     {
       motor->c_deadTime_Motor = 0;
-      timer_reset(&timer_35);
+      timer_reset(&timer_dead_time);
     }
   }
   //Contador para expiração
@@ -98,10 +98,10 @@ void set_rampa(control_t *motor)
   //Este contador incrementa conta o intervalo de tempo para o incremento da rampa para o PWM
   else if(rampa_Motor)
   {
-    if(timer_expired(&timer_5))
+    if(timer_expired(&timer_periodo_rampa))
     {
       rampa_Motor = 0;
-      timer_reset(&timer_5);
+      timer_reset(&timer_periodo_rampa);
     }
   }
   //Set rampa
@@ -158,12 +158,14 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
   uint32_t cont_time = 0;
   //variável aux para armazenar a posição do encoder
   uint16_t posicao_encoder = 0;
+  uint16_t leitura_sensor_pressao = (uint16_t)analogRead(P_SENSOR_PRESSAO);
+
   //variável aux para armazenar a pressão lida
-  uint16_t aux_pressao_lida = ( (analogRead(P_SENSOR_PRESSAO) -48 ) * 0.1105 );
+  uint16_t aux_pressao_lida = (uint16_t)( (leitura_sensor_pressao -48 ) * 0.1105 );
   
-  posicao_encoder = encoder.read();
+  posicao_encoder = (uint16_t)encoder.read();
   
-  p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
+  p_sys_status->s_control.c_angulo_encoder = (uint16_t)posicao_encoder;
   
   cont_time = watch_get(&watch_insp);
   
@@ -171,13 +173,13 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
     que sua leitura é a mesma da pressão ambiente, por este motivo, sempre que seu valor estiver dentro 
     da conição do IF sabemos que há algum vazemento */
 
-  if(analogRead(P_SENSOR_PRESSAO) > 46 && analogRead(P_SENSOR_PRESSAO) < 50)
+  if(leitura_sensor_pressao > 46 && leitura_sensor_pressao < 50)
   {
-    p_sys_status->s_alarm = ALARM_VAZAMENTO;
+    p_sys_status->s_alarm = (uint8_t)ALARM_VAZAMENTO;
   } 
   else
   {
-    p_sys_status->s_alarm = ALARM_LIGADO;
+    p_sys_status->s_alarm = (uint8_t)ALARM_LIGADO;
   }
   
 
@@ -185,17 +187,17 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
     de acordo com a posição do encoder, pois o delta de angulo do encoder, esta diretamente ligado ao 
     volume setado para inspiração do paciênte. Para melhor controle é usado um range no if. */  
 
-   if(posicao_encoder < (p_sys_status->s_control.c_angulo_final) || aux_pressao_lida > L_PRESSAO_SUP)
+   if(posicao_encoder < (uint16_t)(p_sys_status->s_control.c_angulo_final) || aux_pressao_lida > (uint16_t)L_PRESSAO_SUP)
    {
       if(aux_pressao_lida > 40){
-          p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
+          p_sys_status->s_alarm = (uint8_t)ALARM_PRESSAO_ALTA;
       }
-      else if(aux_pressao_lida < (p_sys_status->s_control.c_pressao_cont - 5)) {
-          p_sys_status->s_alarm = ALARM_PRESSAO_BAIXA; 
+      else if(aux_pressao_lida < (uint16_t)(p_sys_status->s_control.c_pressao_cont - 5)) {
+          p_sys_status->s_alarm = (uint8_t)ALARM_PRESSAO_BAIXA; 
       }
       else
       {
-          p_sys_status->s_alarm = ALARM_LIGADO;
+          p_sys_status->s_alarm = (uint8_t)ALARM_LIGADO;
       }
     // o motor inverte rotação, assim usamos um dead time para inversão.  
     p_sys_status->s_control.c_deadTime_Motor = 1;
@@ -229,26 +231,27 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
   uint32_t cont_time = 0;
   //variável aux para armazenar a posição do encoder
   uint16_t posicao_encoder = 0;
+  uint16_t leitura_sensor_pressao = (uint16_t)analogRead(P_SENSOR_PRESSAO);
   //variável aux para armazenar a pressão lida
-  uint16_t aux_pressao_lida = (uint16_t)( (analogRead(P_SENSOR_PRESSAO) -48 ) * 0.1105 );
+  uint16_t aux_pressao_lida = (uint16_t)( (leitura_sensor_pressao-48 ) * 0.1105 );
   
-  posicao_encoder = encoder.read();
+  posicao_encoder = (uint16_t)encoder.read();
   
-  p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
+  p_sys_status->s_control.c_angulo_encoder = (uint16_t)posicao_encoder;
   
   cont_time = watch_get(&watch_insp);
-
+  
   /* teste de vazamento, quando sensor de pressão tem um valor proximo de 48, sabemos
     que sua leitura é a mesma da pressão ambiente, por este motivo, sempre que seu valor estiver dentro 
     da conição do IF sabemos que há algum vazemento */
 
-  if(analogRead(P_SENSOR_PRESSAO) > 46 && analogRead(P_SENSOR_PRESSAO) < 50)
+  if(leitura_sensor_pressao > 46 && leitura_sensor_pressao < 50)
   {
-    p_sys_status->s_alarm = ALARM_VAZAMENTO;
+    p_sys_status->s_alarm = (uint8_t)ALARM_VAZAMENTO;
   } 
   else
   {
-    p_sys_status->s_alarm = ALARM_LIGADO;
+    p_sys_status->s_alarm = (uint8_t)ALARM_LIGADO;
   }
   
 
@@ -257,22 +260,22 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
     estipulada para inspiração do paciênte ocorre a troca. Caso o encoder chegue na posição de 
     volume maxímo a troca também acontece. */
 
-  if(aux_pressao_lida > p_sys_status->s_control.c_pressao_cont ||  posicao_encoder < POSICAO_INF_LIMITE) //2900 É A POSIÇÃO LIMITE NO MOMENTO
+  if(aux_pressao_lida > (uint16_t)p_sys_status->s_control.c_pressao_cont ||  posicao_encoder < (uint16_t)POSICAO_INF_LIMITE) //2900 É A POSIÇÃO LIMITE NO MOMENTO
   { 
     //Caso o encoder chegue na posição de volume maxímo um alarme é acionado.
-    if(posicao_encoder < POSICAO_SUP_LIMITE) p_sys_status->s_alarm = ALARM_VOLUME_MAX; //PRIORIDADE
+    if(posicao_encoder < POSICAO_SUP_LIMITE) p_sys_status->s_alarm = (uint8_t)ALARM_VOLUME_MAX; //PRIORIDADE
     
     if(aux_pressao_lida > L_PRESSAO_SUP)
     {
-      p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
+      p_sys_status->s_alarm = (uint8_t)ALARM_PRESSAO_ALTA;
     }
-    else if(aux_pressao_lida < (p_sys_status->s_control.c_pressao_cont - 5)) 
+    else if(aux_pressao_lida < (uint16_t)(p_sys_status->s_control.c_pressao_cont - 5)) 
     {
-      p_sys_status->s_alarm = ALARM_PRESSAO_BAIXA; 
+      p_sys_status->s_alarm = (uint8_t)ALARM_PRESSAO_BAIXA; 
     }
     else
     {
-      p_sys_status->s_alarm = ALARM_LIGADO;
+      p_sys_status->s_alarm = (uint8_t)ALARM_LIGADO;
     }
     // o motor inverte rotação, assim usamos um dead time para inversão. 
     p_sys_status->s_control.c_deadTime_Motor = 1;
@@ -306,12 +309,13 @@ void control_Expiracao(system_status_t *p_sys_status)
   uint32_t cont_time = 0;
   //variável aux para armazenar a posição do encoder
   uint16_t posicao_encoder = 0;
+  uint16_t leitura_sensor_pressao = (uint16_t)analogRead(P_SENSOR_PRESSAO);
   //variável aux para armazenar a pressão lida
-  uint16_t aux_pressao_lida = ( (analogRead(P_SENSOR_PRESSAO) -48 ) * 0.1105 );
+  uint16_t aux_pressao_lida = (uint16_t)( (leitura_sensor_pressao -48 ) * 0.1105 );
 
-  posicao_encoder = encoder.read();
+  posicao_encoder = (uint16_t)encoder.read();
   
-  p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
+  p_sys_status->s_control.c_angulo_encoder = (uint16_t)posicao_encoder;
   cont_time = watch_get(&watch_exp);
 
   //A condição do if verifica se o tempo de pausa expiratória ja foi contado
@@ -324,7 +328,7 @@ void control_Expiracao(system_status_t *p_sys_status)
   }
   //A condição do if verifica se a pressão atual é menor que a PEEP
   //Caso a pressão estiver menor, a válvula fecha para mantér a PEEP
-  if(p_sys_status->s_control.c_pressao_PEEP > aux_pressao_lida && flag_peep){
+  if((uint16_t)p_sys_status->s_control.c_pressao_PEEP > aux_pressao_lida && flag_peep){
     //fechou válvula
     flag_peep = 0;
     digitalWrite(P_VALVULA_PRESSAO_EXP, LOW);  
@@ -333,13 +337,13 @@ void control_Expiracao(system_status_t *p_sys_status)
        pressão é superior a PEEP estabelecida pela IHM, é porque ocorreu algum problema,
        sendo assim uma flag de alta PEEP é acionada*/
 
-  else if( aux_pressao_lida > (5 + p_sys_status->s_control.c_pressao_PEEP)  && !flag_peep) //PRIORIDADE
+  else if( aux_pressao_lida > (uint16_t)(5 + p_sys_status->s_control.c_pressao_PEEP)  && !flag_peep) //PRIORIDADE
   {
-    p_sys_status->s_alarm =  ALARM_ALTA_PEEP;
+    p_sys_status->s_alarm =  (uint8_t)ALARM_ALTA_PEEP;
   } 
   /* A troca entre expiração e inspiração acontece caso o encoder chegue na posição de inicial */
 
-  if(posicao_encoder > (p_sys_status->s_control.c_angulo_inicial))
+  if(posicao_encoder > (uint16_t)(p_sys_status->s_control.c_angulo_inicial))
   { 
     // o motor inverte rotação, assim usamos um dead time para inversão. 
     p_sys_status->s_control.c_deadTime_Motor = 1;
@@ -351,11 +355,11 @@ void control_Expiracao(system_status_t *p_sys_status)
     //um compensador é usado para setar o pwm requerido de acordo com o tempo de inspiração setado
     if(p_sys_status->s_control.c_tempo_insp_cont != 0)
     {
-      p_sys_status->s_control.c_pwm_insp = compensador(p_sys_status->s_control.c_tempo_insp_IHM,
-                                                       p_sys_status->s_control.c_tempo_insp_cont, 
-                                                       p_sys_status->s_control.c_pwm_insp);
+      p_sys_status->s_control.c_pwm_insp = compensador((uint16_t)p_sys_status->s_control.c_tempo_insp_IHM,
+                                                       (uint16_t)p_sys_status->s_control.c_tempo_insp_cont, 
+                                                       (uint8_t)p_sys_status->s_control.c_pwm_insp);
     }                                                       
-    p_sys_status->s_control.c_pwm_requerido = p_sys_status->s_control.c_pwm_insp;
+    p_sys_status->s_control.c_pwm_requerido = (uint8_t)p_sys_status->s_control.c_pwm_insp;
     
     stop_Motor(); 
 
@@ -364,12 +368,12 @@ void control_Expiracao(system_status_t *p_sys_status)
     flag_peep = 1;
 
     //se o modo de operação setando na IHM for volume a funçãode inspiração é alterada
-    if(p_sys_status->s_modo_de_oper == MODO_OPERACAO_VOLUME) 
+    if(p_sys_status->s_modo_de_oper == (uint8_t)MODO_OPERACAO_VOLUME) 
     {
       PonteiroDeFuncao = control_Inspiracao_volume;
     }
     //se o modo de operação setando na IHM for pressão a função de inspiração é alterada
-    else if(p_sys_status->s_modo_de_oper == MODO_OPERACAO_PRESSAO)
+    else if(p_sys_status->s_modo_de_oper == (uint8_t)MODO_OPERACAO_PRESSAO)
     {
       PonteiroDeFuncao = control_Inspiracao_pressao;
     }  
@@ -399,7 +403,7 @@ uint8_t compensador(uint16_t tempo_inspiratorio_IHM,
   uint8_t pwm = 0;
 
   erro = (int16_t)(tempo_inspiratorio_IHM - tempo_inspiratorio);
-  pwm = pwm_atual + (kp * erro) + 1;
+  pwm = (uint8_t)(pwm_atual + (uint8_t)((kp * (float)erro) + 1));
 
   //*****TESTE CONTROLADOR PI
   // sem utilizar ponto flutuante
@@ -429,7 +433,7 @@ uint8_t compensador(uint16_t tempo_inspiratorio_IHM,
   //erro_1 = erro;
   //aramazena variável anterior
   
-   return ((uint8_t)pwm); 
+   return (uint8_t)pwm; 
 }
 //
 //
