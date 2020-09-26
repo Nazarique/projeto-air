@@ -1,7 +1,7 @@
 #include "bibliotecas.h"
 
-uint8_t flag_control_stat_machine = 0;
-uint32_t global_counter = 0; 
+volatile uint8_t flag_control_stat_machine = 0;
+volatile uint32_t global_counter = 0; 
 
 system_timer watch_insp;
 system_timer watch_exp;
