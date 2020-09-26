@@ -83,7 +83,7 @@ void machine_state()
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//inicia
       else if(botao == BTN_VERDE){
-        set_IHM_default(config_t *IHM);
+        set_IHM_default(&config_IHM_aux);
         switch(cursor)
         {
           case 1:                           //
