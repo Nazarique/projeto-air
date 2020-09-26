@@ -42,7 +42,7 @@ void   sys_status_Init();
 
 uint8_t  get_sys_alarm();
 uint8_t  get_sys_modOperacaoIHM();   
-void  *set_sys_modOperacao(uint8_t modo);
+void *set_sys_modOperacao(uint8_t modo);
 
 control_t *get_control(); 
 uint16_t get_control_anguloEncoder();

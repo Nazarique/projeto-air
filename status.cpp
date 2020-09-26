@@ -37,7 +37,7 @@ uint8_t get_sys_modOperacaoIHM()
 }
 //set função para mudar o modo de operação, no momento tempos volume e pressão
 //----------------------------------------------------------------------------------------------------------------
-void *set_sys_modOperacao(char modo)
+void *set_sys_modOperacao(uint8_t modo)
 {
   my_sys_status.s_modo_de_oper = modo;
 }
