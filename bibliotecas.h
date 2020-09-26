@@ -28,6 +28,16 @@
 #define   ALARM_VOLUME_MAX   6//inspiração_pressão
 //alarmes podem ser encontrados no timer.cpp
 
+#define   T_DEAD_TIME_MOTOR   350     
+#define   T_PERIODO_DA_RAMPA 	5
+#define   T_DEBOUNCE_BOTOES 	5
+//tempo de contadores auxiliares, como no caso debounce para botões e 
+//dead time para motor
+
+#define   T_PERIODO_IHM 		50
+#define   T_PERIODO_SERIAL_ALARM 300
+//periodo de repetição para as funções serial e ihm
+
 #define   MODO_OPERACAO_VOLUME   0     
 #define   MODO_OPERACAO_PRESSAO   7
 //modos de operação de nosso respirador
