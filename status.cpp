@@ -24,20 +24,20 @@ uint16_t get_control_anguloEncoder()
 }
 //get modo de operação, retorna um char para IHM simbolizar qual é o modo de operação 
 //----------------------------------------------------------------------------------------------------------------
-char get_sys_modOperacaoIHM()
+uint8_t get_sys_modOperacaoIHM()
 {
-  if(my_sys_status.s_modo_de_oper == MODO_OPERACAO_VOLUME) 
+  if(my_sys_status.s_modo_de_oper == (uint8_t)MODO_OPERACAO_VOLUME) 
     {
-      return 'V';
+      return (uint8_t)'V';
     }
-    else if(my_sys_status.s_modo_de_oper == MODO_OPERACAO_PRESSAO)
+    else if(my_sys_status.s_modo_de_oper == (uint8_t)MODO_OPERACAO_PRESSAO)
     {
-      return 'P';
+      return (uint8_t)'P';
     }
 }
 //set função para mudar o modo de operação, no momento tempos volume e pressão
 //----------------------------------------------------------------------------------------------------------------
-void *set_sys_modOperacao(uint8_t modo)
+void *set_sys_modOperacao(char modo)
 {
   my_sys_status.s_modo_de_oper = modo;
 }
@@ -165,17 +165,17 @@ void sys_status_Init()
     memset(&my_sys_status, 0, sizeof(system_status_t));
 
     //pré definições
-    my_sys_status.s_modo_de_oper = MODO_OPERACAO_PRESSAO;
+    my_sys_status.s_modo_de_oper = (uint8_t)MODO_OPERACAO_PRESSAO;
     my_sys_status.s_control.c_angulo_inicial = POSICAO_SUP_LIMITE;
     my_sys_status.s_control.c_angulo_final = POSICAO_INF_LIMITE;
     my_sys_status.s_control.c_pressao_PEEP = L_PEEP_INF + 5;
     my_sys_status.s_control.c_pressao_cont = L_PRESSAO_SUP - 10;
     my_sys_status.s_control.c_pwm_insp = 250;
     my_sys_status.s_control.c_pwm_requerido = my_sys_status.s_control.c_pwm_insp;
-    my_sys_status.s_control.c_tempo_exp_cont = 1;
+    my_sys_status.s_control.c_tempo_exp_cont = 0;
     my_sys_status.s_control.c_tempo_exp_pause = L_PAUSE_EXP_INF;//350~550
     my_sys_status.s_control.c_tempo_exp_ocioso = L_TEMP_EXP_INF;
-    my_sys_status.s_control.c_tempo_insp_cont = 1;
+    my_sys_status.s_control.c_tempo_insp_cont = 0;
     my_sys_status.s_control.c_tempo_insp_IHM = L_TEMP_INSP_INF;
     //chute colocado na gaveta
     // my_sys_status->s_control.c_pwm_insp = palpite(my_sys_status->s_control.c_tempo_insp_IHM,
