@@ -4,13 +4,14 @@
 #include <AS5045.h>
 
 AS5045 encoder(AS_SPI_SS, AS_SPI_SCK, AS_SPI_MISO);
+encoder.begin();
 #endif
 
 #ifdef S_ENCODER_AS5047
 #include <AS5X47.h>
 
 #define read readAngle
-AS5X47 encoder(AS_SPI_SS, AS_SPI_SCK, AS_SPI_MISO);
+AS5X47 encoder(AS_SPI_SS);
 #endif
 
 static bool flag_peep = 1;
@@ -493,7 +494,6 @@ void control_init()
       posição final e inicial.*/
 
   pinMode(P_VALVULA_PRESSAO_EXP, OUTPUT);
-  encoder.begin();
 
   //ponteiro de função responsavel pela inversão na maquina de estado para controle
   PonteiroDeFuncao = control_Expiracao;
