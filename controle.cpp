@@ -60,39 +60,48 @@ void set_rampa(control_t *motor)
       rampa e tempo ocioso, o tempo ocioso é o tempo em que de troca de inpiração
       para expiração. */
 
-  static uint16_t cont35 = 350;
-  static uint16_t cont_exp = motor->c_tempo_exp_ocioso;
-  static uint8_t cont5 = 5;
   static uint8_t rampa_Motor = 0;
+  static uint8_t flagSetar = 0;
 
+  static system_timer timer_35;
+  static system_timer timer_5;
+  static system_timer timer_ocioso;
+
+  if(!flagSetar)
+  {
+    flagSetar = 1;
+    timer_set(&timer_35, 350);
+    timer_set(&timer_5, 5);
+    timer_set(&timer_ocioso, (uint32_t)motor->c_tempo_exp_ocioso);
+  }
   //Contador dead time para motor 
   //Este contador mantém o motor desligado na troca de rotação
   if(motor->c_deadTime_Motor)
   {
-    if(--cont35==0)                                                           
-    { 
-      cont35 = 350;                                                            
-      motor->c_deadTime_Motor = 0; 
+    if(timer_expired(&timer_35))
+    {
+      motor->c_deadTime_Motor = 0;
+      timer_reset(&timer_35);
     }
   }
   //Contador para expiração
   //Este contador mantém a válvula de expiração fechada pelo tempo solicitado   
   else if(motor->c_flag_exp_ocioso)                                                        
   {
-    if(--cont_exp==0)                                                           
-    { 
-      cont_exp = motor->c_tempo_exp_ocioso;   //set tempo ocioso após a sua primeira contagem                                                         
+    if(timer_expired(&timer_ocioso))
+    {
       motor->c_flag_exp_ocioso = 0; 
+      timer_set(&timer_ocioso, (uint32_t)motor->c_tempo_exp_ocioso);
     }
   }
   //Contador rampa de PWM
   //Este contador incrementa conta o intervalo de tempo para o incremento da rampa para o PWM
   else if(rampa_Motor)
   {
-    if(--cont5==0)                                                           
-    { 
-      cont5 = 5;                                            
-      rampa_Motor = 0;                                                                                                              
+    if(timer_expired(&timer_5))
+    {
+      rampa_Motor = 0;
+      timer_reset(&timer_5);
     }
   }
   //Set rampa
@@ -146,7 +155,7 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
       de inspiração no modo de volume.
   */
   //variável cont_time responsável por contar o tempo em que a função é exucutada
-  static uint32_t cont_time = 0;
+  uint32_t cont_time = 0;
   //variável aux para armazenar a posição do encoder
   uint16_t posicao_encoder = 0;
   //variável aux para armazenar a pressão lida
@@ -156,7 +165,7 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
   
   p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
   
-  cont_time++;
+  cont_time = watch_get(&watch_insp);
   
   /* teste de vazamento, quando sensor de pressão tem um valor proximo de 48, sabemos
     que sua leitura é a mesma da pressão ambiente, por este motivo, sempre que seu valor estiver dentro 
@@ -194,10 +203,11 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
     p_sys_status->s_control.c_pwm_atual      = 0; 
     p_sys_status->s_control.c_flag_exp_ocioso= 1;
     p_sys_status->s_control.c_direcao        = D_ROTACAO_0_SUBIDA;
-    p_sys_status->s_control.c_tempo_insp_cont = cont_time;
-    cont_time = 0;
+    p_sys_status->s_control.c_tempo_insp_cont = (uint16_t)cont_time;
+
     stop_Motor();       
     PonteiroDeFuncao = control_Expiracao;
+    watch_set(&watch_exp);
   }
   //PWM subindo em rampa
   set_rampa(&p_sys_status->s_control);
@@ -216,7 +226,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
       de inspiração no modo pressão.
   */
   //variável cont_time responsável por contar o tempo em que a função é exucutada
-  static uint32_t cont_time = 0;
+  uint32_t cont_time = 0;
   //variável aux para armazenar a posição do encoder
   uint16_t posicao_encoder = 0;
   //variável aux para armazenar a pressão lida
@@ -226,7 +236,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
   
   p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
   
-  cont_time++;
+  cont_time = watch_get(&watch_insp);
 
   /* teste de vazamento, quando sensor de pressão tem um valor proximo de 48, sabemos
     que sua leitura é a mesma da pressão ambiente, por este motivo, sempre que seu valor estiver dentro 
@@ -270,10 +280,11 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
     p_sys_status->s_control.c_pwm_atual      = 0; 
     p_sys_status->s_control.c_flag_exp_ocioso= 1;
     p_sys_status->s_control.c_direcao        = D_ROTACAO_0_SUBIDA;//subir
-    p_sys_status->s_control.c_tempo_insp_cont = cont_time;
-    cont_time = 0;
+    p_sys_status->s_control.c_tempo_insp_cont = (uint16_t)cont_time;
+
     stop_Motor();       
     PonteiroDeFuncao = control_Expiracao;
+    watch_set(&watch_exp);
   }
   //PWM subindo em rampa
   set_rampa(&p_sys_status->s_control);
@@ -292,7 +303,7 @@ void control_Expiracao(system_status_t *p_sys_status)
       de expiração.
   */
   //variável cont_time responsável por contar o tempo em que a função é exucutada
-  static uint32_t cont_time = 0;
+  uint32_t cont_time = 0;
   //variável aux para armazenar a posição do encoder
   uint16_t posicao_encoder = 0;
   //variável aux para armazenar a pressão lida
@@ -301,11 +312,11 @@ void control_Expiracao(system_status_t *p_sys_status)
   posicao_encoder = encoder.read();
   
   p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
-  cont_time++;
+  cont_time = watch_get(&watch_exp);
 
   //A condição do if verifica se o tempo de pausa expiratória ja foi contado
   //E deixa em ativo uma flag para manter a verificação da PEEP
-  if(cont_time > p_sys_status->s_control.c_tempo_exp_pause && flag_peep)
+  if(cont_time > (uint32_t)p_sys_status->s_control.c_tempo_exp_pause && flag_peep)
   {
     //abriu válvula
     digitalWrite(P_VALVULA_PRESSAO_EXP, HIGH);
@@ -334,7 +345,7 @@ void control_Expiracao(system_status_t *p_sys_status)
     p_sys_status->s_control.c_deadTime_Motor = 1;
     p_sys_status->s_control.c_pwm_atual      = 0;
     p_sys_status->s_control.c_direcao        = D_ROTACAO_1_DESCIDA;
-    p_sys_status->s_control.c_tempo_exp_cont = cont_time - p_sys_status->s_control.c_tempo_exp_pause;
+    p_sys_status->s_control.c_tempo_exp_cont = (uint16_t)(cont_time - (uint32_t)p_sys_status->s_control.c_tempo_exp_pause);
 
     //se o tempo de inspiração anterior for diferente de zero
     //um compensador é usado para setar o pwm requerido de acordo com o tempo de inspiração setado
@@ -345,8 +356,7 @@ void control_Expiracao(system_status_t *p_sys_status)
                                                        p_sys_status->s_control.c_pwm_insp);
     }                                                       
     p_sys_status->s_control.c_pwm_requerido = p_sys_status->s_control.c_pwm_insp;
-
-    cont_time = 0;
+    
     stop_Motor(); 
 
     //fecha válvula para entrar na inspiração 
@@ -363,6 +373,7 @@ void control_Expiracao(system_status_t *p_sys_status)
     {
       PonteiroDeFuncao = control_Inspiracao_pressao;
     }  
+    watch_set(&watch_insp);
   }
   //PWM subindo em rampa
   set_rampa(&p_sys_status->s_control);
@@ -482,4 +493,5 @@ void control_init()
 
   //ponteiro de função responsavel pela inversão na maquina de estado para controle
   PonteiroDeFuncao = control_Expiracao;
+  watch_set(&watch_exp);
 }
