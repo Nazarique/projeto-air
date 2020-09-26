@@ -26,7 +26,6 @@ typedef struct
 } system_timer;
 
 void interrupt4_OVF_Init();
-void serial();
 
 void timer_set(system_timer *timer, uint32_t interval);
 void timer_reset(system_timer *timer);
