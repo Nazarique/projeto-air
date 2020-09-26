@@ -14,13 +14,13 @@ typedef struct {
 	uint8_t b4:1;
 	uint8_t b5:1;
 	uint8_t b6:1;
-	uint8_t deadTime:1;
+	uint8_t debounceTime:1;
 	uint8_t   :1;
 } button_t;
 
 char detect_Button();
 char read_Button();
-void deadTimeButton_Isr();  
+void debounceButton_Isr();  
 void button_Init();
 
 #ifdef __cplusplus
