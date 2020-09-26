@@ -1,6 +1,6 @@
 #include "bibliotecas.h"
 
-volatile uint8_t flag_control_stat_machine = 0;
+uint8_t flag_control_stat_machine = 0;
 volatile uint32_t global_counter = 0; 
 
 system_timer watch_insp;
@@ -54,7 +54,7 @@ ISR(TIMER4_OVF_vect)
 
   global_counter++;
 
-  deadTimeButton_Isr();
+  debounceButton_Isr();
 
   if(!flag_control_stat_machine)
   {

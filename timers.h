@@ -8,10 +8,6 @@
 extern "C"{
 #endif
 
-extern uint8_t flag_control_stat_machine;
-extern system_timer watch_insp;
-extern system_timer watch_exp;
-
 typedef struct Data{
 
 	int16_t pressao;
@@ -24,6 +20,10 @@ typedef struct
 	uint32_t timer_start;
 	uint32_t timer_interval;
 } system_timer;
+
+extern uint8_t flag_control_stat_machine;
+extern system_timer watch_insp;
+extern system_timer watch_exp;
 
 void interrupt4_OVF_Init();
 void timer_set(system_timer *timer, uint32_t interval);
