@@ -77,7 +77,7 @@ void machine_state()
       else if(botao == BTN_DIREITA){ 
         cursor = 1;//RESET CURSOR
         estado = D_TELA_CONFIG_1;
-         set_IHM_default(&IHM);
+         set_IHM_default(&config_IHM_aux);
 
         screen_static(estado);
         screen_dynamic(&config_IHM_aux, estado, cursor);
@@ -131,13 +131,13 @@ void machine_state()
       else if(botao == BTN_ESQUERDA) { 
         cursor = 1;//RESET CURSOR
         estado = D_TELA_CONFIG_0;
-        set_IHM_default(&IHM);
+        set_IHM_default(&config_IHM_aux);
 
         screen_static(estado);
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//inicia
       else if(botao == BTN_VERDE){
-        set_IHM_default(config_t *IHM);
+        set_IHM_default(&config_IHM_aux);
         switch(cursor){
           case 1:
             estado = D_MENU_PEEP;
@@ -225,7 +225,7 @@ void machine_state()
       else if(botao == BTN_VERMELHO){
         cursor = 1;                   //
         estado = D_TELA_CONFIG_0;     // volta a tela inicial
-        set_IHM_default(&IHM);
+        set_IHM_default(&config_IHM_aux);
 
         screen_static(estado);        //
         screen_dynamic(&config_IHM_aux, estado, cursor);
@@ -302,7 +302,7 @@ void machine_state()
       else if(botao == BTN_VERMELHO){
         cursor = 1;//RESET CURSOR      //                      
         estado = D_TELA_CONFIG_0;      // volta a tela inicial 
-        set_IHM_default(&IHM);
+        set_IHM_default(&config_IHM_aux);
 
         screen_static(estado);         //                      
         screen_dynamic(&config_IHM_aux, estado, cursor);
@@ -371,7 +371,7 @@ void machine_state()
       else if(botao == BTN_VERMELHO){
         cursor = 1;//RESET CURSOR           //                      
         estado = D_TELA_CONFIG_0;           // volta a tela inicial 
-        set_IHM_default(&IHM);
+        set_IHM_default(&config_IHM_aux);
 
         screen_static(estado);              //                      
         screen_dynamic(&config_IHM_aux, estado, cursor);
@@ -430,7 +430,7 @@ void machine_state()
       else if(botao == BTN_VERMELHO) {
         cursor = 1;//RESET CURSOR  //                      
         estado = D_TELA_CONFIG_0;  // volta a tela inicial
-        set_IHM_default(&IHM);
+        set_IHM_default(&config_IHM_aux);
 
         screen_static(estado);     //                   
         screen_dynamic(&config_IHM_aux, estado, cursor);   
@@ -445,7 +445,7 @@ void machine_state()
       }                                   // 
       else if(botao == BTN_VERMELHO) {    // [ ] interface bonita para 
         estado = D_TELA_CONFIG_0;         //        volume e pressao
-        set_IHM_default(&IHM);
+        set_IHM_default(&config_IHM_aux);
 
         screen_static(estado);            // [ ] saber o volume com 
         screen_dynamic(&config_IHM_aux, estado, cursor);
