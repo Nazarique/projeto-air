@@ -1,7 +1,7 @@
 #include "bibliotecas.h"
 
-volatile system_timer timer_ihm;
-volatile system_timer timer_serial_alarmes;
+system_timer timer_ihm;
+system_timer timer_serial_alarmes;
 
 void alarmes(){
 
@@ -125,24 +125,24 @@ void setup()
 //----------------------------------------------------------------------------------------------------------------       
 void loop() 
 {
-  if(flag_control_stat_machine)
-  {
+    if(flag_control_stat_machine)
+    {
     maqEstados_Control();
     flag_control_stat_machine = 0;
-  }
+    }
   /* Maquina de estado de controle, com o periodo de operação na faixa de 1ms, com contadores internos com precisão usando "watch_exp/insp"*/
 
-  if(timer_expired(&timer_serial_alarmes))
-  {
-    serial();
-    alarmes();
-    timer_reset(&timer_serial_alarmes);
-  }
-  // Serial e alames, com o periodo de operação na faixa de 300ms
+ if(timer_expired(&timer_serial_alarmes))
+ {
+   //serial();
+   timer_reset(&timer_serial_alarmes);
+ }
+ // Serial e alames, com o periodo de operação na faixa de 300ms
 
  if(timer_expired(&timer_ihm))
  {
     machine_state();
+    alarmes();
     timer_reset(&timer_ihm);
  }
  // Maquina de estado de IHM, com o periodo de operação na faixa de 50ms
