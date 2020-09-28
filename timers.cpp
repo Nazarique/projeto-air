@@ -5,6 +5,10 @@ volatile uint32_t global_counter = 0;
 
 system_timer watch_insp;
 system_timer watch_exp;
+
+system_timer timer_dead_time;
+system_timer timer_periodo_rampa;
+system_timer timer_ocioso;
 //relógios de precisão para contagem dos ciclos de respiração
 
 //----------------------------------------------------------------------------------------------------------------       
@@ -55,6 +59,7 @@ ISR(TIMER4_OVF_vect)
   global_counter++;
 
   debounceButton_Isr();
+  
 
   if(!flag_control_stat_machine)
   {
@@ -72,6 +77,3 @@ void interrupt4_OVF_Init()
 
   // --- Time counter =  ( ( 2^16 - 49536)   x   (Prescaler=1)  /  16E+6 = 1ms ---                                                     
 }//  end init interrupt
-
-
-

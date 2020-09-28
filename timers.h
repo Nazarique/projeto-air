@@ -25,6 +25,10 @@ extern uint8_t flag_control_stat_machine;
 extern system_timer watch_insp;
 extern system_timer watch_exp;
 
+extern system_timer timer_dead_time;
+extern system_timer timer_periodo_rampa;
+extern system_timer timer_ocioso;
+
 void interrupt4_OVF_Init();
 void timer_set(system_timer *timer, uint32_t interval);
 void timer_reset(system_timer *timer);
