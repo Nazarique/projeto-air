@@ -48,7 +48,7 @@ void machine_state()
   // inicia uma variavel do tipo IHM_config zerando a struct e forncendo valores iniciais
   switch(estado)
   {
-    case D_TELA_CONFIG_0:                   // Menu principal parte 1, configura volume pressao e inicia
+    case D_TELA_CONFIG_0:// Menu principal parte 1, configura volume pressao e inicia
       botao = read_Button();    
       if(!botao) {
        
@@ -103,7 +103,7 @@ void machine_state()
       }
       break;
       
-    case D_TELA_CONFIG_1:                   // Menu principal parte 2, com configuracao de PEEP calibracao e desligar motor
+    case D_TELA_CONFIG_1:// Menu principal parte 2, com configuracao de PEEP calibracao e desligar motor
       botao = read_Button();
       if(!botao) {
         break;
@@ -156,7 +156,7 @@ void machine_state()
       }//botão verde pressionado 
       break;
 
-    case D_MENU_PRESSAO:            //Config de pressão
+    case D_MENU_PRESSAO://Config de pressão
       botao = read_Button();        // com ajustes de tempo insp 
                                     // e prop respiratoria
       if(!botao){                             
@@ -217,7 +217,7 @@ void machine_state()
         estado = D_TELA_INICIAL;            // Salvando valores
         screen_static(estado);              // 
 
-        set_sys_modOperacao((uint8_t)MODO_OPERACAO_PRESSAO);
+        set_sys_modOperacao(MODO_OPERACAO_PRESSAO);
         set_control_tempoInspiratorioIHM((uint16_t)config_IHM_aux.h_temp_insp);
         set_control_tempoExpiratorioIHM((uint8_t)config_IHM_aux.h_prop);
         set_control_pressao((uint8_t)config_IHM_aux.h_pressao);
@@ -294,7 +294,7 @@ void machine_state()
         screen_static(estado);          //
         screen_dynamic(&config_IHM_aux, estado, cursor);
 
-        set_sys_modOperacao((uint8_t)MODO_OPERACAO_VOLUME);
+        set_sys_modOperacao(MODO_OPERACAO_VOLUME);
         set_control_tempoInspiratorioIHM((uint16_t)config_IHM_aux.h_temp_insp);
         set_control_tempoExpiratorioIHM((uint8_t)config_IHM_aux.h_prop);
         set_control_angulo((uint16_t)config_IHM_aux.h_volume);
@@ -445,6 +445,7 @@ void machine_state()
       }                                   // 
       else if(botao == BTN_VERMELHO) {    // [ ] interface bonita para 
         estado = D_TELA_CONFIG_0;         //        volume e pressao
+        cursor = 1;
         set_IHM_default(&config_IHM_aux);
 
         screen_static(estado);            // [ ] saber o volume com 
@@ -599,7 +600,7 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.setCursor(10, 0);                         //            e
       lcd.print((uint8_t)(IHM_aux->h_temp_insp/1000));         //
       lcd.print(",");                               // colocamos os valores de 
-      lcd.print((uint8_t)((IHM_aux->h_temp_insp%1000)/100));   // tempo insp, frequencia 
+      lcd.print((uint8_t)((float)(IHM_aux->h_temp_insp%1000)/100));   // tempo insp, frequencia 
                                                     //
       lcd.setCursor(11, 1);                         // e -futuramente- pressao
       lcd.print("   ");//                           //
@@ -629,7 +630,7 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.setCursor(11, 1);                          //
       lcd.print((uint8_t)(IHM_aux->h_temp_insp/1000));          //
       lcd.print(",");                                //
-      lcd.print((uint8_t)((IHM_aux->h_temp_insp%1000)/100));    //
+      lcd.print((uint8_t)((float)(IHM_aux->h_temp_insp%1000)/100));    //
                                                      //
       lcd.setCursor(13, 2);                          //
       lcd.print("   ");//                            //
@@ -651,9 +652,9 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.setCursor(14, 2);                           //                              
       lcd.print("  ");//                              //                              
       lcd.setCursor(14, 2);                           //                              
-      lcd.print(IHM_aux->h_pause_exp/1000);           //                              
+      lcd.print((uint8_t)(IHM_aux->h_pause_exp/1000);           //                              
       lcd.print(",");                                 //
-      lcd.print((uint8_t)((IHM_aux->h_pause_exp%1000)/10));      //                              
+      lcd.print((uint8_t)((float)(IHM_aux->h_pause_exp%1000)/10));      //                              
                                                                                     
       break;                                                                        
                                                                                     
@@ -676,13 +677,13 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.print(get_sys_modOperacaoIHM());                 // TODO
                                                       //  [ ] uma tela inicial decente
       lcd.setCursor(15, 0);                           //  que entenda quando eh volume e  
-      if(get_sys_modOperacaoIHM() == 'P'){lcd.print(IHM_aux->h_pressao);} //   pressao
-      if(get_sys_modOperacaoIHM() == 'V'){lcd.print(IHM_aux->h_volume);}  //
+      if(get_sys_modOperacaoIHM() == 'P'){lcd.print((char)IHM_aux->h_pressao);} //   pressao
+      if(get_sys_modOperacaoIHM() == 'V'){lcd.print((char)IHM_aux->h_volume);}  //
                                                       //
       lcd.setCursor(15, 1);                           //
       lcd.print((uint8_t)(IHM_aux->h_temp_insp/1000));//         //
       lcd.print(",");                                 //
-      lcd.print((uint8_t)((IHM_aux->h_temp_insp%1000)/100));     //
+      lcd.print((uint8_t)((float)(IHM_aux->h_temp_insp%1000)/100));     //
                                                       //
       lcd.setCursor(15, 2);                           //    
       lcd.print("   ");
@@ -764,7 +765,8 @@ void set_IHM_peep(config_t *IHM_aux, uint8_t p)     // seta Peep
   }
 }
 //----------------------------------------------------------------------------------------------------------------
-void set_IHM_pressao(config_t *IHM_aux, uint8_t p) {
+void set_IHM_pressao(config_t *IHM_aux, uint8_t p) 
+{
   switch(p)
   {
     case D_INCREMENTO:  
@@ -784,7 +786,7 @@ void set_IHM_pressao(config_t *IHM_aux, uint8_t p) {
         {
           IHM_aux->h_pressao += 1;
           break;
-         }
+        }
         else
         {
           if(IHM_aux->h_pressao>L_PRESSAO_INF)
