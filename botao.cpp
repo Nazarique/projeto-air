@@ -1,17 +1,17 @@
 #include "bibliotecas.h"
 
-button_t flag_button;
+volatile button_t flag_button;
 
-void deadTimeButton_Isr()                                                      
+void debounceButton_Isr()                                                      
 {
   static unsigned char cont5 = 5;                                                      
 
-  if(flag_button.deadTime)                                                        
+  if(flag_button.debounceTime)                                                        
   {
     if(--cont5==0)                                                           
     { 
     	cont5 = 5;                                                            
-    	flag_button.deadTime = 0;                                                                                                              
+    	flag_button.debounceTime = 0;                                                                                                              
     }
   }
 }
@@ -26,12 +26,12 @@ char detect_Button()
 		{ 
 			flag_button.b1=0;
 			button = BTN_VERDE; 
-			flag_button.deadTime=1;
+			flag_button.debounceTime=1;
 		}	
 		else
 		{
 			flag_button.b1=1;
-			flag_button.deadTime=1; 
+			flag_button.debounceTime=1; 
 		} 
 	} 
 	else if(digitalRead(B_bt2)!=flag_button.b2)
@@ -40,12 +40,12 @@ char detect_Button()
 		{ 
 			flag_button.b2=0;	
 			button = BTN_DIREITA; 
-			flag_button.deadTime=1; 
+			flag_button.debounceTime=1; 
 		}	
 		else
 		{		 		
 			flag_button.b2=1;	
-			flag_button.deadTime=1; 
+			flag_button.debounceTime=1; 
 		} 
 	} 
   else if(digitalRead(B_bt3)!=flag_button.b3)
@@ -54,12 +54,12 @@ char detect_Button()
 		{ 
 			flag_button.b3=0;	
 			button = BTN_BAIXO; 
-			flag_button.deadTime=1; 
+			flag_button.debounceTime=1; 
 		}	
 		else
 		{		 		
 			flag_button.b3=1;	
-			flag_button.deadTime=1; 
+			flag_button.debounceTime=1; 
 		} 
 	} 
 
@@ -69,12 +69,12 @@ char detect_Button()
 		{ 
 			flag_button.b4=0;	
 			button = BTN_CIMA; 
-			flag_button.deadTime=1; 
+			flag_button.debounceTime=1; 
 		}	
 		else
 		{		 		
 			flag_button.b4=1;	
-			flag_button.deadTime=1; 
+			flag_button.debounceTime=1; 
 		} 
 	} 
 
@@ -84,12 +84,12 @@ char detect_Button()
 		{ 
 			flag_button.b5=0;	
 			button = BTN_VERMELHO; 
-			flag_button.deadTime=1; 
+			flag_button.debounceTime=1; 
 		}	
 		else
 		{		 		
 			flag_button.b5=1;	
-			flag_button.deadTime=1; 
+			flag_button.debounceTime=1; 
 		} 
 	} 
 
@@ -99,12 +99,12 @@ char detect_Button()
 		{ 
 			flag_button.b6=0;	
 			button = BTN_ESQUERDA; 
-			flag_button.deadTime=1; 
+			flag_button.debounceTime=1; 
 		}	
 		else
 		{		 		
 			flag_button.b6=1;	
-			flag_button.deadTime=1; 
+			flag_button.debounceTime=1; 
 		} 
 	} 
 	return button;
@@ -113,7 +113,7 @@ char detect_Button()
 char read_Button()
 {
 	char button = 0;
-	if(!flag_button.deadTime)
+	if(!flag_button.debounceTime)
 	{
 	  button = detect_Button();
 	}

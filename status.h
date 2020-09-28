@@ -32,27 +32,26 @@ typedef struct {
 typedef struct {
   uint8_t   s_respirador;
   uint8_t   s_alarm;
-  uint8_t   s_modo_de_oper;
+  char   s_modo_de_oper;
   control_t s_control;
 } system_status_t;
 
 system_status_t *get_sys_status();
-control_t *get_control(); 
+void  *set_sys_status(uint8_t status);
+void   sys_status_Init();
 
 uint8_t  get_sys_alarm();
-uint16_t get_control_anguloEncoder();
+char  get_sys_modOperacaoIHM();   
+void *set_sys_modOperacao(char modo);
 
-char  get_sys_modOperacaoIHM();
-void  *set_sys_status(uint8_t status);
-void  *set_sys_modOperacao(uint8_t modo);
-void  *set_sys_status(uint8_t status);
+control_t *get_control(); 
+uint16_t get_control_anguloEncoder();
 void  *set_control_angulo(uint16_t angulo);
 void  *set_control_PEEP(uint8_t peep);
 void  *set_control_tempoInspiratorioIHM(uint16_t tempo_insp);
 void  *set_control_tempoExpiratorioIHM(uint8_t proporcao);
 void  *set_control_pause(uint16_t delay);
 void  *set_control_pressao(uint8_t pressao_ihm);
-void   sys_status_Init();
 
 #ifdef __cplusplus
 } // extern "C"

@@ -10,7 +10,7 @@ extern "C"{
 typedef void (*tipoFuncao_p)(system_status_t *p_sys_status);
 
 uint8_t rampa(uint8_t pwm, uint8_t pwm_atual);
-void set_rampa();
+void set_rampa(control_t *motor);
 void maqEstados_Control();
 void control_Inspiracao_volume(system_status_t *p_sys_status);
 void control_Inspiracao_pressao(system_status_t *p_sys_status);

@@ -7,6 +7,9 @@
 extern "C"{
 #endif
 
+#define freq(a, b, c) ((uint16_t)(60000./(a + b + c)))
+#define T_insp(a, b) ((uint16_t)(a + b ))
+
 typedef struct {  
     uint8_t  h_peep;
     uint8_t  h_pressao;
@@ -18,6 +21,7 @@ typedef struct {
 } config_t;
 
 config_t get_IHM_default();
+void set_IHM_default(config_t *IHM);
 void machine_state();
 void screen_static(char p);//tela Static
 void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor); 

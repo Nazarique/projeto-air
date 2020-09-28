@@ -1,4 +1,5 @@
 #include "bibliotecas.h"
+
 volatile system_status_t my_sys_status;
 
 system_status_t *get_sys_status()
@@ -36,7 +37,7 @@ char get_sys_modOperacaoIHM()
 }
 //set função para mudar o modo de operação, no momento tempos volume e pressão
 //----------------------------------------------------------------------------------------------------------------
-void *set_sys_modOperacao(uint8_t modo)
+void *set_sys_modOperacao(char modo)
 {
   my_sys_status.s_modo_de_oper = modo;
 }
@@ -85,27 +86,46 @@ void *set_control_PEEP(uint8_t peep)
 //----------------------------------------------------------------------------------------------------------------
 void *set_control_tempoInspiratorioIHM(uint16_t tempo_insp)
 {
-  if(L_TEMP_INSP_SUP < tempo_insp)
+  uint16_t tempo = 0;
+  tempo = (tempo_insp - my_sys_status.s_control.c_tempo_exp_pause);
+  /* Na IHM o valor que é mostrado para p usuario é a 
+    soma do tempo de inpiração + pausa inspiratória, ou seja, o valor mostrado 
+    é o tempo inspiratório. Para configurar este valor, é passado para o 
+    controlador o tempo apenas de inspiração*/
+
+  
+  if(L_TEMP_INSP_SUP < tempo)
   {
     my_sys_status.s_control.c_tempo_insp_IHM = L_TEMP_INSP_SUP;
   }
-  else if(L_TEMP_INSP_INF > tempo_insp)
+  else if(L_TEMP_INSP_INF > tempo)
   {
      my_sys_status.s_control.c_tempo_insp_IHM = L_TEMP_INSP_INF;
   }
   else
   {
-    my_sys_status.s_control.c_tempo_insp_IHM = tempo_insp;
+    my_sys_status.s_control.c_tempo_insp_IHM = tempo;
   }
 }
 //----------------------------------------------------------------------------------------------------------------
 void *set_control_tempoExpiratorioIHM(uint8_t proporcao) //  proporcao seria 10 (1,0), 15 (1,5)
 {                                                        //
-  float provisorio;
-  provisorio = my_sys_status.s_control.c_tempo_insp_IHM * proporcao / 10 - 550;
+  uint16_t provisorio = 0;
+  provisorio = my_sys_status.s_control.c_tempo_insp_IHM * proporcao / 10;
   
-  if(provisorio < 0) provisorio = 0;
+  if(L_TEMP_EXP_SUP < provisorio)
+  {
+    my_sys_status.s_control.c_tempo_exp_ocioso = L_TEMP_EXP_SUP;
+  }
+  else if(L_TEMP_EXP_INF > provisorio)
+  {
+    my_sys_status.s_control.c_tempo_exp_ocioso = L_TEMP_EXP_INF;
+  }
+  else
+  {
     my_sys_status.s_control.c_tempo_exp_ocioso = provisorio;
+  }
+  
 }
 //----------------------------------------------------------------------------------------------------------------
 void *set_control_pause(uint16_t delay)
@@ -145,23 +165,24 @@ void sys_status_Init()
     memset(&my_sys_status, 0, sizeof(system_status_t));
 
     //pré definições
-    my_sys_status.s_modo_de_oper = MODO_OPERACAO_PRESSAO;
+    my_sys_status.s_modo_de_oper = (uint8_t)MODO_OPERACAO_PRESSAO;
     my_sys_status.s_control.c_angulo_inicial = POSICAO_SUP_LIMITE;
     my_sys_status.s_control.c_angulo_final = POSICAO_INF_LIMITE;
     my_sys_status.s_control.c_pressao_PEEP = L_PEEP_INF + 5;
-    my_sys_status.s_control.c_tempo_exp_pause = 400;//350~550
-    my_sys_status.s_control.c_tempo_exp_ocioso = 550;
-    my_sys_status.s_control.c_pwm_insp = L_TEMP_INSP_INF + 100;
-    my_sys_status.s_control.c_tempo_insp_cont = L_TEMP_INSP_INF;
+    my_sys_status.s_control.c_pressao_cont = L_PRESSAO_SUP - 20;
+    my_sys_status.s_control.c_pwm_insp = 250;
+    my_sys_status.s_control.c_pwm_requerido = my_sys_status.s_control.c_pwm_insp;
+    my_sys_status.s_control.c_tempo_exp_cont = 1;
+    my_sys_status.s_control.c_tempo_exp_pause = L_PAUSE_EXP_INF;//350~550
+    my_sys_status.s_control.c_tempo_exp_ocioso = L_TEMP_EXP_INF;
+    my_sys_status.s_control.c_tempo_insp_cont = 1;
     my_sys_status.s_control.c_tempo_insp_IHM = L_TEMP_INSP_INF;
+    my_sys_status.s_control.c_direcao = D_ROTACAO_0_SUBIDA;
     //chute colocado na gaveta
     // my_sys_status->s_control.c_pwm_insp = palpite(my_sys_status->s_control.c_tempo_insp_IHM,
     //                                              my_sys_status->s_control.c_angulo_inicial,
     //                                              my_sys_status->s_control.c_angulo_final);
                                                  
-    my_sys_status.s_control.c_pwm_requerido = my_sys_status.s_control.c_pwm_insp;
-    my_sys_status.s_control.c_pressao_cont = L_PRESSAO_SUP - 10;
-    my_sys_status.s_control.c_tempo_exp_cont = 1;
-    
+
   //limpando memória da struct
 }
