@@ -48,8 +48,8 @@
 #define	  D_ROTACAO_1_DESCIDA   1
 //sentidos de rotação
 
-#define   POSICAO_SUP_LIMITE 1750
-#define   POSICAO_INF_LIMITE 800
+#define   POSICAO_SUP_LIMITE 1650
+#define   POSICAO_INF_LIMITE 900
 //limites para angulos do encoder
 
 #define	  BTN_VERDE   'g'
