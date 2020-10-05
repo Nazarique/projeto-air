@@ -2,6 +2,7 @@
 
 
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_DB7, LCD_DB6, LCD_DB5, LCD_DB4);
+system_timer timer_update_IHM;
 
 static char estado = '0';
 
@@ -435,8 +436,14 @@ void machine_state()
 
     case D_TELA_INICIAL://operando - inicio
       botao = read_Button();
-      //screen_dynamic(&config_IHM_aux, estado, cursor);
-      if(!botao) {                        // 
+      if(!botao) {
+        if(timer_expired(&timer_update_IHM))
+        {
+            set_IHM_default(&config_IHM_aux);      
+            screen_static(estado);       // 
+            screen_dynamic(&config_IHM_aux, estado, cursor);       
+            timer_reset(&timer_update_IHM);                 // 
+        }
         break;                            // TODO
       }                                   // 
       else if(botao == BTN_VERMELHO) {    // [ ] interface bonita para 
@@ -647,7 +654,7 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.setCursor(14, 2);                           //                              
       lcd.print("  ");//                              //                              
       lcd.setCursor(14, 2);                           //                              
-      lcd.print((uint8_t)(IHM_aux->h_pause_exp/1000);           //                              
+      lcd.print((uint8_t)(IHM_aux->h_pause_exp/1000));           //                              
       lcd.print(",");                                 //
       lcd.print((uint8_t)((float)(IHM_aux->h_pause_exp%1000)/10));      //                              
                                                                                     
@@ -898,6 +905,9 @@ void screen_Init()
   
   lcd.begin(20, 4);
   screen_static(D_TELA_COLLAB);
+
+  timer_set(&timer_update_IHM, 5000);
+  //atualiza os valores da IHM
 
   { //configurações para tela inicial
     screen_static(estado);
