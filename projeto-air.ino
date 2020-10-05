@@ -1,7 +1,7 @@
 #include "bibliotecas.h"
 
 system_timer timer_ihm;
-system_timer timer_serial_alarmes;
+system_timer timer_serial;
 
 void alarmes(){
 
@@ -121,9 +121,7 @@ void setup()
   //attachInterrupt(digitalPinToInterrupt(S_SENSOR_INDUTIVO), desliga, LOW);
 
   timer_set(&timer_ihm, T_PERIODO_IHM);
-  timer_set(&timer_serial_alarmes, T_PERIODO_SERIAL_ALARM);
-  //set_sys_status(1);
-  
+  timer_set(&timer_serial, T_PERIODO_SERIAL);
 }
 //----------------------------------------------------------------------------------------------------------------       
 void loop() 
@@ -135,17 +133,17 @@ void loop()
     }
     /* Maquina de estado de controle, com o periodo de operação na faixa de 1ms, com contadores internos com precisão usando "watch_exp/insp"*/
 
- // if(timer_expired(&timer_serial_alarmes))
- // {
- //   //serial();
- //   timer_reset(&timer_serial_alarmes);
- // }
- // // Serial e alames, com o periodo de operação na faixa de 300ms
-//
+  if(timer_expired(&timer_serial))
+  {
+    serial();
+    timer_reset(&timer_serial);
+  }
+  // Serial e alames, com o periodo de operação na faixa de 300ms
+
   if(timer_expired(&timer_ihm))
   {
      machine_state();
-     //alarmes();
+     alarmes();
      timer_reset(&timer_ihm);
   }
  // Maquina de estado de IHM, com o periodo de operação na faixa de 50ms
