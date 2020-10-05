@@ -77,13 +77,10 @@ void machine_state()
       else if(botao == BTN_DIREITA){ 
         cursor = 1;//RESET CURSOR
         estado = D_TELA_CONFIG_1;
-         set_IHM_default(&config_IHM_aux);
-
         screen_static(estado);
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//inicia
       else if(botao == BTN_VERDE){
-        set_IHM_default(&config_IHM_aux);
         switch(cursor)
         {
           case 1:                           //
@@ -131,13 +128,11 @@ void machine_state()
       else if(botao == BTN_ESQUERDA) { 
         cursor = 1;//RESET CURSOR
         estado = D_TELA_CONFIG_0;
-        set_IHM_default(&config_IHM_aux);
 
         screen_static(estado);
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//inicia
       else if(botao == BTN_VERDE){
-        set_IHM_default(&config_IHM_aux);
         switch(cursor){
           case 1:
             estado = D_MENU_PEEP;
@@ -215,12 +210,13 @@ void machine_state()
       else if(botao == BTN_VERDE) {
         cursor = 2;//RESET CURSOR
         estado = D_TELA_INICIAL;            // Salvando valores
-        screen_static(estado);              // 
-
         set_sys_modOperacao(MODO_OPERACAO_PRESSAO);
         set_control_tempoInspiratorioIHM((uint16_t)config_IHM_aux.h_temp_insp);
         set_control_tempoExpiratorioIHM((uint8_t)config_IHM_aux.h_prop);
         set_control_pressao((uint8_t)config_IHM_aux.h_pressao);
+
+        screen_static(estado);          //
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }
       else if(botao == BTN_VERMELHO){
         cursor = 1;                   //
@@ -291,13 +287,13 @@ void machine_state()
       else if(botao == BTN_VERDE){
         cursor = 1;//RESET CURSOR       //
         estado = D_TELA_INICIAL;       // Salva valores
-        screen_static(estado);          //
-        screen_dynamic(&config_IHM_aux, estado, cursor);
-
         set_sys_modOperacao(MODO_OPERACAO_VOLUME);
         set_control_tempoInspiratorioIHM((uint16_t)config_IHM_aux.h_temp_insp);
         set_control_tempoExpiratorioIHM((uint8_t)config_IHM_aux.h_prop);
         set_control_angulo((uint16_t)config_IHM_aux.h_volume);
+
+        screen_static(estado);          //
+        screen_dynamic(&config_IHM_aux, estado, cursor);
       }
       else if(botao == BTN_VERMELHO){
         cursor = 1;//RESET CURSOR      //                      
@@ -439,15 +435,13 @@ void machine_state()
 
     case D_TELA_INICIAL://operando - inicio
       botao = read_Button();
-      screen_dynamic(&config_IHM_aux, estado, cursor);
+      //screen_dynamic(&config_IHM_aux, estado, cursor);
       if(!botao) {                        // 
         break;                            // TODO
       }                                   // 
       else if(botao == BTN_VERMELHO) {    // [ ] interface bonita para 
         estado = D_TELA_CONFIG_0;         //        volume e pressao
         cursor = 1;
-        set_IHM_default(&config_IHM_aux);
-
         screen_static(estado);            // [ ] saber o volume com 
         screen_dynamic(&config_IHM_aux, estado, cursor);
       }//config                           //        base no encoder
@@ -469,6 +463,7 @@ void machine_state()
 //----------------------------------------------------------------------------------------------------------------
 void screen_static(char p)
 {
+  lcd.display();
   switch(p)
   {
     case D_TELA_CONFIG_0: //Menu controles pagina 1
@@ -677,8 +672,8 @@ void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
       lcd.print(get_sys_modOperacaoIHM());                 // TODO
                                                       //  [ ] uma tela inicial decente
       lcd.setCursor(15, 0);                           //  que entenda quando eh volume e  
-      if(get_sys_modOperacaoIHM() == 'P'){lcd.print((char)IHM_aux->h_pressao);} //   pressao
-      if(get_sys_modOperacaoIHM() == 'V'){lcd.print((char)IHM_aux->h_volume);}  //
+      if(get_sys_modOperacaoIHM() == 'P'){lcd.print((uint8_t)IHM_aux->h_pressao);} //   pressao
+      if(get_sys_modOperacaoIHM() == 'V'){lcd.print((uint16_t)IHM_aux->h_volume);}  //
                                                       //
       lcd.setCursor(15, 1);                           //
       lcd.print((uint8_t)(IHM_aux->h_temp_insp/1000));//         //
