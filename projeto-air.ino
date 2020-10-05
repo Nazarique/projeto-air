@@ -91,6 +91,7 @@ void desliga()
     set_sys_status(0);
     stop_Motor();
     cont_ind = 5000;
+    Serial.println("sensor");
   }
 }
 //----------------------------------------------------------------------------------------------------------------       
@@ -117,33 +118,35 @@ void setup()
   pinMode(B_ALARM_BUZZER, OUTPUT);
   pinMode(S_SENSOR_INDUTIVO, INPUT);
   
-  attachInterrupt(digitalPinToInterrupt(S_SENSOR_INDUTIVO), desliga, LOW);
+  //attachInterrupt(digitalPinToInterrupt(S_SENSOR_INDUTIVO), desliga, LOW);
 
   timer_set(&timer_ihm, T_PERIODO_IHM);
   timer_set(&timer_serial_alarmes, T_PERIODO_SERIAL_ALARM);
+  //set_sys_status(1);
+  
 }
 //----------------------------------------------------------------------------------------------------------------       
 void loop() 
 {
     if(flag_control_stat_machine)
     {
-    maqEstados_Control();
-    flag_control_stat_machine = 0;
+      maqEstados_Control();
+      flag_control_stat_machine = 0;
     }
-  /* Maquina de estado de controle, com o periodo de operação na faixa de 1ms, com contadores internos com precisão usando "watch_exp/insp"*/
+    /* Maquina de estado de controle, com o periodo de operação na faixa de 1ms, com contadores internos com precisão usando "watch_exp/insp"*/
 
- if(timer_expired(&timer_serial_alarmes))
- {
-   //serial();
-   timer_reset(&timer_serial_alarmes);
- }
- // Serial e alames, com o periodo de operação na faixa de 300ms
-
- if(timer_expired(&timer_ihm))
- {
-    machine_state();
-    alarmes();
-    timer_reset(&timer_ihm);
- }
+ // if(timer_expired(&timer_serial_alarmes))
+ // {
+ //   //serial();
+ //   timer_reset(&timer_serial_alarmes);
+ // }
+ // // Serial e alames, com o periodo de operação na faixa de 300ms
+//
+  if(timer_expired(&timer_ihm))
+  {
+     machine_state();
+     //alarmes();
+     timer_reset(&timer_ihm);
+  }
  // Maquina de estado de IHM, com o periodo de operação na faixa de 50ms
 }
