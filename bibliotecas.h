@@ -19,6 +19,11 @@
 #define   S_ENCODER_AS5045  
 //idef usados para a escolha do encoder
 
+#define   POSICAO_SUP_LIMITE 2100//1650
+#define   POSICAO_INF_LIMITE 1500//900
+//limites para angulos do encoder
+
+
 #define   ALARM_DESLIGADO   0//set sistema desligado
 #define   ALARM_LIGADO   1//set sistema ligado
 #define   ALARM_PRESSAO_ALTA   2//inspiração 
@@ -35,7 +40,7 @@
 //dead time para motor
 
 #define   T_PERIODO_IHM 		50
-#define   T_PERIODO_SERIAL_ALARM 300
+#define   T_PERIODO_SERIAL 300
 //periodo de repetição para as funções serial e ihm
 
 #define   MODO_OPERACAO_VOLUME   0     
@@ -47,10 +52,6 @@
 #define	  D_ROTACAO_0_SUBIDA   0
 #define	  D_ROTACAO_1_DESCIDA   1
 //sentidos de rotação
-
-#define   POSICAO_SUP_LIMITE 1650
-#define   POSICAO_INF_LIMITE 900
-//limites para angulos do encoder
 
 #define	  BTN_VERDE   'g'
 #define	  BTN_DIREITA   'd'

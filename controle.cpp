@@ -78,7 +78,6 @@ void set_rampa(control_t *motor)
     if(timer_expired(&timer_dead_time))
     {
       motor->c_deadTime_Motor = 0;
-      //timer_reset(&timer_dead_time);
     }
   }
   //Contador para expiração
@@ -88,7 +87,6 @@ void set_rampa(control_t *motor)
     if(timer_expired(&timer_ocioso))
     {
       motor->c_flag_exp_ocioso = 0;
-      //timer_set(&timer_ocioso, (uint32_t)motor->c_tempo_exp_ocioso);
     }
   }
   //Contador rampa de PWM
@@ -203,7 +201,7 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
     p_sys_status->s_control.c_pwm_requerido  = 250;
     p_sys_status->s_control.c_pwm_atual      = 0; 
     p_sys_status->s_control.c_flag_exp_ocioso= 1;
-    timer_set(&timer_ocioso, (uint32_t)p_sys_status->s_control.c_tempo_exp_ocioso);
+    timer_set(&timer_ocioso, (uint32_t)(p_sys_status->s_control.c_tempo_exp_ocioso + p_sys_status->s_control.c_tempo_exp_pause));
 
     p_sys_status->s_control.c_direcao        = D_ROTACAO_0_SUBIDA;
     p_sys_status->s_control.c_tempo_insp_cont = (uint16_t)cont_time;
@@ -262,7 +260,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
     estipulada para inspiração do paciênte ocorre a troca. Caso o encoder chegue na posição de 
     volume maxímo a troca também acontece. */
 
-  if(aux_pressao_lida > p_sys_status->s_control.c_pressao_cont ||  posicao_encoder < POSICAO_INF_LIMITE) //2900 É A POSIÇÃO LIMITE NO MOMENTO
+  if(aux_pressao_lida > p_sys_status->s_control.c_pressao_cont ||  posicao_encoder < POSICAO_INF_LIMITE)
   { 
     //Caso o encoder chegue na posição de volume maxímo um alarme é acionado.
     if(posicao_encoder < POSICAO_SUP_LIMITE) p_sys_status->s_alarm = ALARM_VOLUME_MAX; //PRIORIDADE
@@ -286,7 +284,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
     p_sys_status->s_control.c_pwm_requerido  = 250;
     p_sys_status->s_control.c_pwm_atual      = 0;
     p_sys_status->s_control.c_flag_exp_ocioso= 1;
-    timer_set(&timer_ocioso, (uint32_t)p_sys_status->s_control.c_tempo_exp_ocioso);
+    timer_set(&timer_ocioso, (uint32_t)(p_sys_status->s_control.c_tempo_exp_ocioso + p_sys_status->s_control.c_tempo_exp_pause));
 
     p_sys_status->s_control.c_direcao        = D_ROTACAO_0_SUBIDA;//subir
     p_sys_status->s_control.c_tempo_insp_cont = (uint16_t)cont_time;
@@ -508,5 +506,4 @@ void control_init()
   PonteiroDeFuncao = control_Expiracao;
   encoder.begin();
   watch_set(&watch_exp);
- // watch_set(&watch_insp);
 }
