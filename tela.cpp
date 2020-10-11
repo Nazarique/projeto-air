@@ -36,7 +36,7 @@ void set_IHM_default(config_t *IHM)
   // Quando o botao verde eh apertado
   // as variaveis sao salvas
   IHM->h_volume = (uint16_t)(3451.0 / 1.85 - (float) s_control->c_angulo_final / 1.85);                                                                          
-  IHM->h_prop = (uint16_t)((s_control->c_tempo_exp_ocioso  * 10) /(s_control->c_tempo_insp_IHM + s_control->c_tempo_exp_pause));
+  IHM->h_prop = (uint16_t)((s_control->c_tempo_exp_ocioso  * 10) /T_insp(s_control->c_tempo_insp_IHM, s_control->c_tempo_exp_pause));
 }
 //----------------------------------------------------------------------------------------------------------------
 void machine_state()
@@ -581,6 +581,7 @@ void screen_static(char p)
 void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
 {
   char col = 16;
+  
   switch(p)
   {
     case D_TELA_CONFIG_0:
