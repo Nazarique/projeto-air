@@ -13,15 +13,15 @@ void direct_Motor(uint8_t p, uint8_t duty)
   
   if(p==D_ROTACAO_0_SUBIDA)                                                
   {
-    OCR1B = duty;
-    OCR1A = 0;
+    OCR1A = duty;
+    OCR1B = 0;
     digitalWrite(DRIVE_EN_R, HIGH);                                             
     digitalWrite(DRIVE_EN_L, HIGH);
   }
   else if(p==D_ROTACAO_1_DESCIDA)
   { 
-    OCR1A = duty;
-    OCR1B = 0;
+    OCR1B = duty;
+    OCR1A = 0;
     digitalWrite(DRIVE_EN_R, HIGH);                                             
     digitalWrite(DRIVE_EN_L, HIGH);
   }

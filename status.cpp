@@ -53,11 +53,13 @@ void *set_sys_status(uint8_t status)
   {
     //if de proteção, o status só pode ser 1 ou 0;
     my_sys_status.s_respirador = 0;
+    my_sys_status.s_alarm = ALARM_DESLIGADO;
     stop_Motor();
   }
   else if(status == 1)
   {
     my_sys_status.s_respirador = 1;
+    my_sys_status.s_alarm = ALARM_DESLIGADO;
   } 
 }
 //----------------------------------------------------------------------------------------------------------------

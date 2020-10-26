@@ -2,6 +2,7 @@
 
 system_timer timer_ihm;
 system_timer timer_serial;
+system_timer timer_sensor_indutivo;
 
 void alarmes(){
 
@@ -12,6 +13,8 @@ void alarmes(){
   
   case 0:
       digitalWrite(L_LED_VERDE, LOW);
+      digitalWrite(L_LED_VERMELHO, LOW);
+      digitalWrite(B_ALARM_BUZZER, 0);
       
    break;
   
@@ -85,13 +88,17 @@ void serial()
 }
 void desliga()
 {
-  static uint16_t cont_ind = 5000;
+   static uint16_t cont_ind = 10;
   
-  if(--cont_ind==0){
-    set_sys_status(0);
-    stop_Motor();
-    cont_ind = 5000;
-    Serial.println("sensor");
+  if(--cont_ind==0)
+  {
+    cont_ind = 10;
+    
+    if(digitalRead(S_SENSOR_INDUTIVO) == 0) 
+    {
+      set_sys_status(0);
+      stop_Motor();
+    }
   }
 }
 //----------------------------------------------------------------------------------------------------------------       
@@ -104,6 +111,7 @@ void setup()
   screen_Init();
   interrupt4_OVF_Init();
   control_init();
+  AS5047P_Init();
 
   pinMode(L_LED_AMARELO, OUTPUT);
   pinMode(L_LED_AZUL, OUTPUT);
@@ -121,12 +129,12 @@ void setup()
   //attachInterrupt(digitalPinToInterrupt(S_SENSOR_INDUTIVO), desliga, LOW);
 
   timer_set(&timer_ihm, T_PERIODO_IHM);
-  timer_set(&timer_serial, T_PERIODO_SERIAL);
+  timer_set(&timer_serial, T_PERIODO_SERIAL); 
 }
 //----------------------------------------------------------------------------------------------------------------       
 void loop() 
-{
-    if(flag_control_stat_machine)
+{  
+ if(flag_control_stat_machine)
     {
       maqEstados_Control();
       flag_control_stat_machine = 0;
@@ -146,5 +154,12 @@ void loop()
      alarmes();
      timer_reset(&timer_ihm);
   }
+  
+  if(timer_expired(&timer_sensor_indutivo))
+  {
+    if(digitalRead(S_SENSOR_INDUTIVO) == 0) desliga();
+    timer_reset(&timer_sensor_indutivo);
+  }
+  
  // Maquina de estado de IHM, com o periodo de operação na faixa de 50ms
 }

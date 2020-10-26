@@ -7,6 +7,7 @@
 #include <math.h>
 #include <ArduinoJson.h>
 #include <LiquidCrystal.h>
+#include <SPI.h>
 #include "status.h"
 #include "PINOUT.h"
 #include "botao.h"
@@ -14,13 +15,14 @@
 #include "timers.h"
 #include "motor.h"
 #include "controle.h"
+#include "AS5047P.h"
 //--------------------------------------------------------------------------------------------------------
 //definições
-#define   S_ENCODER_AS5045  
+#define   S_ENCODER_AS5047  
 //idef usados para a escolha do encoder
 
-#define   POSICAO_SUP_LIMITE 2100//1650
-#define   POSICAO_INF_LIMITE 1500//900
+#define   POSICAO_SUP_LIMITE 9300//5800
+#define   POSICAO_INF_LIMITE 6900//2800
 //limites para angulos do encoder
 
 
@@ -41,6 +43,7 @@
 
 #define   T_PERIODO_IHM 		50
 #define   T_PERIODO_SERIAL 300
+#define   T_PERIODO_SENSOR_INDUTIVO  4
 //periodo de repetição para as funções serial e ihm
 
 #define   MODO_OPERACAO_VOLUME   0     
@@ -112,7 +115,7 @@
 //onde o motor sobe com a válvula aberta
 
 #define   L_PAUSE_EXP_SUP  500
-#define   L_PAUSE_EXP_INF  350
+#define   L_PAUSE_EXP_INF  100
 //tempo onde o motor fica parado com a válvula fechada 
 //(ocorre na função expiração, mas faz parte do ciclo de inspiração)
 //----------------------------------------------------------------------------------------------------------------	
