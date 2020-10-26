@@ -8,10 +8,8 @@ AS5045 encoder(AS_SPI_SS, AS_SPI_SCK, AS_SPI_MISO);
 #endif
 
 #ifdef S_ENCODER_AS5047
-#include <AS5X47.h>
 
-#define read readAngle
-AS5X47 encoder(AS_SPI_SS);
+#define readEncoder()((uint16_t)AS5047P_Read( AS5047P_select_pin, ANGLECOM) & 0x3FFF)
 #endif
 
 static bool flag_peep = 1;
@@ -158,7 +156,7 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
   //variável aux para armazenar a pressão lida
   uint16_t aux_pressao_lida = (uint16_t)( ((float)leitura_sensor_pressao-48. ) * 0.1105 );
   
-  posicao_encoder = encoder.read();
+  posicao_encoder = readEncoder();
   
   p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
   
@@ -182,18 +180,22 @@ void control_Inspiracao_volume(system_status_t *p_sys_status)
     de acordo com a posição do encoder, pois o delta de angulo do encoder, esta diretamente ligado ao 
     volume setado para inspiração do paciênte. Para melhor controle é usado um range no if. */  
 
-   if(posicao_encoder < (uint16_t)(p_sys_status->s_control.c_angulo_final) || aux_pressao_lida > L_PRESSAO_SUP)
+   if(( posicao_encoder < (uint16_t)(p_sys_status->s_control.c_angulo_final) && posicao_encoder > (uint16_t)(p_sys_status->s_control.c_angulo_final) - 300) || aux_pressao_lida > L_PRESSAO_SUP)
    {
-      if(aux_pressao_lida > 40){
-          p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
-      }
-      else if(aux_pressao_lida < (uint16_t)(p_sys_status->s_control.c_pressao_cont - 5)) {
-          p_sys_status->s_alarm = ALARM_PRESSAO_BAIXA; 
-      }
-      else
-      {
-          p_sys_status->s_alarm = ALARM_LIGADO;
-      }
+    if(posicao_encoder < POSICAO_SUP_LIMITE) p_sys_status->s_alarm = ALARM_VOLUME_MAX; //PRIORIDADE
+    
+    else if(aux_pressao_lida > L_PRESSAO_SUP)
+    {
+      p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
+    }
+    else if(aux_pressao_lida < (uint16_t)(p_sys_status->s_control.c_pressao_cont - 5)) 
+    {
+      p_sys_status->s_alarm = ALARM_PRESSAO_BAIXA; 
+    }
+    else
+    {
+      p_sys_status->s_alarm = ALARM_LIGADO;
+    }
     // o motor inverte rotação, assim usamos um dead time para inversão.  
     p_sys_status->s_control.c_deadTime_Motor = 1;
     timer_reset(&timer_dead_time);
@@ -236,7 +238,7 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
   //variável aux para armazenar a pressão lida
   uint16_t aux_pressao_lida = (uint16_t)( ((float)leitura_sensor_pressao-48. ) * 0.1105 );
   
-  posicao_encoder = encoder.read();
+  posicao_encoder = readEncoder();
   
   p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
   
@@ -260,12 +262,12 @@ void control_Inspiracao_pressao(system_status_t *p_sys_status)
     estipulada para inspiração do paciênte ocorre a troca. Caso o encoder chegue na posição de 
     volume maxímo a troca também acontece. */
 
-  if(aux_pressao_lida > p_sys_status->s_control.c_pressao_cont ||  posicao_encoder < POSICAO_INF_LIMITE)
+  if(aux_pressao_lida > p_sys_status->s_control.c_pressao_cont ||  ( posicao_encoder < POSICAO_INF_LIMITE && posicao_encoder > POSICAO_INF_LIMITE - 300))
   { 
     //Caso o encoder chegue na posição de volume maxímo um alarme é acionado.
     if(posicao_encoder < POSICAO_SUP_LIMITE) p_sys_status->s_alarm = ALARM_VOLUME_MAX; //PRIORIDADE
     
-    if(aux_pressao_lida > L_PRESSAO_SUP)
+    else if(aux_pressao_lida > L_PRESSAO_SUP)
     {
       p_sys_status->s_alarm = ALARM_PRESSAO_ALTA;
     }
@@ -319,7 +321,7 @@ void control_Expiracao(system_status_t *p_sys_status)
   //variável aux para armazenar a pressão lida
   uint16_t aux_pressao_lida = (uint16_t)( ((float)leitura_sensor_pressao-48. ) * 0.1105 );
 
-  posicao_encoder = encoder.read();
+  posicao_encoder = readEncoder();
   
   p_sys_status->s_control.c_angulo_encoder = posicao_encoder;
   cont_time = watch_get(&watch_exp);
@@ -343,15 +345,18 @@ void control_Expiracao(system_status_t *p_sys_status)
        pressão é superior a PEEP estabelecida pela IHM, é porque ocorreu algum problema,
        sendo assim uma flag de alta PEEP é acionada*/
 
-  else if( aux_pressao_lida > (uint16_t)(5 + p_sys_status->s_control.c_pressao_PEEP)  && !flag_peep) //PRIORIDADE
-  {
-    p_sys_status->s_alarm =  ALARM_ALTA_PEEP;
-  } 
+ 
   /* A troca entre expiração e inspiração acontece caso o encoder chegue na posição de inicial */
 
   if(posicao_encoder > p_sys_status->s_control.c_angulo_inicial)
   { 
     // o motor inverte rotação, assim usamos um dead time para inversão. 
+
+    if( aux_pressao_lida > (uint16_t)(5 + p_sys_status->s_control.c_pressao_PEEP)  && !flag_peep) //PRIORIDADE
+    {
+      p_sys_status->s_alarm =  ALARM_ALTA_PEEP;
+    } 
+    
     p_sys_status->s_control.c_deadTime_Motor = 1;
     timer_reset(&timer_dead_time);
 
@@ -504,6 +509,6 @@ void control_init()
 
   //ponteiro de função responsavel pela inversão na maquina de estado para controle
   PonteiroDeFuncao = control_Expiracao;
-  encoder.begin();
+//  encoder.begin();
   watch_set(&watch_exp);
 }
