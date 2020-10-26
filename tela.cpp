@@ -3,6 +3,7 @@
 
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_DB7, LCD_DB6, LCD_DB5, LCD_DB4);
 system_timer timer_update_IHM;
+uint8_t flag_time = 0;
 
 static char estado = '0';
 
@@ -11,6 +12,7 @@ config_t get_IHM_default()
   config_t IHM;
   memset(&IHM, 0, sizeof(config_t));
   set_IHM_default(&IHM);
+  flag_time = 1;
    
   return IHM;
 }
@@ -36,7 +38,7 @@ void set_IHM_default(config_t *IHM)
   // Quando o botao verde eh apertado
   // as variaveis sao salvas
   IHM->h_volume = (uint16_t)(3451.0 / 1.85 - (float) s_control->c_angulo_final / 1.85);                                                                          
-  IHM->h_prop = (uint16_t)((s_control->c_tempo_exp_ocioso  * 10) /T_insp(s_control->c_tempo_insp_IHM, s_control->c_tempo_exp_pause));
+  IHM->h_prop = (uint16_t)((s_control->c_tempo_exp_ocioso  * 10) /(s_control->c_tempo_insp_IHM + s_control->c_tempo_exp_pause));
 }
 //----------------------------------------------------------------------------------------------------------------
 void machine_state()
@@ -86,6 +88,8 @@ void machine_state()
         {
           case 1:                           //
             estado = D_TELA_INICIAL;        //
+            timer_reset(&timer_update_IHM);
+            flag_time = 1;
             break;                          // a tela destino eh baseada na opcao 
           case 2:                           // em que o cursor eh setado
             cursor = 0;                     //
@@ -218,6 +222,9 @@ void machine_state()
 
         screen_static(estado);          //
         screen_dynamic(&config_IHM_aux, estado, cursor);
+
+        timer_reset(&timer_update_IHM);
+        flag_time = 1;
       }
       else if(botao == BTN_VERMELHO){
         cursor = 1;                   //
@@ -295,6 +302,9 @@ void machine_state()
 
         screen_static(estado);          //
         screen_dynamic(&config_IHM_aux, estado, cursor);
+
+        timer_reset(&timer_update_IHM);
+        flag_time = 1;
       }
       else if(botao == BTN_VERMELHO){
         cursor = 1;//RESET CURSOR      //                      
@@ -437,12 +447,12 @@ void machine_state()
     case D_TELA_INICIAL://operando - inicio
       botao = read_Button();
       if(!botao) {
-        if(timer_expired(&timer_update_IHM))
+        if(timer_expired(&timer_update_IHM) && flag_time)
         {
+            flag_time = 0;
             set_IHM_default(&config_IHM_aux);      
             screen_static(estado);       // 
             screen_dynamic(&config_IHM_aux, estado, cursor);       
-            timer_reset(&timer_update_IHM);                 // 
         }
         break;                            // TODO
       }                                   // 
@@ -526,7 +536,7 @@ void screen_static(char p)
       lcd.setCursor(0,1);
       lcd.print("  PEEP      :  Xcm  ");
       lcd.setCursor(0,2);
-      lcd.print("  Pausa Exp : XXXXs ");
+      lcd.print("  Pausa Insp: XXXXs ");
       lcd.setCursor(0,3);
       lcd.print(" Retorna      Grava ");
       break;
@@ -581,7 +591,6 @@ void screen_static(char p)
 void screen_dynamic(config_t *IHM_aux, char p, uint8_t cursor)
 {
   char col = 16;
-  
   switch(p)
   {
     case D_TELA_CONFIG_0:
@@ -907,7 +916,7 @@ void screen_Init()
   lcd.begin(20, 4);
   screen_static(D_TELA_COLLAB);
 
-  timer_set(&timer_update_IHM, 5000);
+  timer_set(&timer_update_IHM, 8000);
   //atualiza os valores da IHM
 
   { //configurações para tela inicial
