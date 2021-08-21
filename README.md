@@ -3,7 +3,7 @@
 
 Nazarique - Henrique Nazário
 ---------
-Este repositório tem como objetivo, apresentar o [firmware](https://bitbucket.org/Nazarique/projeto-air/src/master/) para o protótipo de respirador mecânico **AIR-ONE**.
+Este repositório tem como objetivo apresentar o [firmware](https://bitbucket.org/Nazarique/projeto-air/src/master/) para o protótipo de respirador mecânico **AIR-ONE**.
 
 Protótipo:
 
