@@ -1,9 +1,5 @@
 # Air-One
 
-
-Nazarique - Henrique Nazário
-# Air-One
-
 ---------
 Este repositório tem como objetivo, apresentar o [firmware](https://bitbucket.org/Nazarique/projeto-air/src/master/) para o protótipo de respirador mecânico **AIR-ONE**.
 
